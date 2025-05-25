@@ -23,3 +23,7 @@ def registrar_cliente(request):
     
     return render(request, 'signup.html', {'form': form})
 
+def hola():
+
+    print("hola")
+
