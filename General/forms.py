@@ -25,8 +25,9 @@ class ClienteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['mail'].widget.attrs['readonly'] = True
-        self.fields['mail'].widget.attrs['style'] = 'background-color: #e9ecef; cursor: not-allowed;'
+        if self.instance and self.instance.pk:
+          self.fields['mail'].widget.attrs['readonly'] = True
+          self.fields['mail'].widget.attrs['style'] = 'background-color: #e9ecef; cursor: not-allowed;'
 
 
 
