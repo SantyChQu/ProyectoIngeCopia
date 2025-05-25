@@ -1,0 +1,173 @@
+<h4>pepe argento<h4>
+
+
+
+
+
+{% block content %}
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 80px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        background-color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    .login-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .login-container label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    .login-container input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .login-container button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 10px;
+        background-color: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .login-container button:hover {
+        background-color: #1565c0;
+    }
+
+    .error-message {
+        color: red;
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    .recover-link {
+        display: block;
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.9em;
+    }
+
+    .recover-link a {
+        color: #1976d2;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .recover-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #888;
+        width: 90%;
+        max-width: 400px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        position: relative;
+    }
+
+    .close {
+        color: #aaa;
+        position: absolute;
+        right: 15px;
+        top: 10px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+    }
+</style>
+
+<div class="login-container">
+    <h2>Iniciar sesión</h2>
+    <form method="post" action="/ingreso/">
+        {% csrf_token %}
+        <label for="mail">Correo:</label>
+        <input type="email" name="mail" required>
+
+        <label for="contraseña">Contraseña:</label>
+        <input type="password" name="contraseña" required>
+
+        <button type="submit">Ingresar</button>
+    </form>
+
+    {% for message in messages %}
+        <p class="error-message">{{ message }}</p>
+    {% endfor %}
+
+    <div class="recover-link">
+        <a onclick="document.getElementById('recuperarModal').style.display='block'">
+            ¿Olvidaste tu contraseña?
+        </a>
+    </div>
+</div>
+
+<!-- Modal de recuperación -->
+<div id="recuperarModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('recuperarModal').style.display='none'">&times;</span>
+        <h3>Recuperar Contraseña</h3>
+        <form method="post" action="/recuperar/">
+            {% csrf_token %}
+            <label for="correo">Correo:</label>
+            <input type="email" name="correo" required>
+
+            <label for="clave_recuperacion">Clave de recuperación:</label>
+            <input type="text" name="clave_recuperacion" required>
+
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Cerrar el modal si se hace click fuera del contenido
+    window.onclick = function(event) {
+        const modal = document.getElementById('recuperarModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+{% endblock %}

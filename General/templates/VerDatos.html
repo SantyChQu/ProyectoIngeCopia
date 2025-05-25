@@ -1,0 +1,195 @@
+{% if messages %}
+  <ul style="list-style: none; padding: 0;">
+    {% for message in messages %}
+      <li style="color: {% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}black{% endif %};
+                 background-color: #f8f8f8; 
+                 padding: 10px; 
+                 margin-bottom: 10px; 
+                 border-left: 5px solid {% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}gray{% endif %}; 
+                 border-radius: 4px;">
+        {{ message }}
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<!-- Formulario principal -->
+<div class="form-container">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">{{ form.nombre.label_tag }} {{ form.nombre }}
+        {% if form.nombre.errors %}
+      <ul class="errorlist">
+        {% for error in form.nombre.errors %}
+          <li style="color: red;">{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    </div>
+    <div class="form-group">{{ form.apellido.label_tag }} {{ form.apellido }}
+    {% if form.apellido.errors %}
+  <ul class="errorlist">
+    {% for error in form.apellido.errors %}
+      <li style="color: red;">{{ error }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+</div>
+  <div class="form-group"> {{ form.mail.label_tag }} {{ form.mail }}</div>
+    <div class="form-group">{{ form.edad.label_tag }} {{ form.edad }}</div>
+    <div class="form-group">{{ form.telefono.label_tag }} {{ form.telefono }}</div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+  </form>
+</div>
+
+<!-- Botón para abrir modal -->
+<div style="text-align: center; margin-top: 20px;">
+  <button onclick="MostrarVentanaEmergente()" class="btn btn-secondary">Cambiar Contraseña</button>
+</div>
+
+<!-- Modal -->
+<div id="ventanaEmergente" class="modal" {% if mostrar_modal %}style="display:block;"{% else %}style="display:none;"{% endif %}>
+  <div class="modal-content">
+    <span class="close" onclick="CerrarVentana()">&times;</span>
+    <form method="post" action="{% url 'cambiar_contraseña' %}">
+      {% csrf_token %}
+      {{ form_cambiar_contraseña.non_field_errors }}
+      
+      <div class="form-group">
+        {{ form_cambiar_contraseña.actual.label_tag }}
+        {{ form_cambiar_contraseña.actual }}
+        {{ form_cambiar_contraseña.actual.errors }}
+      </div>
+
+      <div class="form-group">
+        {{ form_cambiar_contraseña.nueva.label_tag }}
+        {{ form_cambiar_contraseña.nueva }}
+        {{ form_cambiar_contraseña.nueva.errors }}
+      </div>
+
+      <div class="form-group">
+        {{ form_cambiar_contraseña.nueva2.label_tag }}
+        {{ form_cambiar_contraseña.nueva2 }}
+        {{ form_cambiar_contraseña.nueva2.errors }}
+      </div>
+
+      <div style="text-align: right; margin-top: 10px;">
+        <button type="submit" class="btn btn-primary">Actualizar contraseña</button>
+        <button type="button" onclick="CerrarVentana()" class="btn btn-secondary">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Estilos -->
+<style>
+body {
+  font-family: Arial, sans-serif;
+}
+
+.form-container {
+  width: 400px;
+  margin: 30px auto;
+  background-color: #fff;
+  padding: 25px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+  margin-left: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #7f8c8d;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 8% auto;
+  padding: 20px 25px;
+  border: 1px solid #888;
+  width: 350px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: black;
+}
+
+.disabled-field {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+</style>
+
+<!-- Script -->
+<script>
+function MostrarVentanaEmergente() {
+  document.getElementById('ventanaEmergente').style.display = 'block';
+}
+
+function CerrarVentana() {
+  document.getElementById('ventanaEmergente').style.display = 'none';
+}
+
+window.onload = function() {
+  {% if error_contraseña %}
+    MostrarVentanaEmergente();
+  {% endif %}
+};
+</script>

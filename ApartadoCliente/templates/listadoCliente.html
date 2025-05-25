@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Listado de Clientes</title>
+    <link rel="stylesheet" href="{% static 'disenio.css' %}">
+</head>
+<body>
+    <div class="container">
+        
+        <h1>Clientes Registrados</h1>
+        <ul>
+            {% for cliente in clientes %}
+                <li>{{ cliente.apellido }}, {{ cliente.nombre }}  - {{ cliente.email }}</li>
+            {% empty %}
+              <li>No hay clientes registrados.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'tasks' %}">Volver a la pagina principal</a>
+    </div>
+</body>
+</html>
