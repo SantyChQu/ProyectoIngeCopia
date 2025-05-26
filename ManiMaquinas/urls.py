@@ -28,6 +28,7 @@ urlpatterns = [
     path('registro/', general.registro),
     path('verMisDatos/',general.VerDatos),
     path('cambiar_contraseña/', general.cambiar_contraseña, name='cambiar_contraseña'),
-    path('clientes/', cliente_views.ver_clientes, name='ver_clientes'),
-  
+    path('clientes/', cliente_views.ver_clientes, name='ver_clientes'), 
+    path('inhabilitar_cliente/<int:id>/', cliente_views.inhabilitar_cliente, name='inhabilitar_cliente'),
+    path('cliente/habilitar/<int:id>/', cliente_views.habilitar_cliente, name='habilitar_cliente'),
     ]

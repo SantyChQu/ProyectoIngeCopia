@@ -118,3 +118,4 @@ def cambiar_contraseña(request):
         'mostrar_modal': True,  # Esto hace que el modal se abra con errores
         'error_contraseña': True  # Esto hace que el JS también lo abra
     })
+

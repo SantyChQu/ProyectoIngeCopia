@@ -4,19 +4,82 @@
 <head>
     <title>Listado de Clientes</title>
     <link rel="stylesheet" href="{% static 'disenio.css' %}">
+    <style>
+        .columns {
+            display: flex;
+            gap: 40px;
+        }
+
+        .columna {
+            flex: 1;
+            background-color: #e0e0e0; /* gris claro */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .inhabilitados {
+            background-color: #e0e0e0; /* gris claro */
+            padding: 20px;
+            border-radius: 10px;
+        }
+     
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .boton:hover {
+            display: inline-block;
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        
-        <h1>Clientes Registrados</h1>
-        <ul>
-            {% for cliente in clientes %}
-                <li>{{ cliente.apellido }}, {{ cliente.nombre }}  - {{ cliente.mail }}</li>
-            {% empty %}
-              <li>No hay clientes registrados.</li>
-            {% endfor %}
-        </ul>
-        <a href="{% url 'inicio' %}">Volver a la pagina principal</a>
+        <h1>Clientes</h1>
+        <div class="columns">
+            <!-- Habilitados -->
+            <div class="columna">
+                <h2>Habilitados</h2>
+                <ul>
+                    {% for cliente in habilitados %}
+                        <li>
+                            {{ cliente.apellido }}, {{ cliente.nombre }} - {{ cliente.mail }}
+                            <form action="{% url 'inhabilitar_cliente' cliente.id %}" method="post" class="boton">
+                                {% csrf_token %}
+                                <button type="submit" style= "background-color: #f8d7da; border-color:rgb(224, 53, 70);" onclick="return confirm('¿Estás seguro que quiere eliminar a este cliente?')">Inhabilitar Cliente</button>
+                            </form>
+                        </li>
+                    {% empty %}
+                        <li>No hay clientes habilitados.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Inhabilitados -->
+            <div class="columna inhabilitados">
+                <h2>Inhabilitados</h2>
+                <ul>
+                    {% for cliente in inhabilitados %}
+                        <li>
+                            {{ cliente.apellido }}, {{ cliente.nombre }} - {{ cliente.mail }}
+                            <form action="{% url 'habilitar_cliente' cliente.id %}" method="post" class="boton">
+                                {% csrf_token %}
+                                <button type="submit" style= "background-color:rgb(172, 219, 157); border-color:rgb(17, 179, 44);"  onclick="return confirm('¿Estás seguro que quiere Habilitar a este cliente?')">Habilitar Cliente</button>
+                            </form>
+                        </li>                
+                    {% empty %}
+                        <li>No hay clientes registrados.</li>
+                    {% endfor %}
+                </ul>
+            </div>
     </div>
+    </br>   
+    <a href="{% url 'inicio' %}">Volver a la pagina principal</a>
 </body>
 </html>
