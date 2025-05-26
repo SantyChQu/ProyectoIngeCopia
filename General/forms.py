@@ -18,8 +18,8 @@ class ClienteForm(forms.ModelForm):
     
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'edad', 'telefono', 'mail']
-        exclude = ['contraseña']
+        fields = ['nombre', 'apellido', 'edad', 'telefono', 'mail','contraseña']
+       # exclude = ['contraseña']
 
 
 
