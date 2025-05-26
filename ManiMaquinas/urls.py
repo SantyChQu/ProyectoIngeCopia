@@ -22,10 +22,12 @@ from ApartadoCliente import views as cliente_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', general.inicio),
+    path('', general.inicio, name='inicio'),
     path('ingreso/', general.ingresar, name='ingreso'),
     path('cerrarSesion/', general.cerrarSesion),
-     path('registro/', general.registro),
-     path('verMisDatos/',general.VerDatos),
-     path('cambiar_contraseña/', general.cambiar_contraseña, name='cambiar_contraseña')
+    path('registro/', general.registro),
+    path('verMisDatos/',general.VerDatos),
+    path('cambiar_contraseña/', general.cambiar_contraseña, name='cambiar_contraseña'),
+    path('clientes/', cliente_views.ver_clientes, name='ver_clientes'),
+  
     ]
