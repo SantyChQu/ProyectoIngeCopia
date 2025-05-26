@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agregar Maquinaria</title>
+    <style>
+       
+        header {
+            background-color: #FFA726;
+            color: white;
+            padding: 1rem;
+            position: relative;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .menu-btn {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #FFCC80;
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.3rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .menu-btn:hover {
+            background-color: #FFB74D;
+        }
+        nav {
+            position: absolute;
+            left: 1rem;
+            top: 3.5rem;
+            background: white;
+            border: 1px solid #FFA726;
+            border-radius: 0.3rem;
+            display: none;
+            width: 200px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        nav a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #333;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #FFA726;
+            color: white;
+        }
+        .show-menu nav {
+            display: block;
+        }
+        .boton-naranja {
+            background-color: #f4a261; 
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .boton-naranja:hover {
+            background-color: #e76f51;
+        }
+
+        .boton-naranja-small {
+            padding: 10px 20px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .mensaje-exito {
+            background-color: #d4edda; 
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .mensaje-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 8px 12px;          
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: inline-block;      
+            max-width: 300px;           
+            font-size: 0.9rem;          
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        Manny Maquinarias
+        <div id="menu" style="position:relative;">
+            <nav>
+                <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                <a href="{% url 'agregar_maquina' %}">Agregar Maquina</a>
+            </nav>
+        </div>
+    </header>
+
+    <h1>Agregar Maquinaria</h1>
+
+    {% if mensaje %}
+        <div class="mensaje-exito">{{ mensaje }}</div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+        <div class="mensaje-error">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    {% if maquina_agregada %}
+
+        <h2>Datos de la máquina agregada:</h2>
+        <ul>
+            <li><strong>Número de Serie:</strong> {{ maquina_agregada.numero_de_serie }}</li>
+            <li><strong>Marca:</strong> {{ maquina_agregada.marca }}</li>
+            <li><strong>Modelo:</strong> {{ maquina_agregada.modelo }}</li>
+            <li><strong>Año de Compra:</strong> {{ maquina_agregada.año_compra }}</li>
+            <li><strong>Localidad:</strong> {{ maquina_agregada.localidad }}</li>
+        </ul>
+
+        {% if maquina_agregada.imagen %}
+            <p><strong>Imagen:</strong></p>
+            <img src="{{ maquina_agregada.imagen.url }}" alt="Imagen de la máquina" width="300">
+        {% endif %}
+
+        <br>
+        <a href="{% url 'inicio' %}" class="boton-naranja boton-naranja-small">Volver al Inicio</a>
+        <a href="{% url 'agregar_maquina' %}" class="boton-naranja boton-naranja-small">Agregar otra Máquina</a>
+    {% else %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div>
+            {{ form.numero_de_serie.label_tag }}<br>
+            {{ form.numero_de_serie }}
+            {% if form.numero_de_serie.errors %}
+                <div class="mensaje-error">
+                    {{ form.numero_de_serie.errors }}
+                </div>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.marca.label_tag }}<br>
+            {{ form.marca }}
+            {% if form.marca.errors %}
+                <div class="mensaje-error">
+                    {{ form.marca.errors }}
+                </div>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.modelo.label_tag }}<br>
+            {{ form.modelo }}
+            {% if form.modelo.errors %}
+                <div class="mensaje-error">
+                    {{ form.modelo.errors }}
+                </div>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.año_compra.label_tag }}<br>
+            {{ form.año_compra }}
+            {% if form.año_compra.errors %}
+                <div class="mensaje-error">
+                    {{ form.año_compra.errors }}
+                </div>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.localidad.label_tag }}<br>
+            {{ form.localidad }}
+            {% if form.localidad.errors %}
+                <div class="mensaje-error">
+                    {{ form.localidad.errors }}
+                </div>
+            {% endif %}
+        </div>
+    
+        <div>
+            {{ form.imagen.label_tag }}<br>
+            {{ form.imagen }}
+            {% if form.imagen.errors %}
+                <div class="mensaje-error">
+                    {{ form.imagen.errors }}
+                </div>
+            {% endif %}
+        </div>
+    
+        <button type="submit" class="boton-naranja boton-naranja-small">Agregar</button>
+    </form>
+    {% endif %}
+
+<script>
+    function toggleMenu() {
+        const header = document.querySelector('header');
+        header.classList.toggle('show-menu');
+    }
+</script>
+</body>
+</html>
