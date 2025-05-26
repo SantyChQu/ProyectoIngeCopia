@@ -11,7 +11,7 @@
         <h1>Clientes Registrados</h1>
         <ul>
             {% for cliente in clientes %}
-                <li>{{ cliente.apellido }}, {{ cliente.nombre }}  - {{ cliente.email }}</li>
+                <li>{{ cliente.apellido }}, {{ cliente.nombre }}  - {{ cliente.mail }}</li>
             {% empty %}
               <li>No hay clientes registrados.</li>
             {% endfor %}

@@ -2,8 +2,7 @@ from django import forms
 from .models import Cliente
 from django.core.validators import RegexValidator
 
-solo_letras = RegexValidator(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
-                             'Solo se permiten letras y espacios.')
+solo_letras = RegexValidator(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 'Solo se permiten letras y espacios.')
 
 class ClienteUpdateForms(forms.ModelForm):
 
@@ -27,6 +26,7 @@ class ClienteUpdateForms(forms.ModelForm):
                  #esta relacionado para que pueda tomar los tipos de datos que estan definidos en el modelo
         model=Cliente
         fields= ["nombre","apellido","edad","telefono","mail","contraseña"]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['mail'].widget.attrs['readonly'] = True 
