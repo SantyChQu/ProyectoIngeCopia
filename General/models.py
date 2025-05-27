@@ -11,6 +11,13 @@ class Cliente(models.Model):
         ('habilitado', 'Habilitado'),
         ('inhabilitado', 'Inhabilitado'),
     ]               
+
+    ROL_CHOICES = [
+        ('cliente', 'Cliente'),
+        ('jefe', 'Jefe'),
+         ('empleados', 'Empleados'),
+    ]
+
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     edad = models.PositiveIntegerField()
@@ -18,6 +25,8 @@ class Cliente(models.Model):
     mail = models.EmailField(unique=True)
     contraseña = models.CharField(max_length=128)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='habilitado')
+    rol = models.CharField(max_length=10, choices=ROL_CHOICES, default='cliente')
+
   # clave= models.CharField(max_length=20)
 
 
@@ -73,7 +82,7 @@ class Maquinaria(models.Model):
     modelo = models.CharField(max_length=100)
     año_compra = models.PositiveIntegerField()
     localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE)
-    estado = models.CharField(max_length=15, choices=ESTADO_CHOICES)
+    estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='habilitado')
     precio_alquiler_diario = models.DecimalField(max_digits=10, decimal_places=2)
     politica = models.ForeignKey(Politica, on_delete=models.CASCADE)
 

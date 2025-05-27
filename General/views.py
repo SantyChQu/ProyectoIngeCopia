@@ -35,6 +35,10 @@ def registro(request):
             return render(request, 'registro.html', {'form': form})
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Cliente
+
 def ingresar(request):
     if request.method == 'POST':
         mail = request.POST.get('mail')
@@ -42,17 +46,26 @@ def ingresar(request):
 
         try:
             cliente = Cliente.objects.get(mail=mail)
-            if cliente.contraseña == contraseña:  # O usar check_password si estás hasheando
-                # Guardamos el cliente en la sesión manualmente
+            if cliente.contraseña == contraseña:  # Si usas hashing, usa check_password aquí
+
+                # Guardamos datos en la sesión
                 request.session['cliente_id'] = cliente.id
                 request.session['cliente_nombre'] = cliente.nombre
-                return redirect('/')  # Cambiá por donde quieras redirigir
+                request.session['cliente_rol'] = cliente.rol  # 🔹
+
+                # 🔁 Redirección según rol
+                if cliente.rol == 'jefe':
+                    return redirect('/') 
+                else:
+                    return redirect('/')
+
             else:
                 messages.error(request, 'Contraseña incorrecta')
+
         except Cliente.DoesNotExist:
             messages.error(request, 'Correo no registrado')
 
-        return render(request, 'ingreso.html', {'mail': mail})  # mantener input si querés
+        return render(request, 'ingreso.html', {'mail': mail})
 
     return render(request, 'ingreso.html')
 

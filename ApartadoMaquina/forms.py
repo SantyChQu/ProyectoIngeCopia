@@ -14,7 +14,7 @@ class MaquinaForm(forms.ModelForm):
         año = self.cleaned_data.get('año_compra')
         año_actual = datetime.now().year
         if año < 1950 or año > año_actual:
-            raise forms.ValidationError(f"El año de compra debe estar entre 1930 y {año_actual}.")
+            raise forms.ValidationError(f"El año de compra debe estar entre 1950 y {año_actual}.")
         return año
     
     def clean_numero_de_serie(self):

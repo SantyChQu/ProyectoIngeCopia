@@ -1,3 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Manny Maquinarias{% endblock %}
+
+{% block content %}
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -88,39 +96,7 @@
 </head>
 <body>
 
-    <header>
-        <button class="menu-btn dropdown-toggle" id="menuButton" data-bs-toggle="dropdown" aria-expanded="false">
-            Menú
-        </button>
-        <h1 class="mx-auto">Manny Maquinarias</h1>
-         <li class="dropdown-item">Sesión cliente_id: {{ request.session.cliente_id|default:"No definido / linea 95 " }}</li> 
-        <div class="auth-buttons">
-            {% if request.session.cliente_id %}
-                <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" id="perfilMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle fs-5" style="color:red"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
-                    <li><a class="dropdown-item" href="/verMisDatos">Ver mis datos</a></li>
-                    <li><a class="dropdown-item" href="/">Mis alquileres</a></li>
-                   
-                </ul>
-            </div>
 
-            <a href="/cerrarSesion/" class="btn btn-danger">Cerrar sesión</a>
-            {% else %}
-                <a href="/ingreso/" class="login-btn">Iniciar Sesion</a>
-
-                <a href="/registro" class="register-btn">Registrarse</a>
-            {% endif %}
-        </div>
-        <ul class="dropdown-menu" aria-labelledby="menuButton">
-            <li><a class="dropdown-item" href="/">Home</a></li>
-            <li><a class="dropdown-item" href="/admin">Admin</a></li>
-            <li><a class="dropdown-item" href="clientes/">ver Clientes</a></li>
-            <li><a class="dropdown-item" href="agregar_maquina/">Agregar Maquina</a></li>
-        </ul>
-    </header>
 
     <div class="welcome-msg">
         <p>¡Hola! Bienvenido a Manny Maquinarias 👷‍♂️🚜</p>
@@ -131,7 +107,7 @@
 
     <button class="btn-catalogo" >Ver catálogo</button>
 
-    {% block content %}
+   
     {% endblock %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

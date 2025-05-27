@@ -37,7 +37,7 @@ class ClienteForm(forms.ModelForm):
             raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
         return contraseña
 
-
+# agregar verificacion por mail repetido- o mial que no contenga @ y .
 
     def clean(self):
         cleaned_data = super().clean()

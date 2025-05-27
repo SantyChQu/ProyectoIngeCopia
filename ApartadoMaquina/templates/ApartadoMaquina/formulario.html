@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+
+
+{% block content %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -101,16 +105,7 @@
     </style>
 </head>
 <body>
-    <header>
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        Manny Maquinarias
-        <div id="menu" style="position:relative;">
-            <nav>
-                <li><a href="{% url 'inicio' %}">Inicio</a></li>
-                <a href="{% url 'agregar_maquina' %}">Agregar Maquina</a>
-            </nav>
-        </div>
-    </header>
+
 
     <h1>Agregar Maquinaria</h1>
 
@@ -219,3 +214,6 @@
 </script>
 </body>
 </html>
+
+
+{% endblock %}

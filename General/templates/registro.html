@@ -1,18 +1,18 @@
-<h4>PEDRO PICA PIEDRA<h4>
-
-<!-- Este es un comentario en HTML {poner porcentaje de abrir extends 'base.html' %} -->
-
+{% extends 'base.html' %}
 
 {% block content %}
-<h2>Registro de Cliente</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4 text-center">Registro de Cliente</h2>
 
-<form method="post">
+        <form method="post" class="border p-4 shadow rounded bg-light">
+            {% csrf_token %}
+            {{ form.as_p }}
 
-  {% csrf_token %}
-
-  {{ form.as_p }}
-
-  <button type="submit">Registrar</button>
-</form>
-
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary mt-3">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
