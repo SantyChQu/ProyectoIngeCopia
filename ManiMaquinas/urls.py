@@ -16,10 +16,14 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from General import views as general
 from ApartadoCliente import views as cliente_views
+from ApartadoMaquina import views as maquinas_views
 
+import os
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', general.inicio, name='inicio'),
@@ -31,4 +35,9 @@ urlpatterns = [
     path('clientes/', cliente_views.ver_clientes, name='ver_clientes'), 
     path('inhabilitar_cliente/<int:id>/', cliente_views.inhabilitar_cliente, name='inhabilitar_cliente'),
     path('cliente/habilitar/<int:id>/', cliente_views.habilitar_cliente, name='habilitar_cliente'),
+    path('agregar_maquina/', maquinas_views.agregar_maquina, name='agregar_maquina'),
+    path('autodestruir/', cliente_views.autodestruir_clientes, name='autodestruir_clientes'),
     ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=os.path.join(settings.BASE_DIR, 'static'))

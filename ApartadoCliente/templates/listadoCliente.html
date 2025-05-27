@@ -3,8 +3,83 @@
 <html>
 <head>
     <title>Listado de Clientes</title>
-    <link rel="stylesheet" href="{% static 'disenio.css' %}">
 </head>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #FFA726;
+    color: #0a0a0a;
+    margin: 40px;
+    }
+    .container {
+        max-width: 1100px;
+        margin: auto;
+        padding: 20px;
+        background-color:  #e0dfdc;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        padding: 10px;
+        border-bottom: 1px solid #7c5213;
+    }
+
+    li:last-child {
+        border-bottom: none;
+    }
+
+    a {
+        display: inline-block;
+        margin-top: 20px;
+        text-decoration: none;
+        color: rgb(10, 7, 1);
+        background-color:  #FFA726;
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    .columns {
+        display: flex;
+        gap: 40px;
+    }
+
+    .columna {
+        flex: 1;
+        background-color: #e0e0e0; /* gris claro */
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .inhabilitados {
+        background-color: #e0e0e0; 
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 10px;
+    }
+    h1 {
+        text-align: center;
+        color: #b17d49;
+    }
+    .boton {
+        display: block;
+        margin-left: 0;  
+
+    }
+</style>
 <body>
     <div class="container">
         <h1>Clientes</h1>
@@ -40,12 +115,35 @@
                             </form>
                         </li>                
                     {% empty %}
-                        <li>No hay clientes registrados.</li>
+                        <li>No hay clientes inhabilitados.</li>
                     {% endfor %}
                 </ul>
             </div>
     </div>
     </br>   
     <a href="{% url 'inicio' %}">Volver a la pagina principal</a>
+
+
+
+    <form method="POST" action="{% url 'autodestruir_clientes' %}" onsubmit="return confirmarAutodestruccion();">
+    {% csrf_token %}
+    <button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: 2px solid #ff9999; border-radius: 10px; cursor: pointer;">
+        💣 AUTODESTRUIR TODOS LOS CLIENTES
+    </button>
+    </form>
+
+    <script>
+        function confirmarAutodestruccion() {
+        return confirm("⚠️ Esta acción eliminará TODOS los clientes registrados. ¿Estás segura/o?");
+        }
+    </script>
+    <!-- {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                 <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %} -->
+
 </body>
 </html>
