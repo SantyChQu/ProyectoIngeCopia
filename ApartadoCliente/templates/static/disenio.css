@@ -7,7 +7,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #fdc302;
+    color: #b17d49;
 }
 
 .container {
@@ -54,4 +54,40 @@ a:hover {
 
 .imagen-top img {
     max-width: 100px;
+}
+
+.columns {
+    display: flex;
+    gap: 40px;
+}
+
+.columna {
+    flex: 1;
+    background-color: #e0e0e0; /* gris claro */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.inhabilitados {
+    background-color: #e0e0e0; /* gris claro */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+h1 {
+    text-align: center;
+    color: #b17d49;
+}
+.boton {
+    display: inline-block;
+    margin-left: 10px;
 }
