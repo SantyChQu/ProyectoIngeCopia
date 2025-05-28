@@ -83,9 +83,7 @@
             <ul class="dropdown-menu" aria-labelledby="menuButton">
                 <li><a class="dropdown-item" href="/">Home</a></li>
                 <li><a class="dropdown-item" href="/admin">Admin</a></li>
-                <li><a class="dropdown-item" href="/clientes/">Ver Clientes</a></li>
                 
-
                 {% if request.session.cliente_rol == "jefe" %}
 
                     <li><a class="dropdown-item" href="/agregar_maquina/">Agregar Máquina</a></li>   
