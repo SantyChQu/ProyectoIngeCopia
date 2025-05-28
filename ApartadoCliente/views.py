@@ -40,6 +40,8 @@ def habilitar_cliente(request,id):
     return redirect('ver_clientes')
 
 def autodestruir_clientes(request):
-    if request.method == "POST":
+    cliente_id = request.session.get('cliente_id')
+    cliente = Cliente.objects.get(id=cliente_id)
+    if request.method == "POST" and cliente.rol == 'jefe':
         Cliente.objects.all().delete()
-        return redirect('ver_clientes')  
+        return redirect('inicio')  
