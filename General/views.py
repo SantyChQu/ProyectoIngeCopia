@@ -46,29 +46,27 @@ def ingresar(request):
 
         try:
             cliente = Cliente.objects.get(mail=mail)
-            if cliente.contraseña == contraseña:  # Si usas hashing, usa check_password aquí
 
+            if cliente.estado != "habilitado":
+                messages.error(request, 'Tu cuenta está deshabilitada. Contacta al administrador.')
+            elif cliente.contraseña == contraseña:  # Si usas hashing, reemplaza esto por check_password
                 # Guardamos datos en la sesión
                 request.session['cliente_id'] = cliente.id
                 request.session['cliente_nombre'] = cliente.nombre
-                request.session['cliente_rol'] = cliente.rol  # 🔹
+                request.session['cliente_rol'] = cliente.rol
 
-                # 🔁 Redirección según rol
-                if cliente.rol == 'jefe':
-                    return redirect('/') 
-                else:
-                    return redirect('/')
-
+                # Redirección según rol
+                return redirect('/')
             else:
                 messages.error(request, 'Contraseña incorrecta')
 
         except Cliente.DoesNotExist:
             messages.error(request, 'Correo no registrado')
 
+        # En todos los casos de error, se vuelve al formulario con el mail ya cargado
         return render(request, 'ingreso.html', {'mail': mail})
 
     return render(request, 'ingreso.html')
-
                   
 def cerrarSesion(request):
     request.session.flush()  # Limpia la sesión por completo
