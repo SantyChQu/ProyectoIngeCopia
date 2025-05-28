@@ -13,8 +13,8 @@ class Cliente(models.Model):
     ]               
 
     ROL_CHOICES = [
-        ('cliente', 'Cliente'),
-        ('jefe', 'Jefe'),
+         ('cliente', 'Cliente'),
+         ('jefe', 'Jefe'),
          ('empleados', 'Empleados'),
     ]
 
