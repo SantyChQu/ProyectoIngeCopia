@@ -83,6 +83,11 @@
 <body>
     <div class="container">
         <h1>Clientes</h1>
+        {% if not habilitados and not inhabilitados %}
+            <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">
+                No hay clientes registrados.
+            </p>
+{% endif %}
         <div class="columns">
             <!-- Habilitados -->
             <div class="columna">

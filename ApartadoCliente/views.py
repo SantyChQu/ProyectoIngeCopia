@@ -10,8 +10,12 @@ def ver_clientes(request):
     if not cliente_id:
        # messages.error(request, "Tenés que iniciar sesión.")
         return redirect('inicio')
+    try:
+        cliente = Cliente.objects.get(id=cliente_id)
+    except Cliente.DoesNotExist:
+        messages.error(request, "Tu sesión no es válida o el cliente fue eliminado.")
+        return redirect('inicio')
     
-    cliente = get_object_or_404(Cliente, id=cliente_id)
     if cliente.rol not in ['jefe', 'empleados']:
        #messages.error(request, "No tenés permiso para acceder a esta página.")
        return redirect('inicio')  
@@ -38,4 +42,4 @@ def habilitar_cliente(request,id):
 def autodestruir_clientes(request):
     if request.method == "POST":
         Cliente.objects.all().delete()
-    return redirect('ver_clientes')  
+        return redirect('ver_clientes')  
