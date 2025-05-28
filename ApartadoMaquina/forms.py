@@ -1,13 +1,13 @@
 from django import forms
-from .models import Maquina
+from General.models import Maquinaria
 from datetime import datetime
 
-class MaquinaForm(forms.ModelForm):
+class MaquinariaForm(forms.ModelForm):
     class Meta:
-        model = Maquina
-        fields = '__all__'
+        model = Maquinaria
+        exclude = ['estado']
         widgets = {
-            'numero_de_serie': forms.NumberInput(attrs={'min': 0}),
+            'codigo_serie': forms.TextInput(attrs={'minlength': 1}),
         }
 
     def clean_año_compra(self):
@@ -17,8 +17,14 @@ class MaquinaForm(forms.ModelForm):
             raise forms.ValidationError(f"El año de compra debe estar entre 1950 y {año_actual}.")
         return año
     
-    def clean_numero_de_serie(self):
-        numero = self.cleaned_data.get('numero_de_serie')
-        if not numero.isdigit():
-            raise forms.ValidationError("El número de serie debe contener sólo números.")
-        return numero
+    def clean_codigo_serie(self):
+        codigo = self.cleaned_data.get('codigo_serie')
+        if not codigo.isalnum():
+            raise forms.ValidationError("El código de serie debe contener sólo letras y/o números.")
+        return codigo
+    
+    def clean_imagen(self):
+        imagen = self.cleaned_data.get('imagen')
+        if not imagen:
+            raise forms.ValidationError("La imagen es obligatoria.")
+        return imagen

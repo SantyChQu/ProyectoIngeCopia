@@ -1,29 +1,30 @@
 from django.shortcuts import render, redirect
-from .forms import MaquinaForm
-from .models import Maquina
+from .forms import MaquinariaForm
 from django.db import IntegrityError
 from django.contrib import messages
 
 def agregar_maquina(request):
     mensaje = ''
-    maquina_agregada = None
+    maquinaria_agregada = None
 
     if request.method == 'POST':
-        form = MaquinaForm(request.POST, request.FILES)
+        form = MaquinariaForm(request.POST, request.FILES)
         if form.is_valid():
             try:
-                maquina_agregada = form.save()
+                maquinaria_agregada = form.save(commit=False)  # No guardamos todavía
+                maquinaria_agregada.estado = 'habilitado'      # Asignamos estado
+                maquinaria_agregada.save()
                 mensaje = '¡Maquinaria agregada correctamente!'
-                form = MaquinaForm()  # reiniciar el form vacío
+                form = MaquinariaForm()  # reiniciar el form vacío
             except IntegrityError:
                 form.add_error('numero_de_serie', 'Ya existe una máquina con ese número de serie.')
     else:
-        form = MaquinaForm()
+        form = MaquinariaForm()
         
     return render(request, 'ApartadoMaquina/formulario.html', {
         'form': form,
         'mensaje': mensaje,
-        'maquina_agregada': maquina_agregada
+        'maquinaria_agregada': maquinaria_agregada
     })
 
 

@@ -69,7 +69,10 @@ class Localidad(models.Model):
 
 class Politica(models.Model):
     nombre = models.CharField(max_length=100)
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    porcentaje = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return self.nombre
 
 
 class Maquinaria(models.Model):
@@ -86,6 +89,7 @@ class Maquinaria(models.Model):
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='habilitado')
     precio_alquiler_diario = models.DecimalField(max_digits=10, decimal_places=2)
     politica = models.ForeignKey(Politica, on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to='maquinas/')
 
 
 class Mantenimiento(models.Model):
