@@ -124,7 +124,7 @@
             <li><strong>Estado:</strong> {{ maquinaria_agregada.estado }}</li>
             <li><strong>Precio por Día:</strong> ${{ maquinaria_agregada.precio_alquiler_diario }}</li>
             <li><strong>Política:</strong> {{ maquinaria_agregada.politica }}</li>
-            <li><strong>Imagen:</strong><br>
+            <li>
                 {% if maquinaria_agregada.imagen %}
                     <img src="{{ maquinaria_agregada.imagen.url }}" alt="Imagen de maquinaria" width="300">
                 {% else %}
