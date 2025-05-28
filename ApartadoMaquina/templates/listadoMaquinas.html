@@ -1,0 +1,44 @@
+<body>
+    <div class="container">
+        <h1>Maquinas</h1>
+        <div class="columns">
+            <div class="columna">
+                <ul>
+                    {% for maquina in maquina %}
+                        <li>
+                            {{ maquina.marca }}, {{ maquina.modelo }} - {{ maquina.numero_de_serie }}
+                            <form action="{% url 'verListado' %}" method="post" class="boton">
+                                {% csrf_token %}
+                                <button type="submit" style= "background-color: #f8d7da; border-color:rgb(224, 53, 70);" onclick="return confirm('¿Estás seguro que quiere eliminar a este cliente?')">Inhabilitar Cliente</button>
+                            </form>
+                        </li>
+                    {% empty %}
+                        <li>No hay clientes habilitados.</li>
+                    {% endfor %}
+                </ul>
+            </div>      
+                    {% empty %}
+                        <li>No hay clientes inhabilitados.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+    </div>
+    </br>   
+    <a href="{% url 'inicio' %}">Volver a la pagina principal</a>
+
+
+
+    <form method="POST" action="{% url 'autodestruir_clientes' %}" onsubmit="return confirmarAutodestruccion();">
+    {% csrf_token %}
+    <button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: 2px solid #ff9999; border-radius: 10px; cursor: pointer;">
+        💣 AUTODESTRUIR TODOS LOS CLIENTES
+    </button>
+    </form>
+
+    <script>
+        function confirmarAutodestruccion() {
+        return confirm("⚠️ Esta acción eliminará TODOS los clientes registrados. ¿Estás segura/o?");
+        }
+    </script>
+</body>
+</html>

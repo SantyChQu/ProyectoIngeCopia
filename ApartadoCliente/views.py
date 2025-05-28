@@ -1,15 +1,13 @@
 from django.shortcuts import render, redirect,  get_object_or_404
-from .models import Cliente
+
 from General.models import Cliente
 
 from django.contrib import messages
 
 def ver_clientes(request):
-    #agregue el if para que solo los superUsuarios o staff puedar ver el listado y deshabilitar clientes
-    #if not request.user.is_superuser and not request.user.is_staff:  
-     #   messages.error(request, "No tenés permiso para acceder a esta página.")
-      #  return redirect('inicio')  
-    # Hasta aca lo de arriba
+    if not request.user.is_superuser and not request.user.is_staff:  
+        messages.error(request, "No tenés permiso para acceder a esta página.")
+        return redirect('inicio')  
     habilitados = Cliente.objects.filter(estado='habilitado')
     inhabilitados = Cliente.objects.filter(estado='inhabilitado')
     return render(request, 'listadoCliente.html', {

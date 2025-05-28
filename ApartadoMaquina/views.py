@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import MaquinaForm
 from .models import Maquina
 from django.db import IntegrityError
-
+from django.contrib import messages
 
 def agregar_maquina(request):
     mensaje = ''
@@ -25,3 +25,10 @@ def agregar_maquina(request):
         'mensaje': mensaje,
         'maquina_agregada': maquina_agregada
     })
+
+
+def ver_Maquinas(request):
+    if not request.user.is_superuser and not request.user.is_staff:  
+        messages.error(request, "No tenés permiso para acceder a esta página.")
+        return redirect('inicio')  
+    return render(request, 'listadoMaquinas.html')

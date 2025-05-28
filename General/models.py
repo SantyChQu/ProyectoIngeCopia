@@ -42,6 +42,7 @@ class Jefe(models.Model):
     contraseña = models.CharField(max_length=128)
 
 
+
 class Empleado(models.Model):
     ESTADO_CHOICES = [
         ('habilitado', 'Habilitado'),
