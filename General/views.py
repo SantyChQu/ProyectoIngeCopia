@@ -34,11 +34,6 @@ def registro(request):
           
             return render(request, 'registro.html', {'form': form})
 
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Cliente
-
 def ingresar(request):
     if request.method == 'POST':
         mail = request.POST.get('mail')
