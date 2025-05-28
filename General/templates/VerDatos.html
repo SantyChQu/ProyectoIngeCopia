@@ -1,3 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
 {% if messages %}
   <ul style="list-style: none; padding: 0;">
     {% for message in messages %}
@@ -193,3 +197,5 @@ window.onload = function() {
   {% endif %}
 };
 </script>
+
+{% endblock %}
