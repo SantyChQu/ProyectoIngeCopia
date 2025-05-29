@@ -87,7 +87,7 @@ class Maquinaria(models.Model):
     año_compra = models.PositiveIntegerField()
     localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='habilitado')
-    precio_alquiler_diario = models.DecimalField(max_digits=10, decimal_places=2)
+    precio_alquiler_diario = models.DecimalField(max_digits=30, decimal_places=2)
     politica = models.ForeignKey(Politica, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='maquinas/')
 

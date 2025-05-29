@@ -3,7 +3,7 @@ from .forms import MaquinariaForm
 from django.db import IntegrityError
 from django.contrib import messages
 from General.models import Maquinaria, Localidad
-
+from datetime import datetime
 def agregar_maquina(request):
     mensaje = ''
     maquinaria_agregada = None
@@ -62,6 +62,20 @@ def modificar_maquina(request, id):
         
         # Obtener el objeto Localidad según el id enviado en el formulario
         localidad_id = request.POST.get('localidad')
+
+
+
+        # Validar año de compra
+        try:
+            año_actual = datetime.now().year
+            año = int(maquina.año_compra)
+            if año < 1950 or año > año_actual:
+                messages.error(request, f"El año de compra debe estar entre 1950 y {año_actual}.")
+                return redirect('ver_maquinarias')
+            maquina.año_compra = año
+        except (TypeError, ValueError):
+            messages.error(request, "Año de compra inválido.")
+            return redirect('ver_maquinarias')
 
         try:
             precio = float(request.POST.get('precio_alquiler_diario'))
