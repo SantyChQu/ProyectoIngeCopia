@@ -13,14 +13,16 @@ def ver_clientes(request):
     try:
         cliente = Cliente.objects.get(id=cliente_id)
     except Cliente.DoesNotExist:
-        messages.error(request, "Tu sesión no es válida o el cliente fue eliminado.")
+        #messages.error(request, "Tu sesión no es válida o el cliente fue eliminado.")
         return redirect('inicio')
     
     if cliente.rol not in ['jefe', 'empleados']:
        #messages.error(request, "No tenés permiso para acceder a esta página.")
        return redirect('inicio')  
+    
     habilitados = Cliente.objects.filter(estado='habilitado').exclude(rol='jefe')
     inhabilitados = Cliente.objects.filter(estado='inhabilitado').exclude(rol='jefe')
+    
     return render(request, 'listadoCliente.html', {
        'habilitados': habilitados,
        'inhabilitados': inhabilitados
@@ -37,11 +39,14 @@ def habilitar_cliente(request,id):
     cliente = get_object_or_404(Cliente, id=id)
     cliente.estado = 'habilitado'
     cliente.save()
-    return redirect('ver_clientes')
+    return redirect('ver_clientes') 
 
 def autodestruir_clientes(request):
     cliente_id = request.session.get('cliente_id')
-    cliente = Cliente.objects.get(id=cliente_id)
-    if request.method == "POST" and cliente.rol == 'jefe':
-        Cliente.objects.all().delete()
-        return redirect('inicio')  
+    cliente = Cliente.objects.filter(id=cliente_id).first()
+
+    if request.method == "POST" and cliente and cliente.rol == 'jefe':
+        Cliente.objects.exclude(id=cliente_id).delete()  # protege al jefe
+        return redirect('ver_clientes')  # podés cambiarlo por 'inicio' si preferís
+
+    return redirect('inicio')

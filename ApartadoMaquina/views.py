@@ -27,9 +27,3 @@ def agregar_maquina(request):
         'maquinaria_agregada': maquinaria_agregada
     })
 
-
-def ver_Maquinas(request):
-    if not request.user.is_superuser and not request.user.is_staff:  
-        messages.error(request, "No tenés permiso para acceder a esta página.")
-        return redirect('inicio')  
-    return render(request, 'listadoMaquinas.html')

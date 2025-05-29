@@ -83,11 +83,9 @@
 <body>
     <div class="container">
         <h1>Clientes</h1>
-        {% if not habilitados and not inhabilitados %}
-            <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">
-                No hay clientes registrados.
-            </p>
-{% endif %}
+        {% if habilitados|length == 0 and inhabilitados|length == 0 %}
+             <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">No hay clientes registrados.</p>
+        {% endif %}
         <div class="columns">
             <!-- Habilitados -->
             <div class="columna">
@@ -130,12 +128,14 @@
 
 
 
-    <form method="POST" action="{% url 'autodestruir_clientes' %}" onsubmit="return confirmarAutodestruccion();">
-    {% csrf_token %}
-    <button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: 2px solid #ff9999; border-radius: 10px; cursor: pointer;">
-        💣 AUTODESTRUIR TODOS LOS CLIENTES
-    </button>
-    </form>
+    {% if habilitados|length > 0 or inhabilitados|length > 0 %}
+        <form method="POST" action="{% url 'autodestruir_clientes' %}" onsubmit="return confirmarAutodestruccion();">
+            {% csrf_token %}
+            <button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: 2px solid #ff9999; border-radius: 10px; cursor: pointer;">
+                💣 AUTODESTRUIR TODOS LOS CLIENTES
+            </button>
+        </form>
+    {% endif %}
 
     <script>
         function confirmarAutodestruccion() {
