@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -98,7 +99,10 @@
             </ul>
         </div>
 
-        <h1 class="mx-auto">Manny Maquinarias</h1>
+        <div class="d-flex align-items-center mx-auto gap-2">
+            <img src="{% static 'img/logo.png' %}" alt="Logo" style="height: 50px;">
+            <h1 class="mb-0">Manny Maquinarias</h1>
+        </div>
 
         <div class="auth-buttons">
             <span class="text-white small me-2">

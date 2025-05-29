@@ -97,6 +97,14 @@
 <body>
 
 
+<form method="POST" action="{% url 'autodestruir_maquinarias' %}" 
+      onsubmit="return confirm('¿Estás seguro de que querés eliminar TODAS las maquinarias?');" 
+      style="text-align: center; margin: 20px 0;">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">
+      💥 Autodestruir Maquinarias
+  </button>
+</form>
 
     <div class="welcome-msg">
         <p>¡Hola! Bienvenido a Manny Maquinarias 👷‍♂️🚜</p>
@@ -107,7 +115,7 @@
 
     <button class="btn-catalogo" >Ver catálogo</button>
 
-   
+
     {% endblock %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
