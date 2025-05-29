@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import MaquinariaForm
 from django.db import IntegrityError
 from django.contrib import messages
-from General.models import Maquinaria
+from General.models import Maquinaria, Localidad
 
 def agregar_maquina(request):
     mensaje = ''
@@ -30,8 +30,10 @@ def agregar_maquina(request):
 
 def ver_maquinarias(request):
     maquinarias = Maquinaria.objects.all()
+    localidades = Localidad.objects.all()
     return render(request, 'ApartadoMaquina/listadoMaquinas.html', {
-        'maquinarias': maquinarias
+        'maquinarias': maquinarias,
+        'localidades': localidades
     })
 
 
@@ -50,7 +52,30 @@ def cambiar_estado_maquinaria(request, id):
         maquina.save()
         return redirect('ver_maquinarias')
 
-   
+def modificar_maquina(request, id):
+    maquina = get_object_or_404(Maquinaria, id=id)
+    if request.method == "POST":
+        maquina.marca = request.POST.get('marca')
+        maquina.modelo = request.POST.get('modelo')
+        maquina.año_compra = request.POST.get('año_compra')
+        
+        # Obtener el objeto Localidad según el id enviado en el formulario
+        localidad_id = request.POST.get('localidad')
+        if localidad_id:
+            maquina.localidad = Localidad.objects.get(id=localidad_id)
+        
+        if 'imagen' in request.FILES:
+            maquina.imagen = request.FILES['imagen']
+        
+        maquina.save()
+        messages.success(request, "Maquina modificada correctamente")
+        return redirect('ver_maquinarias')
+
+    localidades = Localidad.objects.all()
+    return render(request, 'ApartadoMaquina/modificar_maquina.html', {
+        'maquina': maquina,
+        'localidades': localidades,
+    })
    
    
    
