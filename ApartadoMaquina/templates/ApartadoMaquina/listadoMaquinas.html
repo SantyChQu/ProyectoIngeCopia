@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+
 {% block content %}
 <style>
     .alert-success {
-        background-color:rgb(125, 236, 151);
-        color:rgb(7, 7, 7);
+        background-color: rgb(125, 236, 151);
+        color: rgb(7, 7, 7);
         padding: 10px;
         border-radius: 4px;
         border: 1px solid #c3e6cb;
@@ -13,6 +14,7 @@
         text-align: center;
     }
 </style>
+
 <h1 style="text-align: center;">Listado de Maquinarias</h1>
 
 {% if maquinarias|length == 0 %}
@@ -20,7 +22,6 @@
         No hay maquinarias registradas.
     </p>
 {% else %}
-    <!-- Esto es el mensaje, se puede borrar si no gusta-->
     {% if messages %}
         <ul class="mensajes">
             {% for message in messages %}
@@ -28,23 +29,24 @@
             {% endfor %}
         </ul>
     {% endif %}
+
     <table style="width: 90%; margin: auto; border-collapse: collapse;">
         <thead>
-    <tr style="background-color: #FFA726; color: white;">
-        <th>Código</th>
-        <th>Marca</th>
-        <th>Modelo</th>
-        <th>Año</th>
-        <th>Estado</th>
-        <th>Precio por día</th>
-        <th>Imagen</th>
-        <th>Acción</th>
-        <th>Modificación</th>
-    </tr>
+            <tr style="background-color: #FFA726; color: white;">
+                <th>Código</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Año</th>
+                <th>Estado</th>
+                <th>Precio por día</th>
+                <th>Imagen</th>
+                <th>Acción</th>
+                <th></th>
+            </tr>
         </thead>
         <tbody>
             {% for maquina in maquinarias %}
-                <tr style="text-align: left; border-bottom: 1px solid #ccc;">
+                <tr style="text-align: center; border-bottom: 1px solid #ccc;">
                     <td>{{ maquina.codigo_serie }}</td>
                     <td>{{ maquina.marca }}</td>
                     <td>{{ maquina.modelo }}</td>
@@ -62,64 +64,57 @@
                         <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
                             {% csrf_token %}
                             {% if maquina.estado == 'habilitado' %}
-                                <button type="submit" class="boton-inhabilitar" style= "background-color: #f8d7da; border-color:rgb(224, 53, 70);" >Inhabilitar</button>
+                                <button type="submit" class="boton-inhabilitar" style="background-color: #f8d7da; border-color: rgb(224, 53, 70);">Inhabilitar</button>
                             {% else %}
-                                <button type="submit" class="boton-habilitar" style= "background-color:rgb(172, 219, 157); border-color:rgb(17, 179, 44);">Habilitar</button>
+                                <button type="submit" class="boton-habilitar" style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);">Habilitar</button>
                             {% endif %}
                         </form>
                     </td>
                     <td>
                         <button type="button"
-        class="boton-habilitar"
-        style="background-color:rgb(172, 219, 157); border-color:rgb(17, 179, 44);"
-        data-bs-toggle="modal"
-        data-bs-target="#modalModificar{{ maquina.id }}">
-    Modificar
-</button>
+                                class="boton-habilitar"
+                                style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalModificar{{ maquina.id }}">
+                            Modificar
+                        </button>
                     </td>
                 </tr>
 
-          <!-- Modal para modificar maquinaria -->
-<div class="modal fade" id="modalModificar{{ maquina.id }}" tabindex="-1" aria-labelledby="modalLabel{{ maquina.id }}" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form method="POST" action="{% url 'modificar_maquina' maquina.id %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalLabel{{ maquina.id }}">Modificar Maquinaria</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Campos del formulario -->
-          <input type="text" name="marca" value="{{ maquina.marca }}" class="form-control mb-2" required placeholder="marca">
-          <input type="text" name="modelo" value="{{ maquina.modelo }}" class="form-control mb-2" required placeholder="modelo">
-          <input type="text" name="codigo_serie" value="{{ maquina.codigo_serie }}" class="form-control mb-2" required placeholder="codigo_serie">
-          <input type="number" step="0.01" name="precio_alquiler" value="{{ maquina.precio_alquiler }}" class="form-control mb-2" required placeholder="precio_alquiler">
-          <input type="number" name="año_compra" value="{{ maquina.año_compra }}" class="form-control mb-2" required placeholder="año_compra">
-          <select name="localidad" class="form-control mb-2" required aria-placeholder="localidad">
-  {% for loc in localidades %}
-    <option value="{{ loc.id }}" {% if maquina.localidad.id == loc.id %}selected{% endif %}>{{ loc.nombre }}</option>
-  {% endfor %}
-</select>
-          <input type="file" name="imagen" class="form-control mb-2">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>      
+                <!-- Modal para modificar maquinaria -->
+                <div class="modal fade" id="modalModificar{{ maquina.id }}" tabindex="-1" aria-labelledby="modalLabel{{ maquina.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="POST" action="{% url 'modificar_maquina' maquina.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalLabel{{ maquina.id }}">Modificar Maquinaria</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="text" name="marca" value="{{ maquina.marca }}" class="form-control mb-2" required>
+                                    <input type="text" name="modelo" value="{{ maquina.modelo }}" class="form-control mb-2" required>
+                                    <input type="number" name="año_compra" value="{{ maquina.año_compra }}" class="form-control mb-2" required>
+                                    <select name="localidad" class="form-control mb-2" required>
+                                        {% for loc in localidades %}
+                                            <option value="{{ loc.id }}" {% if maquina.localidad.id == loc.id %}selected{% endif %}>{{ loc.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="file" name="imagen" class="form-control mb-2">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
         </tbody>
-
     </table>
 {% endif %}
 
 <a href="{% url 'inicio' %}" class="boton-naranja" style="display: block; width: 200px; margin: 30px auto; text-align: center;">Volver al inicio</a>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 {% endblock %}
