@@ -42,6 +42,9 @@ urlpatterns = [
     path('maquinarias/cambiar_estado/<int:id>/', maquinas_views.cambiar_estado_maquinaria, name='cambiar_estado_maquinaria'),
     path('clientes/cambiar_estado/<int:id>/', cliente_views.cambiar_estado_Cliente, name='cambiar_estado_Cliente'),
     path('maquinaria/modificar/<int:id>/', maquinas_views.modificar_maquina, name='modificar_maquina'),
+    
+    path('maquinarias/autodestruir/', general.autodestruir_maquinarias, name='autodestruir_maquinarias'),
+
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

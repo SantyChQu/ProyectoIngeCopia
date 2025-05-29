@@ -5,13 +5,19 @@ from django.contrib.auth.models import User
 from .forms import ClienteForm, CambiarContraseñaForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
-from .models import Cliente
+from .models import Cliente,Maquinaria
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
+from django.db import connection
+
 
 def inicio(request):
     return render(request, 'PaginaPrincipal.html')
 
+def autodestruir_maquinarias(request):
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM General_maquinaria")
+    return redirect('ver_clientes') 
 
 def registro(request):
     if request.method == 'GET':
