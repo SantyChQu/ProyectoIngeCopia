@@ -33,7 +33,7 @@
         <form method="post" action="{% url 'autodestruir_clientes' %}" onsubmit="return confirm('¿Estás seguro que querés borrar a todos los clientes que no sean jefes? Esta acción no se puede deshacer.')">
             {% csrf_token %}
                 <button type="submit" class="boton-naranja" style="background-color: red; color: white; padding: 10px 20px; margin: 20px auto; display: block; border-radius: 5px;">
-                    🔥 Autodestruir Clientes (excepto jefes)
+                    🔥 Autodestruir Clientes
                 </button>
         </form>
     {% endif %}
