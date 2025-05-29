@@ -28,3 +28,9 @@ class MaquinariaForm(forms.ModelForm):
         if not imagen:
             raise forms.ValidationError("La imagen es obligatoria.")
         return imagen
+    
+    def clean_precio_alquiler_diario(self):
+        precio = self.cleaned_data.get('precio_alquiler_diario')
+        if precio is None or precio <= 0:
+            raise forms.ValidationError("El precio de alquiler diario debe ser un número positivo.")
+        return precio
