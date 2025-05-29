@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .alert-success {
+        background-color:rgb(125, 236, 151);
+        color:rgb(7, 7, 7);
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #c3e6cb;
+        margin-bottom: 15px;
+        width: 80%;
+        margin: 10px auto;
+        text-align: center;
+    }
+</style>
+<h1 style="text-align: center;">Listado de Maquinarias</h1>
+
+{% if maquinarias|length == 0 %}
+    <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">
+        No hay maquinarias registradas.
+    </p>
+{% else %}
+    <!-- Esto es el mensaje, se puede borrar si no gusta-->
+    {% if messages %}
+        <ul class="mensajes">
+            {% for message in messages %}
+                <li class="alert alert-success">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <table style="width: 90%; margin: auto; border-collapse: collapse;">
+        <thead>
+    <tr style="background-color: #FFA726; color: white;">
+        <th>Código</th>
+        <th>Marca</th>
+        <th>Modelo</th>
+        <th>Año</th>
+        <th>Estado</th>
+        <th>Precio por día</th>
+        <th>Imagen</th>
+        <th>Acción</th>
+    </tr>
+        </thead>
+        <tbody>
+            {% for maquina in maquinarias %}
+                <tr style="text-align: center; border-bottom: 1px solid #ccc;">
+                    <td>{{ maquina.codigo_serie }}</td>
+                    <td>{{ maquina.marca }}</td>
+                    <td>{{ maquina.modelo }}</td>
+                    <td>{{ maquina.año_compra }}</td>
+                    <td>{{ maquina.estado }}</td>
+                    <td>${{ maquina.precio_alquiler_diario }}</td>
+                    <td>
+                        {% if maquina.imagen %}
+                            <img src="{{ maquina.imagen.url }}" width="100">
+                        {% else %}
+                            Sin imagen
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
+                            {% csrf_token %}
+                            {% if maquina.estado == 'habilitado' %}
+                                <button type="submit" class="boton-inhabilitar" style= "background-color: #f8d7da; border-color:rgb(224, 53, 70);" >Inhabilitar</button>
+                            {% else %}
+                                <button type="submit" class="boton-habilitar" style= "background-color:rgb(172, 219, 157); border-color:rgb(17, 179, 44);">Habilitar</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+{% endif %}
+
+<a href="{% url 'inicio' %}" class="boton-naranja" style="display: block; width: 200px; margin: 30px auto; text-align: center;">Volver al inicio</a>
+{% endblock %}
