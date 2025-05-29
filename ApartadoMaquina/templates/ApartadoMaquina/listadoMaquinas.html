@@ -39,11 +39,12 @@
         <th>Precio por día</th>
         <th>Imagen</th>
         <th>Acción</th>
+        <th>Modificación</th>
     </tr>
         </thead>
         <tbody>
             {% for maquina in maquinarias %}
-                <tr style="text-align: center; border-bottom: 1px solid #ccc;">
+                <tr style="text-align: left; border-bottom: 1px solid #ccc;">
                     <td>{{ maquina.codigo_serie }}</td>
                     <td>{{ maquina.marca }}</td>
                     <td>{{ maquina.modelo }}</td>
