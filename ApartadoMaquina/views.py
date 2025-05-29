@@ -58,7 +58,7 @@ def modificar_maquina(request, id):
         maquina.marca = request.POST.get('marca')
         maquina.modelo = request.POST.get('modelo')
         maquina.año_compra = request.POST.get('año_compra')
-        maquina.precio_alquiler = request.POST.get('precio_alquiler')
+        maquina.precio_alquiler_diario = request.POST.get('precio_alquiler_diario')
         
         # Obtener el objeto Localidad según el id enviado en el formulario
         localidad_id = request.POST.get('localidad')
