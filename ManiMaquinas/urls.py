@@ -33,14 +33,14 @@ urlpatterns = [
     path('verMisDatos/',general.VerDatos),
     path('cambiar_contraseña/', general.cambiar_contraseña, name='cambiar_contraseña'),
     path('clientes/', cliente_views.ver_clientes, name='ver_clientes'), 
-    path('inhabilitar_cliente/<int:id>/', cliente_views.inhabilitar_cliente, name='inhabilitar_cliente'),
-    path('cliente/habilitar/<int:id>/', cliente_views.habilitar_cliente, name='habilitar_cliente'),
+   # path('inhabilitar_cliente/<int:id>/', cliente_views.inhabilitar_cliente, name='inhabilitar_cliente'),
+   # path('cliente/habilitar/<int:id>/', cliente_views.habilitar_cliente, name='habilitar_cliente'),
     path('agregar_maquina/', maquinas_views.agregar_maquina, name='agregar_maquina'),
     path('autodestruir/', cliente_views.autodestruir_clientes, name='autodestruir_clientes'),
     path('maquinarias/', maquinas_views.ver_maquinarias, name='ver_maquinarias'),
     #
     path('maquinarias/cambiar_estado/<int:id>/', maquinas_views.cambiar_estado_maquinaria, name='cambiar_estado_maquinaria'),
-
+    path('clientes/cambiar_estado/<int:id>/', cliente_views.cambiar_estado_Cliente, name='cambiar_estado_Cliente'),
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

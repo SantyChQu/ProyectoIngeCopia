@@ -31,7 +31,7 @@ class Cliente(models.Model):
 
 
     def __str__(self):
-       return f"{self.nombre} {self.apellido} {self.mail} {self.estado}"
+       return f"{self.nombre} {self.apellido} {self.mail} {self.edad} {self.telefono} {self.estado} {self.rol} "
 
 
 class Jefe(models.Model):
