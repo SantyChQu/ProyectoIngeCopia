@@ -100,6 +100,9 @@
                                             <option value="{{ loc.id }}" {% if maquina.localidad.id == loc.id %}selected{% endif %}>{{ loc.nombre }}</option>
                                         {% endfor %}
                                     </select>
+                                   
+                                  <input type="number" step="0.01" name="precio_alquiler_diario" value="{{ maquina.precio_alquiler_diario|stringformat:'f' }}" class="form-control mb-2"  required>
+                                    <label for="imagen">Actualizar imagen (opcional):</label>
                                     <input type="file" name="imagen" class="form-control mb-2">
                                 </div>
                                 <div class="modal-footer">
