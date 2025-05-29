@@ -62,6 +62,19 @@ def modificar_maquina(request, id):
         
         # Obtener el objeto Localidad según el id enviado en el formulario
         localidad_id = request.POST.get('localidad')
+
+        try:
+            precio = float(request.POST.get('precio_alquiler_diario'))
+            if precio < 0:
+                messages.error(request, "El precio no puede ser negativo.")
+                return redirect('ver_maquinarias')
+            maquina.precio_alquiler_diario = precio
+        except (TypeError, ValueError):
+            messages.error(request, "Precio inválido.")
+            return redirect('ver_maquinarias')
+
+        localidad_id = request.POST.get('localidad')
+
         if localidad_id:
             maquina.localidad = Localidad.objects.get(id=localidad_id)
         
