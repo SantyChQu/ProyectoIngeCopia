@@ -5,14 +5,39 @@ from django.contrib.auth.models import User
 from .forms import ClienteForm, CambiarContraseñaForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
-from .models import Cliente,Maquinaria
+from .models import Cliente,Maquinaria, Localidad
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
 from django.db import connection
-
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
 
 def inicio(request):
-    return render(request, 'PaginaPrincipal.html')
+    localidad_filtro = request.GET.get('localidad')
+    marca_filtro = request.GET.get('marca')
+
+    maquinarias = Maquinaria.objects.filter(estado='habilitado')
+
+    if localidad_filtro:
+        maquinarias = maquinarias.filter(localidad__id=localidad_filtro)
+    if marca_filtro:
+        maquinarias = maquinarias.filter(marca__icontains=marca_filtro)
+
+    localidades = Localidad.objects.all()
+
+    return render(request, 'PaginaPrincipal.html', {
+        'maquinarias': maquinarias,
+        'localidades': localidades,
+        'marca_filtro': marca_filtro or '',
+        'localidad_filtro': int(localidad_filtro) if localidad_filtro else ''
+    })
+
+def hacer_reserva(request, maquinaria_id):
+    if 'cliente_id' not in request.session:
+        return redirect('/registro/')  # o donde tengas el login o registro
+
+    maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
+    return render(request, 'HacerReserva.html', {'maquinaria': maquinaria})
 
 def autodestruir_maquinarias(request):
     with connection.cursor() as cursor:

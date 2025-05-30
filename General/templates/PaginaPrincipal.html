@@ -3,121 +3,79 @@
 {% block title %}Inicio - Manny Maquinarias{% endblock %}
 
 {% block content %}
+<h1>Catálogo de Maquinarias</h1>
 
+<style>
+    .filtros {
+        margin-bottom: 20px;
+    }
+    .maquinaria {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        margin: 20px 0;
+        padding: 15px;
+        box-shadow: 0 0 10px #eee;
+    }
+    .info-superior {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .imagen {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .imagen img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+    .precio {
+        font-size: 18px;
+        color: #e76f51;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
 
+<div class="filtros">
+    <form method="get">
+        <label for="localidad">Localidad:</label>
+        <select name="localidad" id="localidad">
+            <option value="">Todas</option>
+            {% for loc in localidades %}
+                <option value="{{ loc.id }}" {% if loc.id|stringformat:"s" == localidad_filtro|stringformat:"s" %}selected{% endif %}>
+                    {{ loc.nombre }}
+                </option>
+            {% endfor %}
+        </select>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manny Maquinarias</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            text-align: center;
-            padding-top: 1rem;
-        }
-        header {
-            background-color: #FFA726;
-            color: white;
-            padding: 1rem;
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            margin: 0;
-            font-weight: bold;
-        }
-        .menu-btn {
-            background-color: #FFCC80;
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.3rem;
-        }
-        .menu-btn:hover {
-            background-color: #FFB74D;
-            color: white;
-        }
-        .auth-buttons {
-            display: flex;
-            gap: 0.5rem;
-            margin-right: 1rem;
-        }
-        .login-btn, .register-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.3rem;
-            color: white;
-        }
-        .login-btn {
-            background-color: #4CAF50;
-        }
-        .login-btn:hover {
-            background-color: #45a049;
-        }
-        .register-btn {
-            background-color: #1976D2;
-        }
-        .register-btn:hover {
-            background-color: #1565C0;
-        }
-        .welcome-msg {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 1rem auto 2rem auto;
-            line-height: 1.5;
-        }
-        .btn-catalogo {
-            font-size: 1.5rem;
-            padding: 1rem 3rem;
-            background-color: #FFA726;
-            color: white;
-            border: none;
-            border-radius: 0.4rem;
-        }
-        .btn-catalogo:hover {
-            background-color: #FFB74D;
-            color: white;
-        }
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-        nav li {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
-</head>
-<body>
+        <label for="marca">Marca:</label>
+        <input type="text" name="marca" id="marca" value="{{ marca_filtro }}" placeholder="Ej: Caterpillar">
 
+        <button type="submit">Filtrar</button>
+    </form>
+</div>
 
-<form method="POST" action="{% url 'autodestruir_maquinarias' %}" 
-      onsubmit="return confirm('¿Estás seguro de que querés eliminar TODAS las maquinarias?');" 
-      style="text-align: center; margin: 20px 0;">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">
-      💥 Autodestruir Maquinarias
-  </button>
-</form>
-
-    <div class="welcome-msg">
-        <p>¡Hola! Bienvenido a Manny Maquinarias 👷‍♂️🚜</p>
-        <p>Estamos felices de tenerte por aquí.</p>
-        <p>En nuestra página vas a encontrar todo lo que necesitas para hacer tu obra más fácil: maquinaria confiable, buenos precios y un equipo listo para ayudarte.</p>
-        <p>¡Explorá, consultá y contá con nosotros para lo que necesites!</p>
+{% for maquinaria in maquinarias %}
+    <div class="maquinaria">
+        <div class="info-superior">
+            <div>{{ maquinaria.marca }} {{ maquinaria.modelo }}</div>
+            <div>{{ maquinaria.localidad.nombre }}</div>
+        </div>
+        <div class="imagen">
+            <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
+        </div>
+        <div class="precio">
+            Precio por día: ${{ maquinaria.precio_alquiler_diario }}
+        </div>
+        <div style="text-align: right; margin-top: 10px;">
+            <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary">Hacer reserva</a>
+        </div>
     </div>
+{% empty %}
+    <p>No hay maquinarias disponibles con esos filtros.</p>
+{% endfor %}
 
-    <button class="btn-catalogo" >Ver catálogo</button>
-
-
-    {% endblock %}
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}

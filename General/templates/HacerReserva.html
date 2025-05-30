@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Reservar: {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
+    <p>Localidad: {{ maquinaria.localidad.nombre }}</p>
+    <p>Precio por día: ${{ maquinaria.precio_alquiler_diario }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="fecha_inicio">Fecha inicio:</label>
+        <input type="date" name="fecha_inicio" required><br><br>
+
+        <label for="fecha_fin">Fecha fin:</label>
+        <input type="date" name="fecha_fin" required><br><br>
+
+        <button type="submit">Confirmar Reserva</button>
+    </form>
+{% endblock %}

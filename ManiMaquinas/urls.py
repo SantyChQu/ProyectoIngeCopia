@@ -44,6 +44,7 @@ urlpatterns = [
     path('maquinaria/modificar/<int:id>/', maquinas_views.modificar_maquina, name='modificar_maquina'),
     
     path('maquinarias/autodestruir/', general.autodestruir_maquinarias, name='autodestruir_maquinarias'),
+    path('hacer_reserva/<int:maquinaria_id>/', general.hacer_reserva, name='hacer_reserva'),
 
     ]
 if settings.DEBUG:
