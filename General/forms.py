@@ -22,12 +22,7 @@ class ClienteForm(forms.ModelForm):
         error_messages={'invalid': 'Ingrese una fecha válida.'}
     )
     telefono = forms.IntegerField(required=True)
-    
-    edad_calculada = forms.IntegerField(
-        required=False,
-        label='Edad',
-        widget=forms.NumberInput(attrs={'readonly': 'readonly'})
-    )
+   
 
     class Meta:
         model = Cliente
