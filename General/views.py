@@ -161,6 +161,8 @@ def cambiar_contraseña(request):
 #REALIZAR PAGO
 
 def realizar_pago(request):
+    if 'cliente_id' not in request.session:
+        return redirect('/registro/') 
     if request.method == 'POST':
         form = tarjetaForm(request.POST)
         if form.is_valid():
