@@ -39,9 +39,10 @@
                 <th>Año</th>
                 <th>Estado</th>
                 <th>Precio por día</th>
+                <th>Localidad</th>
                 <th>Imagen</th>
                 <th>Acción</th>
-                <th>Editar datos</th>
+                <th>Modificar Maquinaria</th>
             </tr>
         </thead>
         <tbody>
@@ -53,6 +54,7 @@
                     <td>{{ maquina.año_compra }}</td>
                     <td>{{ maquina.estado }}</td>
                     <td>${{ maquina.precio_alquiler_diario }}</td>
+                    <td>{{ maquina.localidad }}</td>
                     <td>
                         {% if maquina.imagen %}
                             <img src="{{ maquina.imagen.url }}" width="100">
@@ -64,9 +66,9 @@
                         <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
                             {% csrf_token %}
                             {% if maquina.estado == 'habilitado' %}
-                                <button type="submit" class="boton-inhabilitar" style="background-color: #f8d7da; border-color: rgb(224, 53, 70);">Inhabilitar</button>
+                                <button type="submit" class="boton-inhabilitar" style="background-color: #f8d7da; border-color: rgb(224, 53, 70);"onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'inhabilitar')">Inhabilitar</button>
                             {% else %}
-                                <button type="submit" class="boton-habilitar" style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);">Habilitar</button>
+                                <button type="submit" class="boton-habilitar" style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);"onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'inhabilitar')">Habilitar</button>
                             {% endif %}
                         </form>
                     </td>
@@ -114,6 +116,11 @@
                     </div>
                 </div>
             {% endfor %}
+            <script>
+                function confirmarCambioEstado(Codigo, accion) {
+                    const mensaje = `¿Estás seguro que quieres ${accion} a la maquina con codigo: ${Codigo}?`;
+                    return confirm(mensaje);}
+            </script>
         </tbody>
     </table>
 {% endif %}
