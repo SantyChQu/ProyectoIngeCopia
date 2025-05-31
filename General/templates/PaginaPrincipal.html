@@ -62,7 +62,9 @@
     <div class="maquinaria">
         <div class="info-superior">
             <div>{{ maquinaria.marca }} {{ maquinaria.modelo }}</div>
+            <div>{{ maquinaria.año_compra }}</div>
             <div>{{ maquinaria.localidad.nombre }}</div>
+            
         </div>
         <div class="imagen">
             <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import MaquinariaForm
 from django.db import IntegrityError
 from django.contrib import messages
-from General.models import Maquinaria, Localidad
+from General.models import Maquinaria, Localidad, Alquiler
 from datetime import datetime
 def agregar_maquina(request):
     mensaje = ''
@@ -111,3 +111,5 @@ def modificar_maquina(request, id):
    #maquinaria.estado = 'inhabilitado' if maquinaria.estado == 'habilitado' else 'habilitado'
     #maquinaria.save()
     #return redirect('ver_maquinarias')
+
+
