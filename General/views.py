@@ -2,10 +2,10 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .forms import ClienteForm, CambiarContraseñaForm
+from .forms import ClienteForm, CambiarContraseñaForm, tarjetaForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
-from .models import Cliente,Maquinaria, Localidad
+from .models import Cliente,Maquinaria, Localidad, Tarjeta
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
 from django.db import connection
@@ -155,4 +155,42 @@ def cambiar_contraseña(request):
         'mostrar_modal': True,  # Esto hace que el modal se abra con errores
         'error_contraseña': True  # Esto hace que el JS también lo abra
     })
+
+
+
+#REALIZAR PAGO
+
+def realizar_pago(request):
+    if request.method == 'POST':
+        form = tarjetaForm(request.POST)
+        if form.is_valid():
+            numero = form.cleaned_data['numero']
+            numeroseguridad = form.cleaned_data['numeroseguridad']
+            monto = form.cleaned_data['monto']
+
+            try:
+                tarjeta = Tarjeta.objects.get(numero_tarjeta=numero)
+            except Tarjeta.DoesNotExist:
+                messages.error(request, 'Tarjeta no encontrada.')
+                return render(request, 'RealizarPago.html', {'form': form})
+
+            if tarjeta.numero_seguridad != numeroseguridad:
+                messages.error(request, 'Número de seguridad inválido.')
+            elif tarjeta.monto < monto:
+                messages.error(request, 'Saldo insuficiente.')
+            else:
+                tarjeta.monto -= monto
+                tarjeta.save()
+                messages.success(request, 'Pago realizado correctamente.')
+                return render(request,'PaginaPrincipal.html',{'mensajeExito':True})
+
+        else:
+            messages.error(request, 'Formulario inválido.')
+
+        return render(request, 'RealizarPago.html', {'form': form})
+
+    else:
+        form = tarjetaForm()
+        return render(request, 'RealizarPago.html', {'form': form})
+
 

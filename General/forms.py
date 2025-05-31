@@ -75,3 +75,9 @@ class CambiarContraseñaForm(forms.Form):
         if nueva and nueva2 and nueva != nueva2:
             raise forms.ValidationError("Las nuevas contraseñas no coinciden.")
         return cleaned_data   
+
+class tarjetaForm(forms.Form):
+
+    numero = forms.CharField(label="Número de tarjeta")
+    numeroseguridad = forms.CharField(label="Número de seguridad")
+    monto = forms.DecimalField(label="Monto a pagar", decimal_places=2)

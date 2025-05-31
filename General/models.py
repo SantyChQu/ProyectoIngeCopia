@@ -131,3 +131,4 @@ class Tarjeta(models.Model):
     fecha_desde = models.DateField()
     fecha_hasta = models.DateField()
     monto = models.DecimalField(max_digits=10, decimal_places=2)
+
