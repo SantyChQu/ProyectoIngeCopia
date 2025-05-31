@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import date
 # Create your models here.
 
 # dios sabra si estan bien creados
@@ -20,7 +20,8 @@ class Cliente(models.Model):
 
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    edad = models.PositiveIntegerField()
+    fecha_nacimiento = models.DateField(null=True, blank=True)
+    #edad = models.PositiveIntegerField()
     telefono = models.CharField(max_length=20)
     mail = models.EmailField(unique=True)
     contraseña = models.CharField(max_length=128)
@@ -29,6 +30,10 @@ class Cliente(models.Model):
 
   # clave= models.CharField(max_length=20)
 
+    @property
+    def edad(self):
+        hoy = date.today()
+        return hoy.year - self.fecha_nacimiento.year - ((hoy.month, hoy.day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day))
 
     def __str__(self):
        return f"{self.nombre} {self.apellido} {self.mail} {self.edad} {self.telefono} {self.estado} {self.rol} "
