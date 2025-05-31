@@ -22,7 +22,6 @@ class ClienteForm(forms.ModelForm):
         error_messages={'invalid': 'Ingrese una fecha válida.'}
     )
     telefono = forms.IntegerField(required=True)
-    # edad= forms.IntegerField(required=True, min_value=18)
     
     edad_calculada = forms.IntegerField(
         required=False,
@@ -49,13 +48,6 @@ class ClienteForm(forms.ModelForm):
             self.fields['mail'].widget.attrs['readonly'] = True
             self.fields['mail'].widget.attrs['style'] = 'background-color: #e9ecef; cursor: not-allowed;'
 
-    
-    #    super().__init__(*args, **kwargs)
-    #    if self.instance and self.instance.pk:
-    #      self.fields['mail'].widget.attrs['readonly'] = True
-    #      self.fields['mail'].widget.attrs['style'] = 'background-color: #e9ecef; cursor: not-allowed;'
-
-
 
     def clean_contraseña(self):
         contraseña = self.cleaned_data['contraseña']
@@ -71,12 +63,7 @@ class ClienteForm(forms.ModelForm):
         if edad < 18:
             raise forms.ValidationError('El cliente debe tener al menos 18 años.')
         return fecha
-    #def clean(self):
-     #   cleaned_data = super().clean()
-      #  edad = cleaned_data.get('edad')
-       # if edad is not None and edad < 18:
-        #    raise ValidationError("El cliente debe ser mayor de edad.")
-        #return cleaned_data
+    
     
 class CambiarContraseñaForm(forms.Form):
     actual = forms.CharField(
