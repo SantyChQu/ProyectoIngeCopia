@@ -45,7 +45,7 @@ urlpatterns = [
     
     path('maquinarias/autodestruir/', general.autodestruir_maquinarias, name='autodestruir_maquinarias'),
     path('hacer_reserva/<int:maquinaria_id>/', general.hacer_reserva, name='hacer_reserva'),
-    path('RealizarPago/',general.realizar_pago)
+    path('RealizarPago/',general.realizar_pago , name='pago')
 
     ]
 if settings.DEBUG:
