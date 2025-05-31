@@ -1,4 +1,50 @@
-{%for a in alquileres%}
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Mis Alquileres</h2>
+
+    {% if alquileres %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Maquinaria</th>
+                        <th>Localidad</th>
+                        <th>Estado</th>
+                        <th>Desde</th>
+                        <th>Hasta</th>
+                        <th>Precio por día</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alquileres %}
+                        {{a.desde}}
+
+                        <tr>
+                            <td>{{ a.codigo_identificador }}</td>
+                            <td>{{ a.codigo_maquina.marca }} {{ a.codigo_maquina.modelo }}</td>
+                            <td>{{ a.codigo_maquina.localidad.nombre }}</td>
+                            <td>{{ a.estado }}</td>
+                            <td>{{ a.desde }}</td>
+                            <td>{{ a.hasta }}</td>
+                            <td>${{ a.codigo_maquina.precio_alquiler_diario }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Aún no tenés alquileres registrados.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+<!-- {%for a in alquileres%}
 
 {{a.desde}}
-{%endfor%}
+{%endfor%} -->

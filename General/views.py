@@ -12,6 +12,8 @@ from django.db import connection
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from datetime import date
+from django.utils.crypto import get_random_string
+
 def inicio(request):
     localidad_filtro = request.GET.get('localidad')
     marca_filtro = request.GET.get('marca')
@@ -37,7 +39,30 @@ def hacer_reserva(request, maquinaria_id):
         return redirect('/registro/')  # o donde tengas el login o registro
 
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
+    cliente = Cliente.objects.get(id=request.session['cliente_id'])
+
+    if request.method == 'POST':
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_fin = request.POST.get('fecha_fin')
+
+        if fecha_inicio and fecha_fin:
+            # Generar un código de alquiler único
+            codigo = get_random_string(10)
+
+            # Guardar en sesión los datos del alquiler (o pasarlos por GET/POST a la siguiente vista)
+            request.session['reserva'] = {
+                'codigo': codigo,
+                'maquinaria_id': maquinaria.id,
+                'fecha_inicio': fecha_inicio,
+                'fecha_fin': fecha_fin
+            }
+
+            return redirect('pago')  # Redirige a la vista de pago
+        else:
+            messages.error(request, 'Fechas inválidas.')
+
     return render(request, 'HacerReserva.html', {'maquinaria': maquinaria})
+    #return render(request, 'HacerReserva.html', {'maquinaria': maquinaria})
 
 def autodestruir_maquinarias(request):
     with connection.cursor() as cursor:
@@ -165,7 +190,12 @@ def realizar_pago(request):
 
     cliente_id = request.session.get('cliente_id')
     c = Cliente.objects.get(id=cliente_id)
-    maquinaria = Maquinaria.objects.get(id=1)
+    try:
+        datos_reserva = request.session.get('reserva')
+        maquinaria = Maquinaria.objects.get(id=datos_reserva['maquinaria_id'])
+    except (KeyError, Maquinaria.DoesNotExist, TypeError):
+        messages.error(request, 'Hubo un problema con la reserva. Volvé a intentarlo.')
+        return redirect('/')  
 
     if 'cliente_id' not in request.session:
         return redirect('/registro/') 
@@ -189,7 +219,12 @@ def realizar_pago(request):
             else:
                 tarjeta.monto -= monto
                 tarjeta.save()
-                a = Alquiler.objects.create(codigo_identificador="4",codigo_maquina=maquinaria,mail=c,desde=date(2018,5,4),hasta=date(2019,5,6))
+                a = Alquiler.objects.create(
+                    codigo_identificador=datos_reserva['codigo'],
+                    codigo_maquina=maquinaria,
+                    mail=c,
+                    desde=datos_reserva['fecha_inicio'],
+                    hasta=datos_reserva['fecha_fin'])
                 messages.success(request, 'Pago realizado correctamente.')
                 return render(request,'PaginaPrincipal.html',{'mensajeExito':True})
 

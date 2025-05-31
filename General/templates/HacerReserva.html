@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+
 {% block content %}
     <h2>Reservar: {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
     <p>Localidad: {{ maquinaria.localidad.nombre }}</p>
@@ -13,8 +14,7 @@
         <label for="fecha_fin">Fecha fin:</label>
         <input type="date" name="fecha_fin" required><br><br>
 
-        <a href="{%url 'pago'%}">
         <button type="submit">Confirmar Reserva</button>
-        </a>
+       
     </form>
 {% endblock %}
