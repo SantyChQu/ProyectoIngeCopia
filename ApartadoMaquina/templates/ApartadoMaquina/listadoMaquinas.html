@@ -22,27 +22,21 @@
         No hay maquinarias registradas.
     </p>
 {% else %}
-    {% if messages %}
-        <ul class="mensajes">
-            {% for message in messages %}
-                <li class="alert alert-success">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    <table style="width: 90%; margin: auto; border-collapse: collapse;">
+    <!-- <table style="width: 90%; margin: auto; border-collapse: collapse;"> -->
+    <table class="table table-bordered table-hover text-center align-middle">
         <thead>
-            <tr style="background-color: #FFA726; color: white;">
-                <th>Código</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Año</th>
-                <th>Estado</th>
-                <th>Precio por día</th>
-                <th>Localidad</th>
-                <th>Imagen</th>
-                <th>Acción</th>
-                <th>Modificar Maquinaria</th>
+           <!-- <tr style="background-color: #FFA726; color: white;"> -->
+            <tr>
+                <th style="background-color: #FFA726; color: white;">Código</th>
+                <th style="background-color: #FFA726; color: white;">Marca</th>
+                <th style="background-color: #FFA726; color: white;">Modelo</th>
+                <th style="background-color: #FFA726; color: white;">Año</th>
+                <th style="background-color: #FFA726; color: white;">Estado</th>
+                <th style="background-color: #FFA726; color: white;">Precio por día</th>
+                <th style="background-color: #FFA726; color: white;">Localidad</th>
+                <th style="background-color: #FFA726; color: white;">Imagen</th>
+                <th style="background-color: #FFA726; color: white;">Acción</th>
+                <th style="background-color: #FFA726; color: white;">Modificar Maquinaria</th>
             </tr>
         </thead>
         <tbody>

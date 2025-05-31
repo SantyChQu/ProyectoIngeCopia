@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
+<style>
 
+</style>
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Mis Alquileres</h2>
@@ -7,15 +9,15 @@
     {% if alquileres %}
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-center align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Código</th>
-                        <th>Maquinaria</th>
-                        <th>Localidad</th>
-                        <th>Estado</th>
-                        <th>Desde</th>
-                        <th>Hasta</th>
-                        <th>Precio por día</th>
+                <thead>
+                    <tr >
+                        <th style="background-color: #FFA726; color: white;">Código</th>
+                        <th style="background-color: #FFA726; color: white;">Maquinaria</th>
+                        <th style="background-color: #FFA726; color: white;">Localidad</th>
+                        <th style="background-color: #FFA726; color: white;">Estado</th>
+                        <th style="background-color: #FFA726; color: white;">Desde</th>
+                        <th style="background-color: #FFA726; color: white;">Hasta</th>
+                        <th style="background-color: #FFA726; color: white;">Precio por día</th>
                     </tr>
                 </thead>
                 <tbody>
