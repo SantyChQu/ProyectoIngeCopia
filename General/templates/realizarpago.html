@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+
+
+{% block content %}
 <h1>Realizar Pago</h1>
 
 {%if messages%}
@@ -15,3 +19,6 @@
   {{ form.as_p }}
   <button type="submit">Realizar Pago</button>
 </form>
+
+
+{% endblock %}
