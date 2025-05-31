@@ -5,13 +5,13 @@ from django.contrib.auth.models import User
 from .forms import ClienteForm, CambiarContraseñaForm, tarjetaForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
-from .models import Cliente,Maquinaria, Localidad, Tarjeta
+from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
 from django.db import connection
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
-
+from datetime import date
 def inicio(request):
     localidad_filtro = request.GET.get('localidad')
     marca_filtro = request.GET.get('marca')
@@ -162,6 +162,11 @@ def cambiar_contraseña(request):
 #REALIZAR PAGO
 
 def realizar_pago(request):
+
+    cliente_id = request.session.get('cliente_id')
+    c = Cliente.objects.get(id=cliente_id)
+    maquinaria = Maquinaria.objects.get(id=1)
+
     if 'cliente_id' not in request.session:
         return redirect('/registro/') 
     if request.method == 'POST':
@@ -184,6 +189,7 @@ def realizar_pago(request):
             else:
                 tarjeta.monto -= monto
                 tarjeta.save()
+                a = Alquiler.objects.create(codigo_identificador="4",codigo_maquina=maquinaria,mail=c,desde=date(2018,5,4),hasta=date(2019,5,6))
                 messages.success(request, 'Pago realizado correctamente.')
                 return render(request,'PaginaPrincipal.html',{'mensajeExito':True})
 
@@ -196,4 +202,15 @@ def realizar_pago(request):
         form = tarjetaForm()
         return render(request, 'RealizarPago.html', {'form': form})
 
+def misalquileres(request):
 
+    if 'cliente_id' not in request.session:
+        return redirect('/registro/')  # o a tu vista de login
+
+    cliente_id = request.session['cliente_id']
+    cliente = Cliente.objects.get(id=cliente_id)
+
+    # Obtener todos los alquileres del cliente
+    alquileres = Alquiler.objects.filter(mail=cliente)
+
+    return render(request, 'misalquileres.html', {'alquileres': alquileres})          
