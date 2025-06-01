@@ -226,7 +226,7 @@ def realizar_pago(request):
         if form.is_valid():
             numero = form.cleaned_data['numero']
             numeroseguridad = form.cleaned_data['numeroseguridad']
-            nombre = form.cleaned_data['nombre_propietario']
+            nombre_propietario = form.cleaned_data['nombre_propietario']
             fecha_desde = form.cleaned_data['fecha_desde']
             fecha_hasta = form.cleaned_data['fecha_hasta']
 

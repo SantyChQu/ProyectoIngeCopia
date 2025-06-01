@@ -111,8 +111,8 @@
 
         <div class="auth-buttons">
             <span class="text-white small me-2">
-                Sesión cliente_id: {{ request.session.cliente_id|default:"No definido" }}<br>
-                Rol: {{ request.session.cliente_rol|default:"No definido" }}
+                Bienvenido : {{ request.session.cliente_nombre|default:"Usuario no autenticado" }}<br>
+                Rol: {{ request.session.cliente_rol|default:"Usuario no autenticado" }}
             </span>
 
             {% if request.session.cliente_id %}
