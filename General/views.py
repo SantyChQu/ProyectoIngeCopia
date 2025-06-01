@@ -14,8 +14,8 @@ from django.shortcuts import get_object_or_404, render
 from datetime import date
 from django.utils.crypto import get_random_string
 from decimal import Decimal
-from datetime import datetime
-
+from datetime import datetime, timedelta
+from django.db.models import Q
 
 
 def inicio(request):
@@ -40,33 +40,57 @@ def inicio(request):
 
 def hacer_reserva(request, maquinaria_id):
     if 'cliente_id' not in request.session:
-        return redirect('/registro/')  # o donde tengas el login o registro
+        return redirect('/registro/')
 
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
     cliente = Cliente.objects.get(id=request.session['cliente_id'])
 
+    alquileres_existentes = Alquiler.objects.filter(codigo_maquina=maquinaria)
+
     if request.method == 'POST':
-        fecha_inicio = request.POST.get('fecha_inicio')
-        fecha_fin = request.POST.get('fecha_fin')
+        fecha_inicio_str = request.POST.get('fecha_inicio')
+        fecha_fin_str = request.POST.get('fecha_fin')
 
-        if fecha_inicio and fecha_fin:
-            # Generar un código de alquiler único
-            codigo = get_random_string(10)
+        if fecha_inicio_str and fecha_fin_str:
+            fecha_inicio = datetime.strptime(fecha_inicio_str, "%Y-%m-%d").date()
+            fecha_fin = datetime.strptime(fecha_fin_str, "%Y-%m-%d").date()
+            hoy = datetime.today().date()
 
-            # Guardar en sesión los datos del alquiler (o pasarlos por GET/POST a la siguiente vista)
-            request.session['reserva'] = {
-                'codigo': codigo,
-                'maquinaria_id': maquinaria.id,
-                'fecha_inicio': fecha_inicio,
-                'fecha_fin': fecha_fin
-            }
+            if fecha_inicio < hoy:
+                messages.error(request, 'La fecha de inicio no puede ser anterior a hoy.')
+            elif fecha_fin < fecha_inicio:
+                messages.error(request, 'La fecha de fin no puede ser anterior a la fecha de inicio.')
+            else:
+                conflicto = alquileres_existentes.filter(
+                    Q(desde__lte=fecha_fin) & Q(hasta__gte=fecha_inicio)
+                ).exists()
 
-            return redirect('pago')  # Redirige a la vista de pago
+                if conflicto:
+                    messages.error(request, 'La máquina ya está reservada en ese rango de fechas.')
+                else:
+                    codigo = get_random_string(10)
+                    request.session['reserva'] = {
+                        'codigo': codigo,
+                        'maquinaria_id': maquinaria.id,
+                        'fecha_inicio': fecha_inicio.strftime("%Y-%m-%d"),
+                        'fecha_fin': fecha_fin.strftime("%Y-%m-%d")
+                    }
+                    return redirect('pago')
         else:
             messages.error(request, 'Fechas inválidas.')
 
-    return render(request, 'HacerReserva.html', {'maquinaria': maquinaria})
-    #return render(request, 'HacerReserva.html', {'maquinaria': maquinaria})
+    # Generar fechas ocupadas para mostrar en el calendario
+    fechas_ocupadas = []
+    for alquiler in alquileres_existentes:
+        actual = alquiler.desde
+        while actual <= alquiler.hasta:
+            fechas_ocupadas.append(actual.strftime("%Y-%m-%d"))
+            actual += timedelta(days=1)
+
+    return render(request, 'HacerReserva.html', {
+        'maquinaria': maquinaria,
+        'fechas_ocupadas': fechas_ocupadas
+    })
 
 def autodestruir_maquinarias(request):
     with connection.cursor() as cursor:
@@ -117,7 +141,6 @@ def ingresar(request):
 
         except Cliente.DoesNotExist:
             messages.error(request, 'Correo no registrado')
-            mail = ''  # ← Borramos el mail si no existe
 
         return render(request, 'ingreso.html', {'mail': mail})
 

@@ -52,6 +52,11 @@
     .reserva-container button:hover {
         background-color: #0056b3;
     }
+
+    .date-disabled {
+        background-color: #ffc0cb;
+        color: #aaa;
+    }
 </style>
 
 <div class="reserva-container">
@@ -59,15 +64,44 @@
     <p><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</p>
     <p><strong>Precio por día:</strong> ${{ maquinaria.precio_alquiler_diario }}</p>
 
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
         <label for="fecha_inicio">Fecha inicio:</label>
-        <input type="date" name="fecha_inicio" required>
+        <input type="date" name="fecha_inicio" id="fecha_inicio" required>
 
         <label for="fecha_fin">Fecha fin:</label>
-        <input type="date" name="fecha_fin" required>
+        <input type="date" name="fecha_fin" id="fecha_fin" required>
 
         <button type="submit">Confirmar Reserva</button>
     </form>
 </div>
+
+<script>
+    const fechasOcupadas = {{ fechas_ocupadas_json|safe }};
+
+    function deshabilitarFechas() {
+        const inicio = document.getElementById('fecha_inicio');
+        const fin = document.getElementById('fecha_fin');
+
+        const disabledDates = new Set(fechasOcupadas);
+
+        [inicio, fin].forEach(input => {
+            input.addEventListener('input', () => {
+                const dateStr = input.value;
+                if (disabledDates.has(dateStr)) {
+                    alert('Esa fecha ya está reservada. Por favor elige otra.');
+                    input.value = '';
+                }
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', deshabilitarFechas);
+</script>
 {% endblock %}
