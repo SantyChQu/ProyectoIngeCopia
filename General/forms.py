@@ -38,6 +38,8 @@ class ClienteForm(forms.ModelForm):
                 (hoy.month, hoy.day) < (self.instance.fecha_nacimiento.month, self.instance.fecha_nacimiento.day)
             )
             self.fields['fecha_nacimiento'].initial = edad
+        if self.instance and self.instance.fecha_nacimiento:
+            self.initial['fecha_nacimiento'] = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')  #esto hizo que se muestre la fecha    
 
         if self.instance and self.instance.pk:
             self.fields['mail'].widget.attrs['readonly'] = True

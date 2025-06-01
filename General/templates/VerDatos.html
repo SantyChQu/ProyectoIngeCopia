@@ -40,7 +40,17 @@
 {% endif %}
 </div>
   <div class="form-group"> {{ form.mail.label_tag }} {{ form.mail }}</div>
-    <div class="form-group">{{ form.fecha_nacimiento.label_tag }} {{ form.fecha_nacimiento }}</div>
+    <div class="form-group">
+  {{ form.fecha_nacimiento.label_tag }}
+  {{ form.fecha_nacimiento }}
+  {% if form.fecha_nacimiento.errors %}
+    <ul class="errorlist">
+      {% for error in form.fecha_nacimiento.errors %}
+        <li style="color: red;">{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div><!--nuevo-->
     <div class="form-group">{{ form.telefono.label_tag }} {{ form.telefono }}</div>
     <button type="submit" class="btn btn-primary">Actualizar</button>
   </form>
