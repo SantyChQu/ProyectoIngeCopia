@@ -97,10 +97,29 @@ class CambiarContraseñaForm(forms.Form):
             raise forms.ValidationError("Las nuevas contraseñas no coinciden.")
         return cleaned_data   
 
+
+
 class tarjetaForm(forms.Form):
-
-    numero = forms.CharField(label="Número de tarjeta")
-    numeroseguridad = forms.CharField(label="Número de seguridad")
-    monto = forms.DecimalField(label="Monto a pagar", decimal_places=2)
-
-
+    numero = forms.CharField(
+        label="Número de tarjeta",
+        max_length=16,
+        widget=forms.TextInput(attrs={'placeholder': 'Ej: 1234 5678 9012 3456', 'class': 'form-control'})
+    )
+    numero_seguridad = forms.CharField(
+        label="Número de seguridad",
+        max_length=4,
+        widget=forms.TextInput(attrs={'placeholder': 'Ej: 123', 'class': 'form-control'})
+    )
+    nombre_propietario = forms.CharField(
+        label="Nombre del titular",
+        max_length=100,
+        widget=forms.TextInput(attrs={'placeholder': 'Ej: Juan Pérez', 'class': 'form-control'})
+    )
+    fecha_desde = forms.DateField(
+        label="Válida desde",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    fecha_hasta = forms.DateField(
+        label="Válida hasta",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )

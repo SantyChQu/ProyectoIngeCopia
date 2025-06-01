@@ -21,13 +21,7 @@
     </p>
 {% else %}
     <!-- Esto es el mensaje, se puede borrar si no gusta-->
-    {% if messages %}
-        <ul class="mensajes">
-            {% for message in messages %}
-                <li class="alert alert-success">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %} 
+ 
     <!--Boton de autodestruccion-->
     {% if cliente_actual.rol == 'jefe' and hay_clientes_no_jefes %}
         <form method="post" action="{% url 'autodestruir_clientes' %}" onsubmit="return confirm('¿Estás seguro que querés borrar a todos los clientes que no sean jefes? Esta acción no se puede deshacer.')">
@@ -66,7 +60,7 @@
                                 {% if cliente.estado == 'habilitado' %}
                                         <button type="submit" class="boton-inhabilitar" style= "background-color: #f8d7da; border-color:rgb(224, 53, 70);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'inhabilitar')">Inhabilitar</button>  
                                 {% else %}
-                                    <button type="submit" class="boton-habilitar" style= "background-color:rgb(172, 219, 157); border-color:rgb(17, 179, 44);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'inhabilitar')">Habilitar</button>
+                                    <button type="submit" class="boton-habilitar" style= "background-color:rgb(172, 219, 157); border-color:rgb(17, 179, 44);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'Habilitar')">Habilitar</button>
                                 {% endif %}
                         </form>
                     </td>

@@ -14,6 +14,8 @@ from django.shortcuts import get_object_or_404, render
 from datetime import date
 from django.utils.crypto import get_random_string
 from decimal import Decimal
+from datetime import datetime
+
 
 
 def inicio(request):
@@ -188,58 +190,78 @@ def cambiar_contraseña(request):
 
 #REALIZAR PAGO
 
-def realizar_pago(request):
+from datetime import datetime
 
+def realizar_pago(request):
     cliente_id = request.session.get('cliente_id')
     c = Cliente.objects.get(id=cliente_id)
+
     try:
         datos_reserva = request.session.get('reserva')
         maquinaria = Maquinaria.objects.get(id=datos_reserva['maquinaria_id'])
-    except (KeyError, Maquinaria.DoesNotExist, TypeError):
+
+        # Parseamos fechas y calculamos cantidad de días
+        fecha_inicio = datetime.strptime(datos_reserva['fecha_inicio'], "%Y-%m-%d").date()
+        fecha_fin = datetime.strptime(datos_reserva['fecha_fin'], "%Y-%m-%d").date()
+        dias = (fecha_fin - fecha_inicio).days
+
+        if dias <= 0:
+            messages.error(request, 'La fecha de fin debe ser posterior a la de inicio.')
+            return redirect('/')
+
+        monto_total = maquinaria.precio_alquiler_diario * dias
+
+    except (KeyError, Maquinaria.DoesNotExist, TypeError, ValueError):
         messages.error(request, 'Hubo un problema con la reserva. Volvé a intentarlo.')
         return redirect('/')  
 
     if 'cliente_id' not in request.session:
         return redirect('/registro/') 
+
     if request.method == 'POST':
         form = tarjetaForm(request.POST)
         if form.is_valid():
             numero = form.cleaned_data['numero']
             numeroseguridad = form.cleaned_data['numeroseguridad']
-            monto = form.cleaned_data['monto']
+            monto_ingresado = form.cleaned_data['monto']
+
+            if float(monto_ingresado) != float(monto_total):
+                messages.error(request, 'El monto ingresado no coincide con el monto total a pagar.')
+                return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
             try:
                 tarjeta = Tarjeta.objects.get(numero_tarjeta=numero)
             except Tarjeta.DoesNotExist:
                 messages.error(request, 'Tarjeta no encontrada.')
-                return render(request, 'RealizarPago.html', {'form': form})
+                return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
             if tarjeta.numero_seguridad != numeroseguridad:
                 messages.error(request, 'Número de seguridad inválido.')
-            elif tarjeta.monto < monto:
+            elif tarjeta.monto < monto_total:
                 messages.error(request, 'Saldo insuficiente.')
             else:
-                tarjeta.monto -= monto
+                tarjeta.monto -= monto_total
                 tarjeta.save()
-                a = Alquiler.objects.create(
-                 codigo_identificador=datos_reserva['codigo'],
-                 codigo_maquina=maquinaria,
-                 mail=c,
-                 desde=datos_reserva['fecha_inicio'],
-                 hasta=datos_reserva['fecha_fin'],
-                 tarjeta=tarjeta  # ← Esta línea debe estar alineada con las anteriores
+                Alquiler.objects.create(
+                    codigo_identificador=datos_reserva['codigo'],
+                    codigo_maquina=maquinaria,
+                    mail=c,
+                    desde=fecha_inicio,
+                    hasta=fecha_fin,
+                    tarjeta=tarjeta
                 )
                 messages.success(request, 'Pago realizado correctamente.')
-                return render(request,'PaginaPrincipal.html',{'mensajeExito':True})
+                return render(request, 'PaginaPrincipal.html', {'mensajeExito': True})
 
         else:
             messages.error(request, 'Formulario inválido.')
 
-        return render(request, 'RealizarPago.html', {'form': form})
+        return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
     else:
         form = tarjetaForm()
-        return render(request, 'RealizarPago.html', {'form': form})
+        return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
+
 
 def misalquileres(request):
 

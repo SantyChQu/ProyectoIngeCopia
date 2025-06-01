@@ -1,24 +1,28 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 <h1>Realizar Pago</h1>
 
-{%if messages%}
-{%for message in messages%}
+{% if messages %}
+    {% for message in messages %}
+        <div 
+            class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}" 
+            role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 
-{{message}}
-
-
-{%endfor%}
-
-{%endif%}
+{% if monto_total %}
+    <div class="alert alert-warning">
+        Monto total a pagar: <strong>${{ monto_total }}</strong>
+    </div>
+{% endif %}
 
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Realizar Pago</button>
+  <button type="submit" class="btn btn-primary">Realizar Pago</button>
 </form>
-
 
 {% endblock %}
