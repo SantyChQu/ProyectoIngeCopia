@@ -1,7 +1,4 @@
 {% extends 'base.html' %}
-<style>
-
-</style>
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Mis Alquileres</h2>
@@ -10,20 +7,19 @@
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-center align-middle">
                 <thead>
-                    <tr >
+                    <tr>
                         <th style="background-color: #FFA726; color: white;">Código</th>
                         <th style="background-color: #FFA726; color: white;">Maquinaria</th>
                         <th style="background-color: #FFA726; color: white;">Localidad</th>
                         <th style="background-color: #FFA726; color: white;">Estado</th>
                         <th style="background-color: #FFA726; color: white;">Desde</th>
                         <th style="background-color: #FFA726; color: white;">Hasta</th>
-                        <th style="background-color: #FFA726; color: white;">Precio por día</th>
+                        <th style="background-color: #FFA726; color: white;">Precio total</th>
+                        <th style="background-color: #FFA726; color: white;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for a in alquileres %}
-                        {{a.desde}}
-
                         <tr>
                             <td>{{ a.codigo_identificador }}</td>
                             <td>{{ a.codigo_maquina.marca }} {{ a.codigo_maquina.modelo }}</td>
@@ -31,7 +27,19 @@
                             <td>{{ a.estado }}</td>
                             <td>{{ a.desde }}</td>
                             <td>{{ a.hasta }}</td>
-                            <td>${{ a.codigo_maquina.precio_alquiler_diario }}</td>
+                           <td>${{ a.precio_total }}</td>
+
+                            <td>
+                                {% if a.estado == 'pendienteRetiro' or a.estado == 'enCurso' %}
+                                    <a href="{% url 'cancelar_alquiler' alquiler_id=a.id %}" 
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('¿Estás seguro de que querés cancelar este alquiler?')">
+                                       Cancelar alquiler
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">No disponible</span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

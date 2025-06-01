@@ -27,7 +27,7 @@ class Cliente(models.Model):
     contraseña = models.CharField(max_length=128)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='habilitado')
     rol = models.CharField(max_length=10, choices=ROL_CHOICES, default='cliente')
-
+   
   # clave= models.CharField(max_length=20)
 
     @property
@@ -113,6 +113,16 @@ class Calificacion(models.Model):
     estrellas = models.PositiveSmallIntegerField() 
     nota = models.TextField(blank=True, null=True)
 
+class Tarjeta(models.Model):
+    numero_tarjeta = models.CharField(max_length=16)
+    numero_seguridad = models.CharField(max_length=4)
+    nombre_propietario = models.CharField(max_length=100)
+    fecha_desde = models.DateField()
+    fecha_hasta = models.DateField()
+    monto = models.DecimalField(max_digits=100, decimal_places=2)
+
+   
+
 class Alquiler(models.Model):
     ESTADO_CHOICES = [
         ('pendienteRetiro', 'Pendiente de retiro'),
@@ -127,13 +137,6 @@ class Alquiler(models.Model):
     desde = models.DateField()
     hasta = models.DateField()
     calificacion = models.ForeignKey(Calificacion, on_delete=models.SET_NULL, null=True, blank=True)
+    tarjeta = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True, blank=True)
 
-
-class Tarjeta(models.Model):
-    numero_tarjeta = models.CharField(max_length=16)
-    numero_seguridad = models.CharField(max_length=4)
-    nombre_propietario = models.CharField(max_length=100)
-    fecha_desde = models.DateField()
-    fecha_hasta = models.DateField()
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
 

@@ -37,7 +37,7 @@ class ClienteForm(forms.ModelForm):
             edad = hoy.year - self.instance.fecha_nacimiento.year - (
                 (hoy.month, hoy.day) < (self.instance.fecha_nacimiento.month, self.instance.fecha_nacimiento.day)
             )
-            self.fields['edad_calculada'].initial = edad
+            self.fields['fecha_nacimiento'].initial = edad
 
         if self.instance and self.instance.pk:
             self.fields['mail'].widget.attrs['readonly'] = True

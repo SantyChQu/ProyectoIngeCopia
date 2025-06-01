@@ -13,6 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 from datetime import date
 from django.utils.crypto import get_random_string
+from decimal import Decimal
+
 
 def inicio(request):
     localidad_filtro = request.GET.get('localidad')
@@ -220,11 +222,13 @@ def realizar_pago(request):
                 tarjeta.monto -= monto
                 tarjeta.save()
                 a = Alquiler.objects.create(
-                    codigo_identificador=datos_reserva['codigo'],
-                    codigo_maquina=maquinaria,
-                    mail=c,
-                    desde=datos_reserva['fecha_inicio'],
-                    hasta=datos_reserva['fecha_fin'])
+                 codigo_identificador=datos_reserva['codigo'],
+                 codigo_maquina=maquinaria,
+                 mail=c,
+                 desde=datos_reserva['fecha_inicio'],
+                 hasta=datos_reserva['fecha_fin'],
+                 tarjeta=tarjeta  # ← Esta línea debe estar alineada con las anteriores
+                )
                 messages.success(request, 'Pago realizado correctamente.')
                 return render(request,'PaginaPrincipal.html',{'mensajeExito':True})
 
@@ -247,5 +251,47 @@ def misalquileres(request):
 
     # Obtener todos los alquileres del cliente
     alquileres = Alquiler.objects.filter(mail=cliente)
+    for a in alquileres:
+        dias = (a.hasta - a.desde).days
+        a.precio_total = a.codigo_maquina.precio_alquiler_diario * dias
 
     return render(request, 'misalquileres.html', {'alquileres': alquileres})          
+
+
+def cancelar_alquiler(request, alquiler_id):
+    alquiler = get_object_or_404(Alquiler, id=alquiler_id)
+
+    # Verificamos que el alquiler pertenezca al cliente logueado
+    cliente_id = request.session.get('cliente_id')
+    if alquiler.mail.id != cliente_id:
+        messages.error(request, 'No tenés permiso para cancelar este alquiler.')
+        return redirect('/misalquileres')
+
+    # Solo se puede cancelar si aún no está finalizado
+    if alquiler.estado == 'finalizado':
+        messages.error(request, 'Este alquiler ya fue finalizado.')
+        return redirect('/misalquileres')
+
+    maquinaria = alquiler.codigo_maquina
+    politica = maquinaria.politica
+
+    # Calculamos el total pagado
+    dias = (alquiler.hasta - alquiler.desde).days
+    monto_total = maquinaria.precio_alquiler_diario * Decimal(dias)
+
+
+    # Porcentaje de devolución
+    porcentaje_devolucion = politica.porcentaje / Decimal(100)
+    monto_a_devolver = monto_total * porcentaje_devolucion
+
+
+    tarjeta = alquiler.tarjeta
+    if tarjeta:
+        tarjeta.monto += monto_a_devolver
+        tarjeta.save()
+
+    alquiler.estado = 'finalizado'
+    alquiler.save()
+
+    messages.success(request, f'Alquiler cancelado. Se devolvieron ${monto_a_devolver:.2f} según la política de cancelación.')
+    return redirect('/misalquileres')
