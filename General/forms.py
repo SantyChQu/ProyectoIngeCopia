@@ -105,7 +105,7 @@ class tarjetaForm(forms.Form):
         max_length=16,
         widget=forms.TextInput(attrs={'placeholder': 'Ej: 1234 5678 9012 3456', 'class': 'form-control'})
     )
-    numero_seguridad = forms.CharField(
+    numeroseguridad  = forms.CharField(
         label="Número de seguridad",
         max_length=4,
         widget=forms.TextInput(attrs={'placeholder': 'Ej: 123', 'class': 'form-control'})

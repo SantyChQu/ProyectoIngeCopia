@@ -191,6 +191,10 @@ def cambiar_contraseña(request):
 #REALIZAR PAGO
 
 from datetime import datetime
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .models import Cliente, Maquinaria, Tarjeta, Alquiler
+from .forms import tarjetaForm
 
 def realizar_pago(request):
     cliente_id = request.session.get('cliente_id')
@@ -200,7 +204,6 @@ def realizar_pago(request):
         datos_reserva = request.session.get('reserva')
         maquinaria = Maquinaria.objects.get(id=datos_reserva['maquinaria_id'])
 
-        # Parseamos fechas y calculamos cantidad de días
         fecha_inicio = datetime.strptime(datos_reserva['fecha_inicio'], "%Y-%m-%d").date()
         fecha_fin = datetime.strptime(datos_reserva['fecha_fin'], "%Y-%m-%d").date()
         dias = (fecha_fin - fecha_inicio).days
@@ -213,21 +216,19 @@ def realizar_pago(request):
 
     except (KeyError, Maquinaria.DoesNotExist, TypeError, ValueError):
         messages.error(request, 'Hubo un problema con la reserva. Volvé a intentarlo.')
-        return redirect('/')  
+        return redirect('/')
 
     if 'cliente_id' not in request.session:
-        return redirect('/registro/') 
+        return redirect('/registro/')
 
     if request.method == 'POST':
         form = tarjetaForm(request.POST)
         if form.is_valid():
             numero = form.cleaned_data['numero']
             numeroseguridad = form.cleaned_data['numeroseguridad']
-            monto_ingresado = form.cleaned_data['monto']
-
-            if float(monto_ingresado) != float(monto_total):
-                messages.error(request, 'El monto ingresado no coincide con el monto total a pagar.')
-                return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
+            nombre = form.cleaned_data['nombre_propietario']
+            fecha_desde = form.cleaned_data['fecha_desde']
+            fecha_hasta = form.cleaned_data['fecha_hasta']
 
             try:
                 tarjeta = Tarjeta.objects.get(numero_tarjeta=numero)
@@ -246,8 +247,8 @@ def realizar_pago(request):
                     codigo_identificador=datos_reserva['codigo'],
                     codigo_maquina=maquinaria,
                     mail=c,
-                    desde=fecha_inicio,
-                    hasta=fecha_fin,
+                    desde=datos_reserva['fecha_inicio'],
+                    hasta=datos_reserva['fecha_fin'],
                     tarjeta=tarjeta
                 )
                 messages.success(request, 'Pago realizado correctamente.')
