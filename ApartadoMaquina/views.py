@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import MaquinariaForm
 from django.db import IntegrityError
 from django.contrib import messages
-from General.models import Maquinaria, Localidad, Alquiler
+from General.models import Maquinaria, Localidad, Alquiler, Politica
 from datetime import datetime
 def agregar_maquina(request):
     mensaje = ''
@@ -31,9 +31,11 @@ def agregar_maquina(request):
 def ver_maquinarias(request):
     maquinarias = Maquinaria.objects.all()
     localidades = Localidad.objects.all()
+    politicas = Politica.objects.all()
     return render(request, 'ApartadoMaquina/listadoMaquinas.html', {
         'maquinarias': maquinarias,
-        'localidades': localidades
+        'localidades': localidades,
+        'politicas': politicas,
     })
 
 
@@ -54,16 +56,23 @@ def cambiar_estado_maquinaria(request, id):
 
 def modificar_maquina(request, id):
     maquina = get_object_or_404(Maquinaria, id=id)
+    
     if request.method == "POST":
         maquina.marca = request.POST.get('marca')
         maquina.modelo = request.POST.get('modelo')
         maquina.año_compra = request.POST.get('año_compra')
         maquina.precio_alquiler_diario = request.POST.get('precio_alquiler_diario')
         
-        # Obtener el objeto Localidad según el id enviado en el formulario
+        politica_id = request.POST.get('politica')
         localidad_id = request.POST.get('localidad')
 
-
+        # ✅ Asignar política correctamente
+        if politica_id:
+            try:
+                maquina.politica = Politica.objects.get(id=politica_id)
+            except Politica.DoesNotExist:
+                messages.error(request, "La política seleccionada no existe.")
+                return redirect('ver_maquinarias')
 
         # Validar año de compra
         try:
@@ -77,6 +86,7 @@ def modificar_maquina(request, id):
             messages.error(request, "Año de compra inválido.")
             return redirect('ver_maquinarias')
 
+        # Validar precio
         try:
             precio = float(request.POST.get('precio_alquiler_diario'))
             if precio < 0:
@@ -87,22 +97,29 @@ def modificar_maquina(request, id):
             messages.error(request, "Precio inválido.")
             return redirect('ver_maquinarias')
 
-        localidad_id = request.POST.get('localidad')
-
+        # Asignar localidad si se seleccionó
         if localidad_id:
-            maquina.localidad = Localidad.objects.get(id=localidad_id)
-        
+            try:
+                maquina.localidad = Localidad.objects.get(id=localidad_id)
+            except Localidad.DoesNotExist:
+                messages.error(request, "La localidad seleccionada no existe.")
+                return redirect('ver_maquinarias')
+
+        # Guardar imagen si se subió una nueva
         if 'imagen' in request.FILES:
             maquina.imagen = request.FILES['imagen']
-        
+
         maquina.save()
         messages.success(request, "Maquina modificada correctamente")
         return redirect('ver_maquinarias')
 
     localidades = Localidad.objects.all()
+    politicas = Politica.objects.all()
+    
     return render(request, 'ApartadoMaquina/modificar_maquina.html', {
         'maquina': maquina,
         'localidades': localidades,
+        'politicas': politicas,
     })
    
    

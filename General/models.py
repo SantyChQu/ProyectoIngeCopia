@@ -90,7 +90,7 @@ class Maquinaria(models.Model):
     marca = models.CharField(max_length=100)
     modelo = models.CharField(max_length=100)
     año_compra = models.PositiveIntegerField()
-    localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE)
+    localidad = models.ForeignKey(Localidad, on_delete=models.CASCADE, null=True, blank=True)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='habilitado')
     precio_alquiler_diario = models.DecimalField(max_digits=30, decimal_places=2)
     politica = models.ForeignKey(Politica, on_delete=models.CASCADE)

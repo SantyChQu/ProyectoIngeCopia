@@ -96,6 +96,13 @@
                                             <option value="{{ loc.id }}" {% if maquina.localidad.id == loc.id %}selected{% endif %}>{{ loc.nombre }}</option>
                                         {% endfor %}
                                     </select>
+                                    <select name="politica" class="form-control mb-2" required>
+    {% for politica in politicas %}
+        <option value="{{ politica.id }}" {% if maquina.politica.id == politica.id %}selected{% endif %}>
+            {{ politica.nombre }}
+        </option>
+    {% endfor %}
+</select>
                                    
                                   <input type="number" step="0.01" name="precio_alquiler_diario" value="{{ maquina.precio_alquiler_diario|stringformat:'0.2f' }}" class="form-control mb-2"  required>
                                     <label for="imagen">Actualizar imagen (opcional):</label>
@@ -120,5 +127,10 @@
 {% endif %}
 
 <a href="{% url 'inicio' %}" class="boton-naranja" style="display: block; width: 200px; margin: 30px auto; text-align: center;">Volver al inicio</a>
-
+<h4>Políticas disponibles:</h4>
+<ul>
+    {% for politica in politicas %}
+        <li>{{ politica.id }} - {{ politica.nombre }} ({{ politica.porcentaje }}%)</li>
+    {% endfor %}
+</ul>
 {% endblock %}
