@@ -1,20 +1,73 @@
 {% extends "base.html" %}
 
-
 {% block content %}
+<style>
+    .reserva-container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .reserva-container h2 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .reserva-container p {
+        margin: 5px 0 15px 0;
+        color: #555;
+    }
+
+    .reserva-container label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .reserva-container input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .reserva-container button {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .reserva-container button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="reserva-container">
     <h2>Reservar: {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
-    <p>Localidad: {{ maquinaria.localidad.nombre }}</p>
-    <p>Precio por día: ${{ maquinaria.precio_alquiler_diario }}</p>
+    <p><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</p>
+    <p><strong>Precio por día:</strong> ${{ maquinaria.precio_alquiler_diario }}</p>
 
     <form method="post">
         {% csrf_token %}
         <label for="fecha_inicio">Fecha inicio:</label>
-        <input type="date" name="fecha_inicio" required><br><br>
+        <input type="date" name="fecha_inicio" required>
 
         <label for="fecha_fin">Fecha fin:</label>
-        <input type="date" name="fecha_fin" required><br><br>
+        <input type="date" name="fecha_fin" required>
 
         <button type="submit">Confirmar Reserva</button>
-       
     </form>
+</div>
 {% endblock %}

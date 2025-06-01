@@ -96,6 +96,8 @@ def registro(request):
             return render(request, 'registro.html', {'form': form})
 
 def ingresar(request):
+    mail = ''  # Inicializamos mail vacío por defecto
+
     if request.method == 'POST':
         mail = request.POST.get('mail')
         contraseña = request.POST.get('contraseña')
@@ -105,24 +107,21 @@ def ingresar(request):
 
             if cliente.estado != "habilitado":
                 messages.error(request, 'Tu cuenta está deshabilitada. Contacta al administrador')
-            elif cliente.contraseña == contraseña:  # Si usas hashing, reemplaza esto por check_password
-                # Guardamos datos en la sesión
+            elif cliente.contraseña == contraseña:
                 request.session['cliente_id'] = cliente.id
                 request.session['cliente_nombre'] = cliente.nombre
                 request.session['cliente_rol'] = cliente.rol
-
-                # Redirección según rol
                 return redirect('/')
             else:
                 messages.error(request, 'Contraseña incorrecta')
 
         except Cliente.DoesNotExist:
             messages.error(request, 'Correo no registrado')
+            mail = ''  # ← Borramos el mail si no existe
 
-        # En todos los casos de error, se vuelve al formulario con el mail ya cargado
         return render(request, 'ingreso.html', {'mail': mail})
 
-    return render(request, 'ingreso.html')
+    return render(request, 'ingreso.html', {'mail': ''})
                   
 def cerrarSesion(request):
     request.session.flush()  # Limpia la sesión por completo

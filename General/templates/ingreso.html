@@ -121,16 +121,15 @@
 <div class="login-container">
     <h2>Iniciar sesión</h2>
     <form method="post" action="/ingreso/">
-        {% csrf_token %}
-        <label for="mail">Correo:</label>
-        <input type="email" name="mail" required>
+    {% csrf_token %}
+    <label for="mail">Correo:</label>
+    <input type="email" name="mail" required value="{{ mail }}">
 
-        <label for="contraseña">Contraseña:</label>
-        <input type="password" name="contraseña" required>
+    <label for="contraseña">Contraseña:</label>
+    <input type="password" name="contraseña" required>
 
-        <button type="submit">Ingresar</button>
-    </form>
-
+    <button type="submit">Ingresar</button>
+</form>
     {% for message in messages %}
         <p class="error-message">{{ message }}</p>
     {% endfor %}
