@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Estilo de la reserva -->
 <style>
     .reserva-container {
         max-width: 500px;
@@ -29,7 +30,8 @@
         font-weight: 500;
     }
 
-    .reserva-container input[type="date"] {
+    .reserva-container input[type="date"],
+    .reserva-container input.datepicker {
         width: 100%;
         padding: 10px;
         margin-bottom: 20px;
@@ -53,12 +55,20 @@
         background-color: #0056b3;
     }
 
-    .date-disabled {
-        background-color: #ffc0cb;
-        color: #aaa;
+    /* Fechas ocupadas en rojo carmesí */
+    .flatpickr-day.ocupada {
+        background-color: #dc143c !important;
+        color: white !important;
+        border-radius: 50% !important;
+        cursor: not-allowed;
+    }
+
+    .flatpickr-day.ocupada:hover {
+        background-color: #b01030 !important;
     }
 </style>
 
+<!-- Contenido principal -->
 <div class="reserva-container">
     <h2>Reservar: {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
     <p><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</p>
@@ -73,35 +83,41 @@
     <form method="post">
         {% csrf_token %}
         <label for="fecha_inicio">Fecha inicio:</label>
-        <input type="date" name="fecha_inicio" id="fecha_inicio" required>
+        <input type="text" name="fecha_inicio" id="fecha_inicio" class="datepicker" required>
 
         <label for="fecha_fin">Fecha fin:</label>
-        <input type="date" name="fecha_fin" id="fecha_fin" required>
+        <input type="text" name="fecha_fin" id="fecha_fin" class="datepicker" required>
 
         <button type="submit">Confirmar Reserva</button>
     </form>
 </div>
 
+<!-- Flatpickr (desde CDN) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
 <script>
-    const fechasOcupadas = {{ fechas_ocupadas_json|safe }};
+    const fechasOcupadas = {{ fechas_ocupadas|safe }};
+    const hoy = new Date().toISOString().split('T')[0];
 
-    function deshabilitarFechas() {
-        const inicio = document.getElementById('fecha_inicio');
-        const fin = document.getElementById('fecha_fin');
-
-        const disabledDates = new Set(fechasOcupadas);
-
-        [inicio, fin].forEach(input => {
-            input.addEventListener('input', () => {
-                const dateStr = input.value;
-                if (disabledDates.has(dateStr)) {
-                    alert('Esa fecha ya está reservada. Por favor elige otra.');
-                    input.value = '';
-                }
-            });
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', deshabilitarFechas);
+    flatpickr(".datepicker", {
+        dateFormat: "Y-m-d",
+        locale: "es",
+        disable: [
+            ...fechasOcupadas,
+            function(date) {
+                return date < new Date(hoy);
+            }
+        ],
+        minDate: "today",
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const fecha = dayElem.dateObj.toISOString().split('T')[0];
+            if (fechasOcupadas.includes(fecha)) {
+                dayElem.classList.add("ocupada");
+                dayElem.setAttribute("title", "Fecha ocupada");
+            }
+        }
+    });
 </script>
 {% endblock %}

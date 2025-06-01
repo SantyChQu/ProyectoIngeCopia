@@ -2,20 +2,7 @@
 
 {% block content %}
 
-{% if messages %}
-  <ul style="list-style: none; padding: 0;">
-    {% for message in messages %}
-      <li style="color: {% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}black{% endif %};
-                 background-color: #f8f8f8; 
-                 padding: 10px; 
-                 margin-bottom: 10px; 
-                 border-left: 5px solid {% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}gray{% endif %}; 
-                 border-radius: 4px;">
-        {{ message }}
-      </li>
-    {% endfor %}
-  </ul>
-{% endif %}
+
 
 <!-- Formulario principal -->
 <div class="form-container">
@@ -43,13 +30,7 @@
     <div class="form-group">
   {{ form.fecha_nacimiento.label_tag }}
   {{ form.fecha_nacimiento }}
-  {% if form.fecha_nacimiento.errors %}
-    <ul class="errorlist">
-      {% for error in form.fecha_nacimiento.errors %}
-        <li style="color: red;">{{ error }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+
 </div><!--nuevo-->
     <div class="form-group">{{ form.telefono.label_tag }} {{ form.telefono }}</div>
     <button type="submit" class="btn btn-primary">Actualizar</button>
