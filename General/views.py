@@ -104,7 +104,7 @@ def ingresar(request):
             cliente = Cliente.objects.get(mail=mail)
 
             if cliente.estado != "habilitado":
-                messages.error(request, 'Tu cuenta está deshabilitada. Contacta al administrador.')
+                messages.error(request, 'Tu cuenta está deshabilitada. Contacta al administrador')
             elif cliente.contraseña == contraseña:  # Si usas hashing, reemplaza esto por check_password
                 # Guardamos datos en la sesión
                 request.session['cliente_id'] = cliente.id

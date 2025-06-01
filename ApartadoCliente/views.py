@@ -34,9 +34,9 @@ def cambiar_estado_Cliente(request, id):
         cliente = get_object_or_404(Cliente, id=id)
         if cliente.estado == 'habilitado':
             cliente.estado = 'inhabilitado'
-            messages.success(request, f"El cliente  '{cliente.mail} ' fue inhabilitado correctamente.")
+            messages.success(request, f"El cliente  '{cliente.mail} ' fue inhabilitado correctamente")
         else:
             cliente.estado = 'habilitado'
-            messages.success(request, f"El cliente  '{cliente.mail}' fue habilitado correctamente.")
+            messages.success(request, f"El cliente  '{cliente.mail}' fue habilitado correctamente")
         cliente.save()
         return redirect('ver_clientes')
