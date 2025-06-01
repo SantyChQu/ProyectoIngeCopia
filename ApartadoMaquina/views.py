@@ -45,7 +45,7 @@ def cambiar_estado_maquinaria(request, id):
         maquina = get_object_or_404(Maquinaria, id=id)
         if maquina.estado == 'habilitado':
             maquina.estado = 'inhabilitado'
-            messages.success(request, f"La maquinaria '{maquina.marca} {maquina.modelo}' fue inhabilitada correctamente.")
+            messages.error(request, f"La maquinaria '{maquina.marca} {maquina.modelo}' fue inhabilitada correctamente.")
         else:
             maquina.estado = 'habilitado'
             messages.success(request, f"La maquinaria '{maquina.marca} {maquina.modelo}' fue habilitada correctamente.")
