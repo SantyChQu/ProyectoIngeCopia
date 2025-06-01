@@ -9,42 +9,19 @@ from datetime import date, timedelta
 solo_letras = RegexValidator(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
                              'Solo se permiten letras y espacios.',
                              code='invalid')
-class ClienteForm(forms.ModelForm):
-    nombre= forms.CharField(required=True,validators=[solo_letras],
-        error_messages={'invalid': 'Solo se permiten letras.'}
-    )
-    apellido= forms.CharField(required=True,validators=[solo_letras],
-        error_messages={'invalid': 'Solo se permiten letras.'})
-    
+class ClienteRegistroForm(forms.ModelForm):
+    nombre = forms.CharField(required=True, validators=[solo_letras])
+    apellido = forms.CharField(required=True, validators=[solo_letras])
     fecha_nacimiento = forms.DateField(
         required=True,
         widget=forms.DateInput(attrs={'type': 'date'}),
         error_messages={'invalid': 'Ingrese una fecha válida.'}
     )
     telefono = forms.IntegerField(required=True)
-   
 
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'fecha_nacimiento', 'telefono', 'mail','contraseña']
-       # exclude = ['contraseña']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if self.instance and self.instance.fecha_nacimiento:
-            hoy = date.today()
-            edad = hoy.year - self.instance.fecha_nacimiento.year - (
-                (hoy.month, hoy.day) < (self.instance.fecha_nacimiento.month, self.instance.fecha_nacimiento.day)
-            )
-            self.fields['fecha_nacimiento'].initial = edad
-        if self.instance and self.instance.fecha_nacimiento:
-            self.initial['fecha_nacimiento'] = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')  #esto hizo que se muestre la fecha    
-
-        if self.instance and self.instance.pk:
-            self.fields['mail'].widget.attrs['readonly'] = True
-            self.fields['mail'].widget.attrs['style'] = 'background-color: #e9ecef; cursor: not-allowed;'
-
+        fields = ['nombre', 'apellido', 'fecha_nacimiento', 'telefono', 'mail', 'contraseña']
 
     def clean_contraseña(self):
         contraseña = self.cleaned_data['contraseña']
@@ -52,7 +29,6 @@ class ClienteForm(forms.ModelForm):
             raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
         return contraseña
 
-# agregar verificacion por mail repetido- o mial que no contenga @ y .
     def clean_fecha_nacimiento(self):
         fecha = self.cleaned_data['fecha_nacimiento']
         hoy = date.today()
@@ -60,6 +36,35 @@ class ClienteForm(forms.ModelForm):
         if edad < 18:
             raise forms.ValidationError('El cliente debe tener al menos 18 años.')
         return fecha
+    
+class ClienteEdicionForm(forms.ModelForm):
+    nombre = forms.CharField(required=True, validators=[solo_letras])
+    apellido = forms.CharField(required=True, validators=[solo_letras])
+    fecha_nacimiento = forms.DateField(
+        required=True,
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        error_messages={'invalid': 'Ingrese una fecha válida.'}
+    )
+    telefono = forms.IntegerField(required=True)
+
+    class Meta:
+        model = Cliente
+        fields = ['nombre', 'apellido', 'fecha_nacimiento', 'telefono', 'mail']
+
+    def __init__(self, *args, **kwargs):
+          super().__init__(*args, **kwargs)
+          if self.instance and self.instance.pk:
+            self.fields['mail'].disabled = True    
+          if self.instance and self.instance.fecha_nacimiento:
+            self.initial['fecha_nacimiento'] = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')  #esto hizo que se muestre la fecha
+
+    def clean_fecha_nacimiento(self):
+          fecha = self.cleaned_data['fecha_nacimiento']
+          hoy = date.today()
+          edad = hoy.year - fecha.year - ((hoy.month, hoy.day) < (fecha.month, fecha.day))
+          if edad < 18:
+             raise forms.ValidationError('El cliente debe tener al menos 18 años.')
+          return fecha  
     
     
 class CambiarContraseñaForm(forms.Form):

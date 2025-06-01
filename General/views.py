@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .forms import ClienteForm, CambiarContraseñaForm, tarjetaForm
+from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
 from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler
@@ -74,11 +74,11 @@ def autodestruir_maquinarias(request):
 def registro(request):
     if request.method == 'GET':
         print('Enviando formulario')
-        form = ClienteForm()
+        form = ClienteRegistroForm()
         return render(request, 'registro.html', {'form': form})
     
     else:  
-        form = ClienteForm(request.POST)
+        form = ClienteRegistroForm(request.POST)
         if form.is_valid():
             try:
                 form.save()
@@ -132,7 +132,7 @@ def VerDatos(request):
     cliente = Cliente.objects.get(id=cliente_id)
 
     if request.method == 'GET':
-        form = ClienteForm(instance=cliente)
+        form = ClienteEdicionForm(instance=cliente)
         return render(request, 'VerDatos.html', {
             'form': form,
             'form_cambiar_contraseña': CambiarContraseñaForm(),
@@ -140,7 +140,7 @@ def VerDatos(request):
         })
 
     elif request.method == 'POST':
-        form = ClienteForm(request.POST, instance=cliente)
+        form = ClienteEdicionForm(request.POST, instance=cliente)
         if form.is_valid():
             form.save()
             messages.success(request, 'Datos actualizados correctamente')
@@ -175,7 +175,7 @@ def cambiar_contraseña(request):
     else:
         form = CambiarContraseñaForm()
 
-    cliente_form = ClienteForm(instance=cliente)
+    cliente_form = ClienteEdicionForm(instance=cliente)
 
     return render(request, 'VerDatos.html', {
         'form': cliente_form,
