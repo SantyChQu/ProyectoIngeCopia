@@ -3,15 +3,6 @@
 {% block content %}
 <h1>Realizar Pago</h1>
 
-{% if messages %}
-    {% for message in messages %}
-        <div 
-            class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}" 
-            role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
 
 {% if monto_total %}
     <div class="alert alert-warning">

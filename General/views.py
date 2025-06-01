@@ -126,6 +126,7 @@ def ingresar(request):
                   
 def cerrarSesion(request):
     request.session.flush()  # Limpia la sesión por completo
+    messages.success(request, 'Sesión cerrada correctamente')
     return redirect('/')  # Redirige al login o página principa
 
 
@@ -190,13 +191,11 @@ def cambiar_contraseña(request):
 
 #REALIZAR PAGO
 
-from datetime import datetime
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .models import Cliente, Maquinaria, Tarjeta, Alquiler
-from .forms import tarjetaForm
 
 def realizar_pago(request):
+    if 'cliente_id' not in request.session:
+        return redirect('/registro/')
+
     cliente_id = request.session.get('cliente_id')
     c = Cliente.objects.get(id=cliente_id)
 
@@ -218,9 +217,6 @@ def realizar_pago(request):
         messages.error(request, 'Hubo un problema con la reserva. Volvé a intentarlo.')
         return redirect('/')
 
-    if 'cliente_id' not in request.session:
-        return redirect('/registro/')
-
     if request.method == 'POST':
         form = tarjetaForm(request.POST)
         if form.is_valid():
@@ -236,28 +232,47 @@ def realizar_pago(request):
                 messages.error(request, 'Tarjeta no encontrada.')
                 return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
+            # Validaciones adicionales
+            errores = []
             if tarjeta.numero_seguridad != numeroseguridad:
-                messages.error(request, 'Número de seguridad inválido.')
-            elif tarjeta.monto < monto_total:
-                messages.error(request, 'Saldo insuficiente.')
-            else:
-                tarjeta.monto -= monto_total
-                tarjeta.save()
-                Alquiler.objects.create(
-                    codigo_identificador=datos_reserva['codigo'],
-                    codigo_maquina=maquinaria,
-                    mail=c,
-                    desde=datos_reserva['fecha_inicio'],
-                    hasta=datos_reserva['fecha_fin'],
-                    tarjeta=tarjeta
-                )
-                messages.success(request, 'Pago realizado correctamente.')
-                return render(request, 'PaginaPrincipal.html', {'mensajeExito': True})
+                errores.append('Número de seguridad inválido.')
+
+            if tarjeta.nombre_propietario.lower() != nombre_propietario.lower():
+                errores.append('El nombre del propietario no coincide.')
+
+            if tarjeta.fecha_desde != fecha_desde:
+                errores.append('La fecha de inicio de vigencia no coincide.')
+
+            if tarjeta.fecha_hasta != fecha_hasta:
+                errores.append('La fecha de vencimiento no coincide.')
+
+            if tarjeta.monto < monto_total:
+                errores.append('Saldo insuficiente.')
+
+            if errores:
+                for e in errores:
+                    messages.error(request, e)
+                return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
+
+            # Si todo está OK, se guarda el pago y el alquiler
+            tarjeta.monto -= monto_total
+            tarjeta.save()
+
+            Alquiler.objects.create(
+                codigo_identificador=datos_reserva['codigo'],
+                codigo_maquina=maquinaria,
+                mail=c,
+                desde=datos_reserva['fecha_inicio'],
+                hasta=datos_reserva['fecha_fin'],
+                tarjeta=tarjeta
+            )
+
+            messages.success(request, 'Pago realizado correctamente.')
+            return render(request, 'PaginaPrincipal.html', {'mensajeExito': True})
 
         else:
             messages.error(request, 'Formulario inválido.')
-
-        return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
+            return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
     else:
         form = tarjetaForm()
