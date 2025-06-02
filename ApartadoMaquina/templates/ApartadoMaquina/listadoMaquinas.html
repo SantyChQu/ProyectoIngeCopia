@@ -22,21 +22,30 @@
         No hay maquinarias registradas.
     </p>
 {% else %}
+
+    <!--Boton de autodestruccion-->
+    <form method="post" action="{% url 'autodestruir_maquinarias' %}" onsubmit="return confirm('¿Estás seguro que querés borrar a todas las Maquinas? Esta acción no se puede deshacer.')">
+            {% csrf_token %}
+                <button type="submit" class="boton-naranja" style="background-color: red; color: white; padding: 10px 20px; margin: 20px auto; display: block; border-radius: 5px;">
+                    🔥 Autodestruir Maquinas
+                </button>
+    </form>
     <!-- <table style="width: 90%; margin: auto; border-collapse: collapse;"> -->
     <table class="table table-bordered table-hover text-center align-middle">
         <thead>
            <!-- <tr style="background-color: #FFA726; color: white;"> -->
             <tr>
-                <th style="background-color: #FFA726; color: white;">Código</th>
-                <th style="background-color: #FFA726; color: white;">Marca</th>
-                <th style="background-color: #FFA726; color: white;">Modelo</th>
-                <th style="background-color: #FFA726; color: white;">Año</th>
-                <th style="background-color: #FFA726; color: white;">Estado</th>
-                <th style="background-color: #FFA726; color: white;">Precio por día</th>
-                <th style="background-color: #FFA726; color: white;">Localidad</th>
-                <th style="background-color: #FFA726; color: white;">Imagen</th>
-                <th style="background-color: #FFA726; color: white;">Acción</th>
-                <th style="background-color: #FFA726; color: white;">Modificar Maquinaria</th>
+                <th style="background-color: #FFA726; color: black;">Código</th>
+                <th style="background-color: #FFA726; color: black;">Marca</th>
+                <th style="background-color: #FFA726; color: black;">Modelo</th>
+                <th style="background-color: #FFA726; color: black;">Año</th>
+                <th style="background-color: #FFA726; color: black;">Estado</th>
+                <th style="background-color: #FFA726; color: black;">Precio por día</th>
+                <th style="background-color: #FFA726; color: black;">Localidad</th>
+                <th style="background-color: #FFA726; color: black;">Imagen</th>
+                <th style="background-color: #FFA726; color: black;">Politica</th>
+                <th style="background-color: #FFA726; color: black;">Acción</th>
+                <th style="background-color: #FFA726; color: black;">Modificar Maquinaria</th>
             </tr>
         </thead>
         <tbody>
@@ -56,6 +65,7 @@
                             Sin imagen
                         {% endif %}
                     </td>
+                    <td>{{ maquina.politica }}</td>
                     <td>
                         <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
                             {% csrf_token %}
@@ -126,7 +136,10 @@
     </table>
 {% endif %}
 
-<a href="{% url 'inicio' %}" class="boton-naranja" style="display: block; width: 200px; margin: 30px auto; text-align: center;">Volver al inicio</a>
+<a href="{% url 'inicio' %}"> 
+<button type="submit" class="boton-VolverAlInicio" style="background-color:  #FFA726; border-color:rgb(160, 124, 69);">Volver al inicio</button>
+</a>                            
+
 <h4>Políticas disponibles:</h4>
 <ul>
     {% for politica in politicas %}

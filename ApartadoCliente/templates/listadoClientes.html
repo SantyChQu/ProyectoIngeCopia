@@ -34,14 +34,14 @@
     <table class="table table-bordered table-hover text-center align-middle">
         <thead>
     <tr style="background-color: #FFA726; color: white;">
-        <th style="background-color: #FFA726; color: white;">Apellido</th>
-        <th style="background-color: #FFA726; color: white;">Nombre</th>
-        <th style="background-color: #FFA726; color: white;">Mail</th>
-        <th style="background-color: #FFA726; color: white;">Fecha de Nacimiento</th>
-        <th style="background-color: #FFA726; color: white;">Edad</th>
-        <th style="background-color: #FFA726; color: white;">Telefono</th>
-        <th style="background-color: #FFA726; color: white;">Estado</th>
-        <th style="background-color: #FFA726; color: white;">Cambiar Estado</th>
+        <th style="background-color: #FFA726; color: black;">Apellido</th>
+        <th style="background-color: #FFA726; color: black;">Nombre</th>
+        <th style="background-color: #FFA726; color: black;">Mail</th>
+        <th style="background-color: #FFA726; color: black;">Fecha de Nacimiento</th>
+        <th style="background-color: #FFA726; color: black;">Edad</th>
+        <th style="background-color: #FFA726; color: black;">Telefono</th>
+        <th style="background-color: #FFA726; color: black;">Estado</th>
+        <th style="background-color: #FFA726; color: black;">Cambiar Estado</th>
     </tr>
         </thead>
         <tbody>
@@ -76,6 +76,7 @@
 
     </table>
 {% endif %}
-
-<a href="{% url 'inicio' %}" class="boton-naranja" style="display: block; width: 200px; margin: 30px auto; text-align: center;">Volver al inicio</a>
+<a href="{% url 'inicio' %}"> 
+    <button type="submit" class="boton-VolverAlInicio" style="background-color:  #FFA726; border-color:rgb(160, 124, 69);">Volver al inicio</button>
+</a>
 {% endblock %}

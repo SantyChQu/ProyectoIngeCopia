@@ -4,7 +4,8 @@ from django.db import IntegrityError
 from django.contrib import messages
 from General.models import Maquinaria, Localidad, Alquiler, Politica
 from datetime import datetime
-import imghdr
+#import imghdr
+from PIL import Image
 
 def agregar_maquina(request):
     mensaje = ''
@@ -39,7 +40,6 @@ def ver_maquinarias(request):
         'localidades': localidades,
         'politicas': politicas,
     })
-
 
 ##
 from django.shortcuts import get_object_or_404
@@ -117,10 +117,17 @@ def modificar_maquina(request, id):
                 messages.error(request, "El archivo debe ser una imagen (JPEG, PNG, GIF, etc)")
                 return redirect('ver_maquinarias')
 
-            # Verifica internamente con imghdr (más seguro contra archivos falsos)
-            if imghdr.what(imagen) not in ['jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp']:
-                messages.error(request, "Formato de imagen no válido")
-                return redirect('ver_maquinarias')
+            # Verifica internamente con imghdr (más seguro contra archivos falsos) NO LO PUEDO USAR
+            #if imghdr.what(imagen) not in ['jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp']:
+            try:
+              with Image.open(imagen) as img:
+                 tipo = img.format.lower()  # devuelve 'jpeg', 'png', etc.
+            except:
+                 messages.error(request, "No se pudo verificar la imagen. El archivo puede estar corrupto.")
+                 return redirect('ver_maquinarias')
+            if tipo not in ['jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp']:   
+                 messages.error(request, "Formato de imagen no válido")
+                 return redirect('ver_maquinarias')
 
             maquina.imagen = imagen
 
