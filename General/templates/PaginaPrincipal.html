@@ -60,11 +60,13 @@
 
 {% for maquinaria in maquinarias %}
     <div class="maquinaria">
-        <div class="info-superior">
-            <div>{{ maquinaria.marca }} {{ maquinaria.modelo }}</div>
-            <div>{{ maquinaria.año_compra }}</div>
-            <div>{{ maquinaria.localidad.nombre }}</div>
-            
+        <div class="info-superior"> 
+      <div><strong>nro Serie:</strong> {{ maquinaria.codigo_serie }}</div>
+      <div><strong>Marca:</strong> {{ maquinaria.marca }}</div>
+      <div><strong>Modelo:</strong> {{ maquinaria.modelo }}</div>
+      <div><strong>Año de compra: </strong> {{ maquinaria.año_compra }}</div>
+      <div><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</div>
+      <div><strong>Política de cancelación:</strong> {{ maquinaria.politica.nombre }}</div>
         </div>
         <div class="imagen">
             <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
@@ -82,19 +84,6 @@
 {% endfor %}
 
 
-
-<!--MENSAJE EXITO DE REALIZAR PAGO-->
-
-{%if mensajeExito%}
- <div id="modal-exito" class="modal" style="display: block;">
-    <div class="modal-content">
-      <p>Pago exitoso</p>
-      <a href="{% url 'inicio' %}">
-      <button type="button">OK</button>
-      </a>
-    </div>
-  </div>
-{%endif%}
 
 <style>
   .modal {

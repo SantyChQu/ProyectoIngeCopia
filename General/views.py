@@ -16,6 +16,7 @@ from django.utils.crypto import get_random_string
 from decimal import Decimal
 from datetime import datetime, timedelta
 from django.db.models import Q
+from django.utils import timezone
 
 
 def inicio(request):
@@ -135,6 +136,9 @@ def ingresar(request):
                 request.session['cliente_id'] = cliente.id
                 request.session['cliente_nombre'] = cliente.nombre
                 request.session['cliente_rol'] = cliente.rol
+
+                #  si inicia sesión correctamente
+                messages.success(request, 'Inicio de sesion correctamente')
                 return redirect('/')
             else:
                 messages.error(request, 'Contraseña incorrecta')
@@ -144,6 +148,7 @@ def ingresar(request):
 
         return render(request, 'ingreso.html', {'mail': mail})
 
+    # Solo muestra el formulario sin mensaje
     return render(request, 'ingreso.html', {'mail': ''})
                   
 def cerrarSesion(request):
@@ -251,7 +256,7 @@ def realizar_pago(request):
             try:
                 tarjeta = Tarjeta.objects.get(numero_tarjeta=numero)
             except Tarjeta.DoesNotExist:
-                messages.error(request, 'Tarjeta no encontrada.')
+                messages.error(request, 'Tarjeta no registrada')
                 return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
             # Validaciones adicionales
@@ -332,6 +337,12 @@ def cancelar_alquiler(request, alquiler_id):
         messages.error(request, 'Este alquiler ya fue finalizado.')
         return redirect('/misalquileres')
 
+    # Verificamos que falten al menos 2 días para que empiece el alquiler
+    hoy = timezone.now().date()
+    if (alquiler.desde - hoy).days < 2:
+        messages.error(request, 'Solo podés cancelar alquileres con al menos 2 días de anticipación.')
+        return redirect('/misalquileres')
+
     maquinaria = alquiler.codigo_maquina
     politica = maquinaria.politica
 
@@ -339,11 +350,9 @@ def cancelar_alquiler(request, alquiler_id):
     dias = (alquiler.hasta - alquiler.desde).days
     monto_total = maquinaria.precio_alquiler_diario * Decimal(dias)
 
-
     # Porcentaje de devolución
     porcentaje_devolucion = politica.porcentaje / Decimal(100)
     monto_a_devolver = monto_total * porcentaje_devolucion
-
 
     tarjeta = alquiler.tarjeta
     if tarjeta:
@@ -353,5 +362,8 @@ def cancelar_alquiler(request, alquiler_id):
     alquiler.estado = 'finalizado'
     alquiler.save()
 
-    messages.success(request, f'Alquiler cancelado. Se devolvieron ${monto_a_devolver:.2f} según la política de cancelación.')
+    messages.success(
+        request,
+        f'Alquiler cancelado. Se devolvieron ${monto_a_devolver:.2f} según la política de cancelación.'
+    )
     return redirect('/misalquileres')

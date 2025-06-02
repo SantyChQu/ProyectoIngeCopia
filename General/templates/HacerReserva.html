@@ -73,12 +73,9 @@
     <h2>Reservar: {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
     <p><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</p>
     <p><strong>Precio por día:</strong> ${{ maquinaria.precio_alquiler_diario }}</p>
+     <p><strong>Politica de cancelacion:</strong> {{ maquinaria.politica.nombre }}</p>
 
-    {% if messages %}
-        {% for message in messages %}
-            <p style="color: red;">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+
 
     <form method="post">
         {% csrf_token %}

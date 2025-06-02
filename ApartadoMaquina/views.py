@@ -4,6 +4,8 @@ from django.db import IntegrityError
 from django.contrib import messages
 from General.models import Maquinaria, Localidad, Alquiler, Politica
 from datetime import datetime
+import imghdr
+
 def agregar_maquina(request):
     mensaje = ''
     maquinaria_agregada = None
@@ -47,10 +49,10 @@ def cambiar_estado_maquinaria(request, id):
         maquina = get_object_or_404(Maquinaria, id=id)
         if maquina.estado == 'habilitado':
             maquina.estado = 'inhabilitado'
-            messages.error(request, f"La maquinaria '{maquina.marca} {maquina.modelo}' fue inhabilitada correctamente.")
+            messages.error(request, f"La maquinaria '{maquina.codigo_serie} ' fue inhabilitada correctamente.")
         else:
             maquina.estado = 'habilitado'
-            messages.success(request, f"La maquinaria '{maquina.marca} {maquina.modelo}' fue habilitada correctamente.")
+            messages.success(request, f"La maquinaria '{maquina.codigo_serie} ' fue habilitada correctamente.")
         maquina.save()
         return redirect('ver_maquinarias')
 
@@ -106,11 +108,24 @@ def modificar_maquina(request, id):
                 return redirect('ver_maquinarias')
 
         # Guardar imagen si se subió una nueva
-        if 'imagen' in request.FILES:
-            maquina.imagen = request.FILES['imagen']
+        if request.method == 'POST':
+         if 'imagen' in request.FILES:
+            imagen = request.FILES['imagen']
+
+            # Verifica el tipo MIME
+            if not imagen.content_type.startswith('image/'):
+                messages.error(request, "El archivo debe ser una imagen (JPEG, PNG, GIF, etc)")
+                return redirect('ver_maquinarias')
+
+            # Verifica internamente con imghdr (más seguro contra archivos falsos)
+            if imghdr.what(imagen) not in ['jpeg', 'png', 'gif', 'bmp', 'tiff', 'webp']:
+                messages.error(request, "Formato de imagen no válido")
+                return redirect('ver_maquinarias')
+
+            maquina.imagen = imagen
 
         maquina.save()
-        messages.success(request, "Maquina modificada correctamente")
+        messages.success(request, "Máquina modificada correctamente")
         return redirect('ver_maquinarias')
 
     localidades = Localidad.objects.all()
