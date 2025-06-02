@@ -46,8 +46,10 @@ def hacer_reserva(request, maquinaria_id):
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
     cliente = Cliente.objects.get(id=request.session['cliente_id'])
 
-    alquileres_existentes = Alquiler.objects.filter(codigo_maquina=maquinaria)
-
+    alquileres_existentes = Alquiler.objects.filter(
+       codigo_maquina=maquinaria,
+      estado='pendienteRetiro'
+    )
     if request.method == 'POST':
         fecha_inicio_str = request.POST.get('fecha_inicio')
         fecha_fin_str = request.POST.get('fecha_fin')
@@ -90,7 +92,7 @@ def hacer_reserva(request, maquinaria_id):
 
     return render(request, 'HacerReserva.html', {
         'maquinaria': maquinaria,
-        'fechas_ocupadas': fechas_ocupadas
+        'fechas_ocupadas': fechas_ocupadas,
     })
 # ------------------------- AUTODESTRUIR MAQUINARIAS -----------------------------------------
 def autodestruir_maquinarias(request):
@@ -329,7 +331,7 @@ def misalquileres(request):
     cliente = Cliente.objects.get(id=cliente_id)
 
     # Obtener todos los alquileres del cliente
-    alquileres = Alquiler.objects.filter(mail=cliente)
+    alquileres = Alquiler.objects.filter(mail=cliente).order_by('desde')
     for a in alquileres:
         dias = (a.hasta - a.desde).days
         a.precio_total = a.codigo_maquina.precio_alquiler_diario * dias
