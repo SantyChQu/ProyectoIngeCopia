@@ -109,7 +109,7 @@ def registro(request):
         if form.is_valid():
             try:
                 form.save()
-                messages.success(request, '¡Registro exitoso! Ya podés iniciar sesión.')
+                messages.success(request, 'Registro exitoso')
                 return redirect('ingreso') 
             except IntegrityError:
                 return render(request, 'registro.html', {
