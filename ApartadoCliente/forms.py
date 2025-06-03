@@ -25,7 +25,7 @@ class ClienteUpdateForms(forms.ModelForm):
     class Meta: #class meta nos sirve para indicarle a la clase a que modelo
                  #esta relacionado para que pueda tomar los tipos de datos que estan definidos en el modelo
         model=Cliente
-        fields= ["nombre","apellido","edad","telefono","mail","contraseña"]
+        fields= ["nombre","apellido","edad","telefono","dni","mail","contraseña"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

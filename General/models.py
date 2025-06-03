@@ -21,6 +21,7 @@ class Cliente(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     fecha_nacimiento = models.DateField(null=True, blank=True)
+    dni = models.CharField(max_length=20, unique=True)
     #edad = models.PositiveIntegerField()
     telefono = models.CharField(max_length=20)
     mail = models.EmailField(unique=True)

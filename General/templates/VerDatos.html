@@ -26,6 +26,20 @@
   </ul>
 {% endif %}
 </div>
+
+<!-- AACA AGREGUE DNI HACERLO INALTERABLE COMO MAIL-->
+<div class="form-group">
+  {{ form.dni.label_tag }} {{ form.dni }}
+  {% if form.dni.errors %}
+    <ul class="errorlist">
+      {% for error in form.dni.errors %}
+        <li style="color: red;">{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+
+
   <div class="form-group"> {{ form.mail.label_tag }} {{ form.mail }}</div>
     <div class="form-group">
   {{ form.fecha_nacimiento.label_tag }}
@@ -36,6 +50,7 @@
         <li style="color: red;">{{ error }}</li>
       {% endfor %}
     </ul>
+    
   {% endif %}
 
 </div><!--nuevo-->

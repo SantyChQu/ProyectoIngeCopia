@@ -18,10 +18,11 @@ class ClienteRegistroForm(forms.ModelForm):
         error_messages={'invalid': 'Ingrese una fecha válida.'}
     )
     telefono = forms.IntegerField(required=True)
+    dni = forms.CharField(required=True, label="DNI")
 
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'fecha_nacimiento', 'telefono', 'mail', 'contraseña']
+        fields = ['nombre', 'apellido', 'fecha_nacimiento', 'telefono','dni', 'mail', 'contraseña']
 
     def clean_contraseña(self):
         contraseña = self.cleaned_data['contraseña']
@@ -46,15 +47,18 @@ class ClienteEdicionForm(forms.ModelForm):
         error_messages={'invalid': 'Ingrese una fecha válida.'}
     )
     telefono = forms.IntegerField(required=True)
+    dni = forms.CharField(required=True, label="DNI")
 
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'fecha_nacimiento', 'telefono', 'mail']
+        fields = ['nombre', 'apellido', 'fecha_nacimiento','dni', 'telefono', 'mail']
 
     def __init__(self, *args, **kwargs):
           super().__init__(*args, **kwargs)
           if self.instance and self.instance.pk:
-            self.fields['mail'].disabled = True    
+            self.fields['mail'].disabled = True  
+          if self.instance and self.instance.pk:
+            self.fields['dni'].disabled = True   
           if self.instance and self.instance.fecha_nacimiento:
             self.initial['fecha_nacimiento'] = self.instance.fecha_nacimiento.strftime('%Y-%m-%d')  #esto hizo que se muestre la fecha
 
