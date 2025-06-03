@@ -140,10 +140,5 @@
 <button type="submit" class="boton-VolverAlInicio" style="background-color:  #FFA726; border-color:rgb(160, 124, 69);">Volver al inicio</button>
 </a>                            
 
-<h4>Políticas disponibles:</h4>
-<ul>
-    {% for politica in politicas %}
-        <li>{{ politica.id }} - {{ politica.nombre }} ({{ politica.porcentaje }}%)</li>
-    {% endfor %}
-</ul>
+
 {% endblock %}
