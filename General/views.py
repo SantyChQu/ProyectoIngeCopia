@@ -157,10 +157,10 @@ def ingresar(request):
                 messages.success(request, 'Inicio de sesion correctamente')
                 return redirect('/')
             else:
-                messages.error(request, 'Contraseña incorrecta')
+                messages.error(request, 'Mail y/o Contraseña incorrecta.')
 
         except Cliente.DoesNotExist:
-            messages.error(request, 'Correo no registrado')
+            messages.error(request, 'Mail y/o Contraseña incorrecta.')
 
         return render(request, 'ingreso.html', {'mail': mail})
 

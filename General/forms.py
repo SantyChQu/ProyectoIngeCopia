@@ -29,6 +29,8 @@ class ClienteRegistroForm(forms.ModelForm):
         if len(contraseña) < 8:
             raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
         return contraseña
+    
+
 
     def clean_fecha_nacimiento(self):
         fecha = self.cleaned_data['fecha_nacimiento']
@@ -37,6 +39,17 @@ class ClienteRegistroForm(forms.ModelForm):
         if edad < 18:
             raise forms.ValidationError('Se debe tener al menos 18 años.')
         return fecha
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        dni = cleaned_data.get('dni')
+        mail = cleaned_data.get('mail')
+
+        if Cliente.objects.filter(dni=dni).exists():
+            self.add_error('dni', 'Ya existe un usuario con este DNI.')
+
+        if Cliente.objects.filter(mail=mail).exists():
+            self.add_error('mail', 'Ya existe un usuario registrado con este mail.')
     
 class ClienteEdicionForm(forms.ModelForm):
     nombre = forms.CharField(required=True, validators=[solo_letras])

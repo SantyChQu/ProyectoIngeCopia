@@ -9,12 +9,14 @@
                 <thead>
                     <tr>
                         <th style="background-color: #FFA726; color: white;">Código</th>
+                        <th style="background-color: #FFA726; color: white;">Nro de serie</th>
                         <th style="background-color: #FFA726; color: white;">Maquinaria</th>
                         <th style="background-color: #FFA726; color: white;">Localidad</th>
                         <th style="background-color: #FFA726; color: white;">Estado</th>
                         <th style="background-color: #FFA726; color: white;">Desde</th>
                         <th style="background-color: #FFA726; color: white;">Hasta</th>
                         <th style="background-color: #FFA726; color: white;">Costo total</th>
+                        <th style="background-color: #FFA726; color: white;">Politica de Cancelacion</th>
                         <th style="background-color: #FFA726; color: white;">Acciones</th>
                     </tr>
                 </thead>
@@ -22,13 +24,15 @@
                     {% for a in alquileres %}
                         <tr>
                             <td>{{ a.codigo_identificador }}</td>
+                            <td>{{ a.codigo_maquina.codigo_serie }}</td>
                             <td>{{ a.codigo_maquina.marca }} {{ a.codigo_maquina.modelo }}</td>
                             <td>{{ a.codigo_maquina.localidad.nombre }}</td>
                             <td>{{ a.estado }}</td>
                             <td>{{ a.desde }}</td>
                             <td>{{ a.hasta }}</td>
-                           <td>${{ a.precio }}</td>
-
+                            <td>${{ a.precio }}</td>
+                            <td>{{ a.codigo_maquina.politica.nombre }}</td>
+                          
                             <td>
                                 {% if a.estado == 'pendienteRetiro' or a.estado == 'enCurso' %}
                                     <a href="{% url 'cancelar_alquiler' alquiler_id=a.id %}" 
