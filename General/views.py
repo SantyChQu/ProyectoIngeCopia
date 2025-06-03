@@ -307,7 +307,8 @@ def realizar_pago(request):
                 mail=c,
                 desde=datos_reserva['fecha_inicio'],
                 hasta=datos_reserva['fecha_fin'],
-                tarjeta=tarjeta
+                tarjeta=tarjeta,
+                precio=monto_total,
             )
 
             messages.success(request, 'Pago realizado correctamente.')
@@ -332,9 +333,6 @@ def misalquileres(request):
 
     # Obtener todos los alquileres del cliente
     alquileres = Alquiler.objects.filter(mail=cliente).order_by('desde')
-    for a in alquileres:
-        dias = (a.hasta - a.desde).days
-        a.precio_total = a.codigo_maquina.precio_alquiler_diario * dias
 
     return render(request, 'misalquileres.html', {'alquileres': alquileres})          
 
@@ -375,6 +373,7 @@ def cancelar_alquiler(request, alquiler_id):
         tarjeta.monto += monto_a_devolver
         tarjeta.save()
 
+    alquiler.precio = monto_total - monto_a_devolver
     alquiler.estado = 'finalizado'
     alquiler.save()
 

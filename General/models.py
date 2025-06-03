@@ -138,5 +138,6 @@ class Alquiler(models.Model):
     hasta = models.DateField()
     calificacion = models.ForeignKey(Calificacion, on_delete=models.SET_NULL, null=True, blank=True)
     tarjeta = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True, blank=True)
+    precio = models.DecimalField(max_digits=100, decimal_places=2, default=0)
 
 
