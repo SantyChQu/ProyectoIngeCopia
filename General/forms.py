@@ -34,7 +34,7 @@ class ClienteRegistroForm(forms.ModelForm):
         hoy = date.today()
         edad = hoy.year - fecha.year - ((hoy.month, hoy.day) < (fecha.month, fecha.day))
         if edad < 18:
-            raise forms.ValidationError('El cliente debe tener al menos 18 años.')
+            raise forms.ValidationError('Se debe tener al menos 18 años.')
         return fecha
     
 class ClienteEdicionForm(forms.ModelForm):
@@ -63,7 +63,7 @@ class ClienteEdicionForm(forms.ModelForm):
           hoy = date.today()
           edad = hoy.year - fecha.year - ((hoy.month, hoy.day) < (fecha.month, fecha.day))
           if edad < 18:
-             raise forms.ValidationError('El cliente debe tener al menos 18 años.')
+             raise forms.ValidationError('Se debe tener al menos 18 años.')
           return fecha  
     
     
