@@ -1,75 +1,114 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Agregar Maquinaria</title>
     <style>
-       
-        header {
-            background-color: #FFA726;
-            color: white;
-            padding: 1rem;
-            position: relative;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fdfcfb;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
             text-align: center;
+            color:rgb(79, 212, 101);
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: auto;
+            background-color:rgb(234, 243, 242);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form div {
+            margin-bottom: 20px;
+        }
+
+        label {
             font-weight: bold;
-            font-size: 1.5rem;
-        }
-        .menu-btn {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #FFCC80;
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.3rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .menu-btn:hover {
-            background-color: #FFB74D;
-        }
-        nav {
-            position: absolute;
-            left: 1rem;
-            top: 3.5rem;
-            background: white;
-            border: 1px solid #FFA726;
-            border-radius: 0.3rem;
-            display: none;
-            width: 200px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            z-index: 10;
-        }
-        nav a {
             display: block;
-            padding: 0.5rem 1rem;
+            margin-bottom: 6px;
             color: #333;
-            text-decoration: none;
         }
-        nav a:hover {
-            background-color: #FFA726;
-            color: white;
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
         }
-        .show-menu nav {
+
+        input[type="file"] {
+            padding: 5px;
+        }
+
+        .mensaje-exito {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto;
+            font-weight: bold;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .mensaje-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        ul {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            list-style-type: none;
+        }
+
+        ul li {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        ul img {
             display: block;
+            margin: 15px auto;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
         }
+
         .boton-naranja {
-            background-color: #f4a261; 
+            background-color: #f4a261;
             color: white;
-            padding: 14px 28px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
+            font-size: 16px;
             text-decoration: none;
-            font-size: 18px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             display: inline-block;
-            text-align: center;
+            margin: 10px 5px;
         }
 
         .boton-naranja:hover {
@@ -77,44 +116,26 @@
         }
 
         .boton-naranja-small {
-            padding: 10px 20px;
             font-size: 14px;
-            margin-right: 10px;
+            padding: 10px 20px;
         }
-        .mensaje-exito {
-            background-color: #d4edda; 
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: bold;
+
+        .acciones {
             text-align: center;
-        }
-        .mensaje-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 8px 12px;          
-            border-radius: 5px;
-            margin-bottom: 10px;
-            display: inline-block;      
-            max-width: 300px;           
-            font-size: 0.9rem;          
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-
- <h1>Agregar Maquinaria</h1>
+    <h2>Agregar Maquinaria</h2>
 
     {% if mensaje %}
         <div class="mensaje-exito">{{ mensaje }}</div>
     {% endif %}
 
     {% if maquinaria_agregada %}
-        <h2>Datos de la maquinaria agregada:</h2>
+        <h2 style="text-align:center; color:#264653;">Datos de la maquinaria agregada:</h2>
         <ul>
             <li><strong>Código de Serie:</strong> {{ maquinaria_agregada.codigo_serie }}</li>
             <li><strong>Marca:</strong> {{ maquinaria_agregada.marca }}</li>
@@ -126,25 +147,26 @@
             <li><strong>Política:</strong> {{ maquinaria_agregada.politica }}</li>
             <li>
                 {% if maquinaria_agregada.imagen %}
-                    <img src="{{ maquinaria_agregada.imagen.url }}" alt="Imagen de maquinaria" width="300">
+                    <img src="{{ maquinaria_agregada.imagen.url }}" alt="Imagen de maquinaria">
                 {% else %}
                     No se ha subido imagen.
                 {% endif %}
             </li>
         </ul>
 
-        <a href="{% url 'inicio' %}" class="boton-naranja boton-naranja-small">Volver al Inicio</a>
-        <a href="{% url 'agregar_maquina' %}" class="boton-naranja boton-naranja-small">Agregar otra Máquina</a>
+        <div class="acciones">
+            <a href="{% url 'inicio' %}" class="boton-naranja boton-naranja-small">Volver al Inicio</a>
+            <a href="{% url 'agregar_maquina' %}" class="boton-naranja boton-naranja-small">Agregar otra Máquina</a>
+        </div>
 
     {% else %}
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-
             {{ form.non_field_errors }}
 
             {% for field in form %}
                 <div>
-                    {{ field.label_tag }}<br>
+                    {{ field.label_tag }}
                     {{ field }}
                     {% if field.errors %}
                         <div class="mensaje-error">{{ field.errors }}</div>
@@ -152,12 +174,12 @@
                 </div>
             {% endfor %}
 
-            <button type="submit" class="boton-naranja boton-naranja-small">Agregar</button>
+            <div style="text-align: center;">
+                <button type="submit" class="boton-naranja">Agregar</button>
+            </div>
         </form>
     {% endif %}
 
 </body>
 </html>
-
-
 {% endblock %}
