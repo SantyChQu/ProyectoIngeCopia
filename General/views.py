@@ -313,7 +313,7 @@ def realizar_pago(request):
             )
 
             messages.success(request, 'Pago realizado correctamente.')
-            return render(request, 'PaginaPrincipal.html', {'mensajeExito': True})
+            return redirect('/misalquileres/')
 
         else:
             messages.error(request, 'Formulario inválido.')
