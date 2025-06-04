@@ -96,20 +96,9 @@ def hacer_reserva(request, maquinaria_id):
     })
 # ------------------------- AUTODESTRUIR MAQUINARIAS -----------------------------------------
 def autodestruir_maquinarias(request):
-#    with connection.cursor() as cursor:
-#        cursor.execute("DELETE FROM General_maquinaria")
-#    return redirect('ver_clientes') 
-    maquinarias = Maquinaria.objects.all()
-
-    for maq in maquinarias:
-        if Alquiler.objects.filter(codigo_maquina_id=maq).exists():
-            # Si hay relaciones, no la borres
-            continue
-        maq.delete()
-
-    messages.success(request, "Se eliminaron todas las maquinarias que no estaban en uso.")
+    Maquinaria.objects.all().delete()
+    messages.success(request, "Se eliminaron todas las maquinarias.")
     return redirect('ver_maquinarias')
-
 
 
 
