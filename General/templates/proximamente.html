@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .proximamente-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .proximamente-title {
+        font-size: 2.5rem;
+        color: #FFA726;
+        margin-bottom: 20px;
+    }
+
+    .proximamente-text {
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 30px;
+    }
+
+    .proximamente-img {
+        width: 200px;
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
+
+    .btn-volver {
+        background-color: #FFA726;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 1rem;
+        text-decoration: none;
+    }
+
+    .btn-volver:hover {
+        background-color: #fb8c00;
+    }
+</style>
+
+<div class="proximamente-container">
+    <img src="https://cdn-icons-png.flaticon.com/512/1055/1055646.png" alt="En construcción" class="proximamente-img">
+    <h1 class="proximamente-title">¡Estamos trabajando en esto!</h1>
+    <p class="proximamente-text">
+        Esta funcionalidad estará disponible próximamente. <br>
+        ¡Gracias por tu paciencia!
+    </p>
+    <a href="{% url 'inicio' %}" class="btn-volver">Volver al inicio</a>
+</div>
+{% endblock %}

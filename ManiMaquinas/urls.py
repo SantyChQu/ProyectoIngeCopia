@@ -49,6 +49,7 @@ urlpatterns = [
     path('RealizarPago/',general.realizar_pago , name='pago'),
     path('misalquileres/',general.misalquileres),
     path('cancelar_alquiler/<int:alquiler_id>/', general.cancelar_alquiler, name='cancelar_alquiler'),
+    path('proximamente/',general.proximo)
 
     ]
 if settings.DEBUG:

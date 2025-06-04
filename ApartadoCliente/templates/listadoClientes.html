@@ -2,8 +2,8 @@
 {% block content %}
 <style>
     .alert-success {
-        background-color:rgb(125, 236, 151);
-        color:rgb(7, 7, 7);
+        background-color: rgb(125, 236, 151);
+        color: rgb(7, 7, 7);
         padding: 10px;
         border-radius: 4px;
         border: 1px solid #c3e6cb;
@@ -12,7 +12,40 @@
         margin: 10px auto;
         text-align: center;
     }
+
+    .boton-autodestruir {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color: #f44336;
+        color: white;
+        padding: 6px 12px;
+        font-size: 12px;
+        border: none;
+        border-radius: 4px;
+        z-index: 9999;
+        opacity: 0.85;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .boton-autodestruir:hover {
+        opacity: 1;
+        background-color: #d32f2f;
+    }
+
+    .boton-VolverAlInicio {
+        background-color: #FFA726;
+        border-color: rgb(160, 124, 69);
+        padding: 10px 20px;
+        margin: 30px auto;
+        display: block;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+    }
 </style>
+
 <h1 style="text-align: center;">Listado de Clientes</h1>
 
 {% if clientes|length == 0 %}
@@ -20,30 +53,30 @@
         No hay Clientes registrados
     </p>
 {% else %}
-    <!-- Esto es el mensaje, se puede borrar si no gusta-->
- 
-    <!--Boton de autodestruccion-->
+
     {% if cliente_actual.rol == 'jefe' and hay_clientes_no_jefes %}
-        <form method="post" action="{% url 'autodestruir_clientes' %}" onsubmit="return confirm('¿Estás seguro que querés borrar a todos los clientes que no sean jefes? Esta acción no se puede deshacer.')">
+        <form method="post" action="{% url 'autodestruir_clientes' %}" 
+              onsubmit="return confirm('¿Estás seguro que querés borrar a todos los clientes que no sean jefes? Esta acción no se puede deshacer.')">
             {% csrf_token %}
-                <button type="submit" class="boton-naranja" style="background-color: red; color: white; padding: 10px 20px; margin: 20px auto; display: block; border-radius: 5px;">
-                    🔥 Autodestruir Clientes
-                </button>
+            <button type="submit" class="boton-autodestruir">
+                🔥 Autodestruir
+            </button>
         </form>
     {% endif %}
+
     <table class="table table-bordered table-hover text-center align-middle">
         <thead>
-    <tr style="background-color: #FFA726; color: white;">
-        <th style="background-color: #FFA726; color: black;">Apellido</th>
-        <th style="background-color: #FFA726; color: black;">Nombre</th>
-            <th style="background-color: #FFA726; color: black;">Dni</th>
-        <th style="background-color: #FFA726; color: black;">Mail</th>
-        <th style="background-color: #FFA726; color: black;">Fecha de Nacimiento</th>
-        <th style="background-color: #FFA726; color: black;">Edad</th>
-        <th style="background-color: #FFA726; color: black;">Telefono</th>
-        <th style="background-color: #FFA726; color: black;">Estado</th>
-        <th style="background-color: #FFA726; color: black;">Cambiar Estado</th>
-    </tr>
+            <tr style="background-color: #FFA726; color: white;">
+                <th style="background-color: #FFA726; color: black;">Apellido</th>
+                <th style="background-color: #FFA726; color: black;">Nombre</th>
+                <th style="background-color: #FFA726; color: black;">Dni</th>
+                <th style="background-color: #FFA726; color: black;">Mail</th>
+                <th style="background-color: #FFA726; color: black;">Fecha de Nacimiento</th>
+                <th style="background-color: #FFA726; color: black;">Edad</th>
+                <th style="background-color: #FFA726; color: black;">Telefono</th>
+                <th style="background-color: #FFA726; color: black;">Estado</th>
+                <th style="background-color: #FFA726; color: black;">Cambiar Estado</th>
+            </tr>
         </thead>
         <tbody>
             {% for cliente in clientes %}
@@ -59,26 +92,27 @@
                     <td>
                         <form method="post" action="{% url 'cambiar_estado_Cliente' cliente.id %}" >
                             {% csrf_token %}
-                                {% if cliente.estado == 'habilitado' %}
-                                        <button type="submit" class="boton-inhabilitar" style= "background-color: #f8d7da; border-color:rgb(224, 53, 70);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'inhabilitar')">Inhabilitar</button>  
-                                {% else %}
-                                    <button type="submit" class="boton-habilitar" style= "background-color:rgb(172, 219, 157); border-color:rgb(17, 179, 44);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'Habilitar')">Habilitar</button>
-                                {% endif %}
+                            {% if cliente.estado == 'habilitado' %}
+                                <button type="submit" class="boton-inhabilitar" style="background-color: #f8d7da; border-color: rgb(224, 53, 70);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'inhabilitar')">Inhabilitar</button>  
+                            {% else %}
+                                <button type="submit" class="boton-habilitar" style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'Habilitar')">Habilitar</button>
+                            {% endif %}
                         </form>
                     </td>
                 </tr>
             {% endfor %}
-            <script>
-                function confirmarCambioEstado(nombre, apellido, accion) {
-                    const mensaje = `¿Estás seguro que quieres ${accion} a ${nombre}-${apellido}?`;
-                    return confirm(mensaje);
-                }
-            </script>
         </tbody>
-
     </table>
+
+    <script>
+        function confirmarCambioEstado(nombre, apellido, accion) {
+            const mensaje = `¿Estás seguro que quieres ${accion} a ${nombre}-${apellido}?`;
+            return confirm(mensaje);
+        }
+    </script>
 {% endif %}
+
 <a href="{% url 'inicio' %}"> 
-    <button type="submit" class="boton-VolverAlInicio" style="background-color:  #FFA726; border-color:rgb(160, 124, 69);">Volver al inicio</button>
+    <button type="submit" class="boton-VolverAlInicio">Volver al inicio</button>
 </a>
 {% endblock %}
