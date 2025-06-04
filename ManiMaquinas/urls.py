@@ -42,15 +42,16 @@ urlpatterns = [
     path('maquinarias/cambiar_estado/<int:id>/', maquinas_views.cambiar_estado_maquinaria, name='cambiar_estado_maquinaria'),
     path('clientes/cambiar_estado/<int:id>/', cliente_views.cambiar_estado_Cliente, name='cambiar_estado_Cliente'),
     path('maquinaria/modificar/<int:id>/', maquinas_views.modificar_maquina, name='modificar_maquina'),
-    
+    path('maquinarias/eliminar/<int:maquinaria_id>/', maquinas_views.eliminar_maquinaria, name='eliminar_maquinaria'),
+
     path('maquinarias/autodestruir/', general.autodestruir_maquinarias, name='autodestruir_maquinarias'),
     path('hacer_reserva/<int:maquinaria_id>/', general.hacer_reserva, name='hacer_reserva'),
     path('RealizarPago/',general.realizar_pago , name='pago'),
     path('RealizarPago/',general.realizar_pago , name='pago'),
     path('misalquileres/',general.misalquileres),
     path('cancelar_alquiler/<int:alquiler_id>/', general.cancelar_alquiler, name='cancelar_alquiler'),
-    path('proximamente/',general.proximo)
-
+    path('proximamente/',general.proximo),
+  
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -114,6 +114,7 @@ def autodestruir_maquinarias(request):
 
 
 
+
 def registro(request):
     if request.method == 'GET':
         print('Enviando formulario')

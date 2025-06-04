@@ -77,6 +77,7 @@
                 <th style="background-color: #FFA726; color: black;">Politica</th>
                 <th style="background-color: #FFA726; color: black;">Acción</th>
                 <th style="background-color: #FFA726; color: black;">Modificar Maquinaria</th>
+                <th style="background-color: #FFA726; color: black;">Eliminar maquina</th>
             </tr>
         </thead>
         <tbody>
@@ -97,6 +98,7 @@
                         {% endif %}
                     </td>
                     <td>{{ maquina.politica }}</td>
+                    
                     <td>
                         <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
                             {% csrf_token %}
@@ -116,6 +118,21 @@
                             Modificar
                         </button>
                     </td>
+                    <td>
+    <form method="post" action="{% url 'eliminar_maquinaria' maquina.id %}">
+        {% csrf_token %}
+        {% if maquina.estado != 'eliminado' %}
+            <button type="submit"
+                    class="boton-inhabilitar"
+                    style="background-color: #f5c6cb; border-color: #dc3545;"
+                    onclick="return confirm('¿Estás seguro de que querés eliminar la maquinaria {{ maquina.codigo_serie }}?')">
+                Eliminar
+            </button>
+        {% else %}
+            <span style="color: red;">Eliminada</span>
+        {% endif %}
+    </form>
+</td>
                 </tr>
 
                 <!-- Modal para modificar maquinaria -->

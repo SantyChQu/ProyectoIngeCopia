@@ -32,7 +32,7 @@ def agregar_maquina(request):
     })
 
 def ver_maquinarias(request):
-    maquinarias = Maquinaria.objects.all()
+    maquinarias = Maquinaria.objects.exclude(estado='eliminado')
     localidades = Localidad.objects.all()
     politicas = Politica.objects.all()
     return render(request, 'ApartadoMaquina/listadoMaquinas.html', {
@@ -55,6 +55,21 @@ def cambiar_estado_maquinaria(request, id):
             messages.success(request, f"La maquinaria '{maquina.codigo_serie} ' fue habilitada correctamente.")
         maquina.save()
         return redirect('ver_maquinarias')
+   
+   
+def eliminar_maquinaria(request, maquinaria_id):
+    maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
+
+    if maquinaria.estado == 'eliminado':
+        messages.warning(request, 'La maquinaria ya está marcada como eliminada.')
+    else:
+        maquinaria.estado = 'eliminado'
+        maquinaria.save()
+        messages.success(request, 'Eliminacion Exitosa')
+
+    return redirect('ver_maquinarias')
+
+
 
 def modificar_maquina(request, id):
     maquina = get_object_or_404(Maquinaria, id=id)
