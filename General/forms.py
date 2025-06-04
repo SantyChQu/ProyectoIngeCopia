@@ -18,7 +18,7 @@ class ClienteRegistroForm(forms.ModelForm):
         error_messages={'invalid': 'Ingrese una fecha válida.'}
     )
     telefono = forms.IntegerField(required=True)
-    dni = forms.CharField(required=True, label="DNI")
+    dni = forms.IntegerField(required=True, label="DNI")
 
     class Meta:
         model = Cliente
@@ -37,7 +37,10 @@ class ClienteRegistroForm(forms.ModelForm):
         hoy = date.today()
         edad = hoy.year - fecha.year - ((hoy.month, hoy.day) < (fecha.month, fecha.day))
         if edad < 18:
-            raise forms.ValidationError('Se debe tener al menos 18 años.')
+             raise forms.ValidationError('Se debe tener al menos 18 años.')
+        if edad > 100:
+            raise forms.ValidationError('La edad no puede ser mayor a 100 años.')
+
         return fecha
     
     def clean(self):

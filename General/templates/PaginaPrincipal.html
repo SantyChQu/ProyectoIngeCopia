@@ -74,9 +74,11 @@
         <div class="precio">
             Precio por día: ${{ maquinaria.precio_alquiler_diario }}
         </div>
-        <div style="text-align: right; margin-top: 10px;">
-            <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary">Hacer reserva</a>
-        </div>
+        {% if request.session.cliente_rol != "jefe" %}
+            <div style="text-align: right; margin-top: 10px;">
+                <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary">Hacer reserva</a>
+            </div>
+        {% endif %}
     </div>
     
 {% empty %}

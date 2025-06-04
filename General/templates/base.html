@@ -88,7 +88,7 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="menuButton">
                 <li><a class="dropdown-item" href="/">Home</a></li>
-                <li><a class="dropdown-item" href="/admin">Admin</a></li>
+               
                 
                 {% if request.session.cliente_rol == "jefe" %}
 
@@ -111,8 +111,8 @@
 
         <div class="auth-buttons">
             <span class="text-white small me-2">
-                Bienvenido : {{ request.session.cliente_nombre|default:"Usuario no autenticado" }}<br>
-                Rol: {{ request.session.cliente_rol|default:"Usuario no autenticado" }}
+                Bienvenido : {{ request.session.cliente_nombre|default:"Visitante" }}<br>
+                Rol: {{ request.session.cliente_rol|default:"Visitante" }}
             </span>
 
             {% if request.session.cliente_id %}

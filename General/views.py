@@ -290,13 +290,18 @@ def realizar_pago(request):
             if tarjeta.fecha_hasta != fecha_hasta:
                 errores.append('La fecha de vencimiento no coincide.')
 
-            if tarjeta.monto < monto_total:
-                errores.append('Saldo insuficiente.')
-
+        
             if errores:
                 for e in errores:
                     messages.error(request, e)
                 return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
+            
+            try:
+               if tarjeta.monto < monto_total:
+                 raise ValueError('Saldo insuficiente.')
+            except ValueError as e:
+                errores.append(str(e))
+
 
             # Si todo está OK, se guarda el pago y el alquiler
             tarjeta.monto -= monto_total
