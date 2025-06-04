@@ -284,13 +284,15 @@ def realizar_pago(request):
                 for e in errores:
                     messages.error(request, e)
                 return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
-            
+                        
             try:
-               if tarjeta.monto < monto_total:
-                 raise ValueError('Saldo insuficiente.')
+                    if tarjeta.monto < monto_total:
+                         raise ValueError('Saldo insuficiente.')
             except ValueError as e:
                 errores.append(str(e))
-
+                for e in errores:
+                    messages.error(request, e)
+                return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
             # Si todo está OK, se guarda el pago y el alquiler
             tarjeta.monto -= monto_total
