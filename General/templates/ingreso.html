@@ -135,15 +135,20 @@
     {% for message in messages %}
         <p class="error-message">{{ message }}</p>
     {% endfor %}
--->
+ -->
+
+<!-- boton de recuperar contrase;a
+
     <div class="recover-link">
         <a onclick="document.getElementById('recuperarModal').style.display='block'">
             ¿Olvidaste tu contraseña?
         </a>
     </div>
 </div>
+-->
 
-<!-- Modal de recuperación -->
+
+<!-- Modal de recuperación
 <div id="recuperarModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="document.getElementById('recuperarModal').style.display='none'">&times;</span>
@@ -159,7 +164,12 @@
             <button type="submit">Enviar</button>
         </form>
     </div>
-</div>
+
+
+ -->
+    </div>
+
+{% include "footer.html" %}
 
 <script>
     // Cerrar el modal si se hace click fuera del contenido
