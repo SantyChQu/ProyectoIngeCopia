@@ -25,13 +25,13 @@
                         <tr>
                             <td>{{ a.codigo_identificador }}</td>
                             <td>{{ a.codigo_maquina.codigo_serie }}</td>
-                            <td>{{ a.codigo_maquina.marca }} - {{ a.codigo_maquina.modelo }}</td>
-                            <td>{{ a.codigo_maquina.localidad.nombre }}</td>
+                            <td>{{ a.marca }} - {{ a.modelo }}</td>
+                            <td>{{ a.localidad }}</td>
                             <td>{{ a.estado }}</td>
                             <td>{{ a.desde }}</td>
                             <td>{{ a.hasta }}</td>
                             <td>${{ a.precio }}</td>
-                            <td>{{ a.codigo_maquina.politica.nombre }}</td>
+                            <td>{{ a.politica_cancelacion}}</td>
                           
                             <td>
                                 {% if a.estado == 'pendienteRetiro' or a.estado == 'enCurso' %}

@@ -306,6 +306,10 @@ def realizar_pago(request):
                 hasta=datos_reserva['fecha_fin'],
                 tarjeta=tarjeta,
                 precio=monto_total,
+                Marca=maquinaria.marca,
+                Modelo=maquinaria.modelo,
+                Localidad=maquinaria.localidad.nombre,
+                politica_cancelacion=maquinaria.politica.nombre,
             )
 
             messages.success(request, 'Pago realizado correctamente.')

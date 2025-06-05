@@ -85,6 +85,7 @@ class Maquinaria(models.Model):
     ESTADO_CHOICES = [
         ('habilitado', 'Habilitado'),
         ('inhabilitado', 'Inhabilitado'),
+        ('eliminado', 'Eliminado'), 
     ]
 
     codigo_serie = models.CharField(max_length=50, unique=True)
@@ -142,3 +143,17 @@ class Alquiler(models.Model):
     precio = models.DecimalField(max_digits=100, decimal_places=2, default=0)
 
 
+
+   
+    marca = models.CharField(max_length=100)
+    modelo = models.CharField(max_length=100)
+    localidad = models.CharField(max_length=100)
+    politica_cancelacion = models.CharField(max_length=100)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Solo la primera vez que se guarda
+            self.marca = self.codigo_maquina.marca
+            self.modelo = self.codigo_maquina.modelo
+            self.localidad = self.codigo_maquina.localidad.nombre
+            self.politica_cancelacion = self.codigo_maquina.politica.nombre
+        super().save(*args, **kwargs)
