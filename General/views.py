@@ -254,6 +254,7 @@ def realizar_pago(request):
         form = tarjetaForm(request.POST)
         if form.is_valid():
             numero = form.cleaned_data['numero']
+            numero = numero.replace(" ", "").replace("-", "") 
             numeroseguridad = form.cleaned_data['numeroseguridad']
             nombre_propietario = form.cleaned_data['nombre_propietario']
             fecha_desde = form.cleaned_data['fecha_desde']
