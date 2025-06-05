@@ -298,7 +298,7 @@ def realizar_pago(request):
             tarjeta.monto -= monto_total
             tarjeta.save()
 
-            Alquiler.objects.create(
+            alquiler = Alquiler(
                 codigo_identificador=datos_reserva['codigo'],
                 codigo_maquina=maquinaria,
                 mail=c,
@@ -306,11 +306,9 @@ def realizar_pago(request):
                 hasta=datos_reserva['fecha_fin'],
                 tarjeta=tarjeta,
                 precio=monto_total,
-                Marca=maquinaria.marca,
-                Modelo=maquinaria.modelo,
-                Localidad=maquinaria.localidad.nombre,
-                politica_cancelacion=maquinaria.politica.nombre,
             )
+
+            alquiler.save()
 
             messages.success(request, 'Pago realizado correctamente.')
             return redirect('/misalquileres/')
