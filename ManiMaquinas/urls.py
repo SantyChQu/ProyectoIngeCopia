@@ -22,7 +22,6 @@ from django.conf.urls.static import static
 from General import views as general
 from ApartadoCliente import views as cliente_views
 from ApartadoMaquina import views as maquinas_views
-
 import os
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -51,7 +50,7 @@ urlpatterns = [
     path('misalquileres/',general.misalquileres),
     path('cancelar_alquiler/<int:alquiler_id>/', general.cancelar_alquiler, name='cancelar_alquiler'),
     path('proximamente/',general.proximo),
-  
+    path('estadisticas/', cliente_views.estadisticas_clientes, name='estadisticas_clientes'),
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

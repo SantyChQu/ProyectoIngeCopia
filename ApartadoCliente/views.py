@@ -40,3 +40,15 @@ def cambiar_estado_Cliente(request, id):
             messages.success(request, f"El cliente  '{cliente.mail}' fue habilitado correctamente")
         cliente.save()
         return redirect('ver_clientes')
+   
+from django.db.models import Count
+
+def estadisticas_clientes(request):
+    clientes = Cliente.objects.exclude(rol='jefe')
+    total_clientes = clientes.count()
+    cantidad_por_estado = clientes.values('estado').annotate(cantidad=Count('estado'))
+
+    return render(request, 'estadisticasClientes.html', {
+        'total_clientes': total_clientes,
+        'cantidad_por_estado': cantidad_por_estado,
+    })

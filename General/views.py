@@ -388,3 +388,4 @@ def cancelar_alquiler(request, alquiler_id):
 def proximo(request):
 
     return render(request,'proximamente.html')
+
