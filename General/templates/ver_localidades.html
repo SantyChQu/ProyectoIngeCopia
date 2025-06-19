@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .boton-volver {
+        background-color: #FFA726;
+        color: white;
+        padding: 10px 20px;
+        margin: 30px auto;
+        display: block;
+        border-radius: 5px;
+        border: none;
+    }
+
+    .boton-volver:hover {
+        background-color: #FF9800;
+    }
+
+    .tabla-localidades th {
+        background-color: #FFA726;
+        color: black;
+        text-align: center;
+    }
+
+    .tabla-localidades td {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+    <!-- Bootstrap JS 
+<h1 class="text-center mb-4">Listado de Localidades</h1>
+
+<div class="text-center mb-3">
+    <a href="{% url 'agregar_localidad' %}" class="btn btn-success">Agregar Localidad</a>
+</div>
+-->
+{% if localidades %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover tabla-localidades">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Código Postal</th>
+                    <th>Ubicación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loc in localidades %}
+                    <tr>
+                        <td>{{ loc.id }}</td>
+                        <td>{{ loc.nombre }}</td>
+                        <td>{{ loc.codigo_postal }}</td>
+                        <td>{{ loc.ubicacion }}</td>
+                        <td>
+                            <form method="post" action="{% url 'eliminar_localidad' loc.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('¿Eliminar la localidad {{ loc.nombre }}?')">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        No hay localidades registradas.
+    </div>
+{% endif %}
+
+<a href="{% url 'inicio' %}">
+    <button class="boton-volver">Volver al inicio</button>
+</a>
+{% endblock %}

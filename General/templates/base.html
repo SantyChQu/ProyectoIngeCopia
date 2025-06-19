@@ -91,6 +91,8 @@
                
                 
                 {% if request.session.cliente_rol == "jefe" %}
+                
+                    <li><a class="dropdown-item" href="{% url 'ver_localidades' %}">Ver Localidades</a></li>
 
                     <li><a class="dropdown-item" href="/agregar_maquina/">Agregar Máquina</a></li>   
                     <li><a class="dropdown-item" href="/clientes/">Ver Listado Clientes</a></li>

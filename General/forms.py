@@ -1,7 +1,7 @@
 # yo cree este archivo 
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Cliente
+from .models import Cliente,Localidad
 from django.core.validators import RegexValidator
 from django.forms import DateInput
 from datetime import date, timedelta
@@ -143,3 +143,14 @@ class tarjetaForm(forms.Form):
         label="Válida hasta",
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
+
+
+    class LocalidadForm(forms.ModelForm):
+        class Meta:
+          model = Localidad
+          fields = ['nombre', 'codigo_postal', 'ubicacion']
+          widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'codigo_postal': forms.TextInput(attrs={'class': 'form-control'}),
+            'ubicacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+        }

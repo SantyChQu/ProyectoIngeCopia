@@ -51,6 +51,10 @@ urlpatterns = [
     path('cancelar_alquiler/<int:alquiler_id>/', general.cancelar_alquiler, name='cancelar_alquiler'),
     path('proximamente/',general.proximo),
     path('estadisticas/', cliente_views.estadisticas_clientes, name='estadisticas_clientes'),
+    path('localidades/', general.ver_localidades, name='ver_localidades'),
+     path('localidades/agregar/', general.agregar_localidad, name='agregar_localidad'),
+    path('localidades/eliminar/<int:localidad_id>/', general.eliminar_localidad, name='eliminar_localidad'),
+
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

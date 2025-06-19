@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm
+from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, Localidad
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
 from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler
@@ -383,7 +383,26 @@ def cancelar_alquiler(request, alquiler_id):
     )
     return redirect('/misalquileres')
 
+def ver_localidades(request):
+    localidades = Localidad.objects.all()
+    return render(request, 'ver_localidades.html', {'localidades': localidades})
 
+def agregar_localidad(request):
+    if request.method == 'POST':
+        form = LocalidadForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('ver_localidades')
+    else:
+        form = LocalidadForm()
+    return render(request, 'agregar_localidad.html', {'form': form})
+
+def eliminar_localidad(request, localidad_id):
+    localidad = get_object_or_404(Localidad, id=localidad_id)
+    if request.method == 'POST':
+        localidad.delete()
+        return redirect('ver_localidades')
+    return render(request, 'confirmar_eliminacion.html', {'localidad': localidad})
 
 def proximo(request):
 
