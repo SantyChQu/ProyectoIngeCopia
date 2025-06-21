@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import date
+from django.utils import timezone
 # Create your models here.
 
 # dios sabra si estan bien creados
@@ -28,7 +29,7 @@ class Cliente(models.Model):
     contraseña = models.CharField(max_length=128)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='habilitado')
     rol = models.CharField(max_length=10, choices=ROL_CHOICES, default='cliente')
-   
+    fecha_registro = models.DateField(default=timezone.now)
   # clave= models.CharField(max_length=20)
 
     @property

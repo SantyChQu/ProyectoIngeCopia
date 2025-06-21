@@ -4,6 +4,10 @@ from General.models import Cliente
 
 from django.contrib import messages
 
+#from django.db.models.functions import TruncDate
+from .forms import FiltroFechaForm
+from collections import defaultdict
+
 def autodestruir_clientes(request):
     cliente_id = request.session.get('cliente_id')
     cliente = Cliente.objects.filter(id=cliente_id).first()
@@ -40,15 +44,35 @@ def cambiar_estado_Cliente(request, id):
             messages.success(request, f"El cliente  '{cliente.mail}' fue habilitado correctamente")
         cliente.save()
         return redirect('ver_clientes')
-   
-from django.db.models import Count
 
 def estadisticas_clientes(request):
-    clientes = Cliente.objects.exclude(rol='jefe')
-    total_clientes = clientes.count()
-    cantidad_por_estado = clientes.values('estado').annotate(cantidad=Count('estado'))
+    form = FiltroFechaForm(request.GET or None)
+    etiquetas = []
+    datos_habilitados = []
+    datos_inhabilitados = []
+
+    if form.is_valid():
+        fecha_desde = form.cleaned_data['fecha_desde']
+        fecha_hasta = form.cleaned_data['fecha_hasta']
+
+        clientes = Cliente.objects.exclude(rol='jefe') \
+                    .filter(fecha_registro__range=[fecha_desde, fecha_hasta])
+
+        # Agrupamos por fecha y estado
+        agrupados = defaultdict(lambda: {'habilitado': 0, 'inhabilitado': 0})
+
+        for cliente in clientes:
+            fecha = cliente.fecha_registro.strftime('%Y-%m-%d')
+            agrupados[fecha][cliente.estado] += 1
+
+        # Ordenamos por fecha
+        etiquetas = sorted(agrupados.keys())
+        datos_habilitados = [agrupados[fecha]['habilitado'] for fecha in etiquetas]
+        datos_inhabilitados = [agrupados[fecha]['inhabilitado'] for fecha in etiquetas]
 
     return render(request, 'estadisticasClientes.html', {
-        'total_clientes': total_clientes,
-        'cantidad_por_estado': cantidad_por_estado,
+        'form': form,
+        'etiquetas': etiquetas,
+        'habilitados': datos_habilitados,
+        'inhabilitados': datos_inhabilitados,
     })

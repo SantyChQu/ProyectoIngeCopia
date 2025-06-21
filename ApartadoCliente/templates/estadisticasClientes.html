@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
+<h1 style="text-align: center;">📊 Estadísticas de Clientes</h1>
 
-<h1 style="text-align: center;"> Estadísticas de Clientes</h1>
+<form method="get" style="text-align: center; margin-bottom: 20px;">
+    {{ form.as_p }}
+    <button type="submit" class="boton-VolverAlInicio" style="background-color: #4caf50;">Filtrar</button>
+</form>
 
-<div style="width: 80%; margin: 20px auto;">
-    <p style="text-align: center;">Total de clientes registrados: <strong>{{ total_clientes }}</strong></p>
-
-    <canvas id="estadoChart" width="400" height="200"></canvas>
-</div>
+{% if etiquetas %}
+    <div style="width: 80%; margin: 0 auto;">
+        <canvas id="graficoClientes"></canvas>
+    </div>
+{% else %}
+    <p style="text-align: center;">No hay datos para el rango seleccionado.</p>
+{% endif %}
 
 <a href="{% url 'ver_clientes' %}">
     <button class="boton-VolverAlInicio">Volver al listado</button>
@@ -15,31 +21,28 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('estadoChart').getContext('2d');
+    const ctx = document.getElementById('graficoClientes');
     const chart = new Chart(ctx, {
-        type: 'pie',
+        type: 'bar',
         data: {
-            labels: [
-                {% for item in cantidad_por_estado %}
-                    '{{ item.estado }}'{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            ],
-            datasets: [{
-                label: 'Clientes',
-                data: [
-                    {% for item in cantidad_por_estado %}
-                        {{ item.cantidad }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                ],
-                backgroundColor: ['#81C784', '#E57373'],
-                borderWidth: 1
-            }]
+            labels: {{ etiquetas|safe }},
+            datasets: [
+                {
+                    label: 'Habilitados',
+                    data: {{ habilitados|safe }},
+                    backgroundColor: 'rgba(38, 207, 61, 0.7)'
+                },
+                {
+                    label: 'Inhabilitados',
+                    data: {{ inhabilitados|safe }},
+                    backgroundColor: 'rgba(239, 83, 80, 0.7)'
+                }
+            ]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                title: { display: true, text: 'Distribución de Clientes por Estado' }
+            scales: {
+                y: { beginAtZero: true }
             }
         }
     });
