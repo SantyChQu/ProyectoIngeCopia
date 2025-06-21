@@ -40,17 +40,16 @@
         <table class="table table-bordered table-hover tabla-localidades">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nombre</th>
                     <th>Código Postal</th>
                     <th>Ubicación</th>
                     <th>Acciones</th>
+                    <th>Mapa</th>
                 </tr>
             </thead>
             <tbody>
                 {% for loc in localidades %}
                     <tr>
-                        <td>{{ loc.id }}</td>
                         <td>{{ loc.nombre }}</td>
                         <td>{{ loc.codigo_postal }}</td>
                         <td>{{ loc.ubicacion }}</td>
@@ -63,6 +62,7 @@
                                 </button>
                             </form>
                         </td>
+                        <td><a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|urlencode }}" target="_blank"><button >Ver Mapa</button> </a></td>
                     </tr>
                 {% endfor %}
             </tbody>
