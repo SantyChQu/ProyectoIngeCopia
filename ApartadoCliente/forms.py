@@ -39,6 +39,7 @@ class FiltroFechaForm(forms.Form):
         label='Desde',
         widget=forms.DateInput(attrs={
             'type': 'date',
+            'min': '2000-01-01',
             'max': hoy.strftime('%Y-%m-%d')
         })
     )
@@ -47,6 +48,7 @@ class FiltroFechaForm(forms.Form):
         label='Hasta',
         widget=forms.DateInput(attrs={
             'type': 'date',
+            'min': '2000-01-01',
             'max': hoy.strftime('%Y-%m-%d')
         })
     )
@@ -62,3 +64,6 @@ class FiltroFechaForm(forms.Form):
 
         if desde and hasta and desde > hasta:
             self.add_error('fecha_desde', 'La fecha de inicio no puede ser posterior a la de fin.')
+                
+        if desde and desde < date(2000, 1, 1):
+            self.add_error('fecha_desde', 'La fecha de inicio no puede ser anterior al año 2000.')    
