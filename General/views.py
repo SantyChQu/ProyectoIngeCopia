@@ -1,4 +1,5 @@
-from django.shortcuts import render,redirect
+from collections import defaultdict
+from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
@@ -10,11 +11,9 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
 from django.db import connection
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render
-from datetime import date
+from datetime import date, datetime, timedelta
 from django.utils.crypto import get_random_string
 from decimal import Decimal
-from datetime import datetime, timedelta
 from django.db.models import Q
 from django.utils import timezone
 
@@ -408,3 +407,44 @@ def proximo(request):
 
     return render(request,'proximamente.html')
 
+#from django.shortcuts import render
+from General.models import Alquiler, Localidad
+from collections import defaultdict
+from datetime import date, datetime
+from General.forms import FiltroFechaForm
+from datetime import datetime, time
+from django.contrib import messages
+
+def estadisticas_alquileres_localidad(request):
+    localidades = Localidad.objects.all()
+    localidad_seleccionada = request.GET.get('localidad')
+    form = FiltroFechaForm(request.GET or None)
+
+    datos = defaultdict(list)
+    mostrar_form_fecha = False
+
+    if localidad_seleccionada:
+        mostrar_form_fecha = True
+        if form.is_valid():
+            fecha_desde = form.cleaned_data['fecha_desde']
+            fecha_hasta = form.cleaned_data['fecha_hasta']
+            fecha_desde_dt = datetime.combine(fecha_desde, time.min)
+            fecha_hasta_dt = datetime.combine(fecha_hasta, time.max)
+
+            alquileres = Alquiler.objects.filter(
+                codigo_maquina__localidad__nombre=localidad_seleccionada,
+                desde__range=(fecha_desde_dt, fecha_hasta_dt)
+            )
+
+            for alquiler in alquileres:
+                datos[alquiler.estado].append(alquiler.desde.strftime('%Y-%m-%d'))
+        #else:
+            # Mostrar errores en el template si faltan fechas
+            #messages.error(request, "Debés seleccionar ambas fechas para continuar.")
+    return render(request, 'estadisticasAlquileres.html', {
+        'localidades': localidades,
+        'localidad_seleccionada': localidad_seleccionada,
+        'form': form,
+        'datos': dict(datos),
+        'mostrar_form_fecha': mostrar_form_fecha,
+    })

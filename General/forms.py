@@ -153,4 +153,36 @@ class tarjetaForm(forms.Form):
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'codigo_postal': forms.TextInput(attrs={'class': 'form-control'}),
             'ubicacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-        }
+        }       
+class FiltroFechaForm(forms.Form):
+
+    fecha_desde = forms.DateField(
+        label='Desde',
+        required=True,
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'min': '2000-01-01',
+            'max': '9999-01-01'
+        })
+    )
+
+    fecha_hasta = forms.DateField(
+        label='Hasta',
+        required=True,
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'min': '2000-01-01',
+            'max': '9999-01-01'
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha_desde = cleaned_data.get("fecha_desde")
+        fecha_hasta = cleaned_data.get("fecha_hasta")
+
+        if fecha_desde and fecha_desde < date(2000, 1, 1):
+          raise forms.ValidationError("La fecha 'Desde' no puede ser anterior al año 2000.")
+
+        if fecha_desde and fecha_hasta and fecha_hasta < fecha_desde:
+          raise forms.ValidationError("La fecha 'Hasta' no puede ser anterior a la fecha 'Desde'.")

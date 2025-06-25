@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-center">📊 Estadísticas de Alquileres por Localidad</h2>
+
+<style>
+    .required-label::after {
+        content: "*";
+        color: red;
+        margin-left: 5px;
+    }
+</style>
+
+<form method="get" class="text-center mb-4">
+    <label for="localidad">Seleccionar localidad:</label>
+    <select name="localidad" id="localidad" onchange="this.form.submit()">
+        <option value="">-- Elegir --</option>
+        {% for loc in localidades %}
+            <option value="{{ loc.nombre }}" {% if localidad_seleccionada == loc.nombre %}selected{% endif %}>{{ loc.nombre }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if mostrar_form_fecha %}
+    
+    {% if form.errors %}
+        <div class="alert alert-danger text-center">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <form method="get" class="text-center mb-4">
+        <input type="hidden" name="localidad" value="{{ localidad_seleccionada }}">
+
+        <label for="{{ form.fecha_desde.id_for_label }}" class="required-label">Desde:</label>
+        {{ form.fecha_desde }}
+
+        <label for="{{ form.fecha_hasta.id_for_label }}" class="required-label">Hasta:</label>
+        {{ form.fecha_hasta }}
+
+        <button type="submit">Filtrar por Fecha</button>
+    </form>
+    
+    {% if etiquetas  %}
+        <div style="width: 80%; margin: 0 auto;">
+            <canvas id="graficoClientes"></canvas>
+        </div>
+    {% else %}
+        <p style="text-align: center;">No hay datos para el rango seleccionado.</p>
+    {% endif %}
+{% endif %}
+
+{% if datos %}
+<div style="width: 90%; margin: auto;">
+    <canvas id="graficoAlquileres"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const dataEstados = {{ datos|safe }};
+    const labels = Array.from(new Set(Object.values(dataEstados).flat()));
+
+    const datasets = Object.keys(dataEstados).map(estado => ({
+        label: estado,
+        data: labels.map(fecha => dataEstados[estado].filter(f => f === fecha).length),
+        backgroundColor: estado === 'pendienteRetiro' ? 'rgba(255, 193, 7, 0.7)' : 
+                          estado === 'enCurso' ? 'rgba(33, 150, 243, 0.7)' : 
+                          'rgba(76, 175, 80, 0.7)'
+    }));
+
+    new Chart(document.getElementById('graficoAlquileres'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+
+<a href="{% url 'inicio' %}">
+    <button class="boton-volver">Volver al inicio</button>
+</a>
+{% endblock %}
+

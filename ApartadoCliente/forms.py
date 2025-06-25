@@ -37,15 +37,18 @@ class FiltroFechaForm(forms.Form):
 
     fecha_desde = forms.DateField(
         label='Desde',
+        required=True,
         widget=forms.DateInput(attrs={
             'type': 'date',
             'min': '2000-01-01',
             'max': hoy.strftime('%Y-%m-%d')
         })
+
     )
 
     fecha_hasta = forms.DateField(
         label='Hasta',
+        required=True,
         widget=forms.DateInput(attrs={
             'type': 'date',
             'min': '2000-01-01',

@@ -97,8 +97,8 @@
                     <li><a class="dropdown-item" href="/agregar_maquina/">Agregar Máquina</a></li>   
                     <li><a class="dropdown-item" href="/clientes/">Ver Listado Clientes</a></li>
                     <li><a class="dropdown-item" href="/maquinarias/">Ver Listado Maquinarias</a></li>
-                    <li><a class="dropdown-item" href="{% url 'estadisticas_clientes' %}">Ver Estadísticas</a></li>
-
+                    <li><a class="dropdown-item" href="{% url 'estadisticas_clientes' %}">Ver Estadísticas Clientes</a></li>
+                    <li><a class="dropdown-item" href="{% url 'estadisticas_alquileres_localidad' %}">Ver Estadísticas Alquileres</a></li>
                 {% endif %}
 
                 {% if request.session.cliente_rol == "cliente" %}
