@@ -85,6 +85,17 @@ class ClienteEdicionForm(forms.ModelForm):
           if edad < 18:
              raise forms.ValidationError('Se debe tener al menos 18 años.')
           return fecha  
+
+class EmpleadoRegistroForm(ClienteRegistroForm):
+    class Meta(ClienteRegistroForm.Meta):
+        fields = ClienteRegistroForm.Meta.fields
+
+    def save(self, commit=True):
+        empleado = super().save(commit=False)
+        empleado.rol = 'empleados'  # Forzamos el rol empleado
+        if commit:
+            empleado.save()
+        return empleado    
     
     
 class CambiarContraseñaForm(forms.Form):

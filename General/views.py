@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, LocalidadForm
+from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, LocalidadForm, EmpleadoRegistroForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
 from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler
@@ -16,7 +16,7 @@ from django.utils.crypto import get_random_string
 from decimal import Decimal
 from django.db.models import Q
 from django.utils import timezone
-
+from django.db.models import Q, Case, When, Value, IntegerField
 
 def inicio(request):
     localidad_filtro = request.GET.get('localidad')
@@ -469,3 +469,55 @@ def estadisticas_alquileres_localidad(request):
         'finalizado': finalizado,
         'fecha_desde': fecha_desde,
         'fecha_hasta': fecha_hasta,})
+
+def registro_empleado(request):
+    if request.session.get('cliente_rol') != 'jefe':
+        messages.error(request, "No tenés permiso para acceder a esta sección.")
+        return redirect('inicio')
+
+    if request.method == 'POST':
+        form = EmpleadoRegistroForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Empleado registrado exitosamente.")
+            return redirect('registro_empleado')
+    else:
+        form = EmpleadoRegistroForm()
+
+    return render(request, 'registro_empleado.html', {'form': form})
+
+def verEmpleados(request):
+    cliente_id = request.session.get('cliente_id')
+    cliente_actual = Cliente.objects.filter(id=cliente_id).first()
+
+    empleados = Cliente.objects.filter(
+        rol='empleados'
+    ).order_by(
+        Case(
+            When(estado='habilitado', then=Value(0)),
+            When(estado='inhabilitado', then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField()
+        ),
+        'dni'
+    )
+
+    hay_clientes_no_jefes = empleados.exists()
+
+    return render(request, 'listadoEmpleados.html', {
+        'empleados': empleados,
+        'cliente_actual': cliente_actual,
+        'hay_clientes_no_jefes': hay_clientes_no_jefes,
+    })
+
+def cambiar_estado_Empleado(request, id):
+   if request.method == 'POST':
+        cliente = get_object_or_404(Cliente, id=id)
+        if cliente.estado == 'habilitado':
+            cliente.estado = 'inhabilitado'
+            messages.error(request, f"El empleado  '{cliente.mail} ' fue inhabilitado correctamente")
+        else:
+            cliente.estado = 'habilitado'
+            messages.success(request, f"El empleado  '{cliente.mail}' fue habilitado correctamente")
+        cliente.save()
+        return redirect('verEmpleados')  
