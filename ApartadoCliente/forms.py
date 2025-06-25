@@ -64,9 +64,9 @@ class FiltroFechaForm(forms.Form):
 
         if hasta and hasta > hoy:
             self.add_error('fecha_hasta', 'La fecha de fin no puede ser mayor a hoy.')
-
+           
         if desde and hasta and desde > hasta:
             self.add_error('fecha_desde', 'La fecha de inicio no puede ser posterior a la de fin.')
-                
+             
         if desde and desde < date(2000, 1, 1):
             self.add_error('fecha_desde', 'La fecha de inicio no puede ser anterior al año 2000.')    

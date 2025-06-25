@@ -3,10 +3,21 @@
 <h1 style="text-align: center;">📊 Estadísticas de Clientes</h1>
 
 <form method="get" style="text-align: center; margin-bottom: 20px;">
-    {{ form.as_p }}
-    <button type="submit" class="boton-VolverAlInicio" >Generar gráfico</button>
-</form>
+    <label for="{{ form.fecha_desde.id_for_label }}">Desde:</label>
+    {{ form.fecha_desde }}
+    
+    <label for="{{ form.fecha_hasta.id_for_label }}">Hasta:</label>
+    {{ form.fecha_hasta }}
+    {% for error in form.fecha_hasta.errors %}
+        <p class="alert alert-danger text-center">{{ error }}</p>
+    {% endfor %}
+    {% for error in form.fecha_desde.errors %}
+        <p class="alert alert-danger text-center">{{ error }}</p>
+    {% endfor %}
 
+    <button type="submit" class="boton-VolverAlInicio">Generar gráfico</button>
+</form>
+       
 {% if etiquetas %}
     <div style="width: 80%; margin: 0 auto;">
         <canvas id="graficoClientes"></canvas>

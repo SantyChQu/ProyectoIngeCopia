@@ -46,12 +46,20 @@ def cambiar_estado_Cliente(request, id):
         return redirect('ver_clientes')
 
 def estadisticas_clientes(request):
-    form = FiltroFechaForm(request.GET or None)
+
+    # Detectamos si se presionó "Filtrar"
+    se_presiono_filtrar = 'fecha_desde' in request.GET or 'fecha_hasta' in request.GET
+    #form = FiltroFechaForm(request.GET if se_presiono_filtrar else None)
+    mostrar_errores = se_presiono_filtrar
+
+    #form = FiltroFechaForm(request.GET or None)
+    form = FiltroFechaForm(request.GET if se_presiono_filtrar else None)
+    
     etiquetas = []
     datos_habilitados = []
     datos_inhabilitados = []
-
-    if form.is_valid():
+    
+    if se_presiono_filtrar and form.is_valid(): #if form.is_valid():
         fecha_desde = form.cleaned_data['fecha_desde']
         fecha_hasta = form.cleaned_data['fecha_hasta']
 
@@ -75,4 +83,5 @@ def estadisticas_clientes(request):
         'etiquetas': etiquetas,
         'habilitados': datos_habilitados,
         'inhabilitados': datos_inhabilitados,
+        'mostrar_errores': mostrar_errores,
     })

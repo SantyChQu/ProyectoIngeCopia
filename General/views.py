@@ -418,13 +418,16 @@ from django.contrib import messages
 def estadisticas_alquileres_localidad(request):
     localidades = Localidad.objects.all()
     localidad_seleccionada = request.GET.get('localidad')
-    form = FiltroFechaForm(request.GET or None)
+    
+    mostrar_form_fecha = bool(localidad_seleccionada)
 
+    # Solo instanciar el formulario si se intenta filtrar por fechas
+    se_presiono_filtrar = 'fecha_desde' in request.GET or 'fecha_hasta' in request.GET
+    form = FiltroFechaForm(request.GET if se_presiono_filtrar else None)
+
+    mostrar_errores = se_presiono_filtrar
     datos = defaultdict(list)
-    mostrar_form_fecha = False
-
-    if localidad_seleccionada:
-        mostrar_form_fecha = True
+    if localidad_seleccionada and se_presiono_filtrar:
         if form.is_valid():
             fecha_desde = form.cleaned_data['fecha_desde']
             fecha_hasta = form.cleaned_data['fecha_hasta']
@@ -438,13 +441,11 @@ def estadisticas_alquileres_localidad(request):
 
             for alquiler in alquileres:
                 datos[alquiler.estado].append(alquiler.desde.strftime('%Y-%m-%d'))
-        #else:
-            # Mostrar errores en el template si faltan fechas
-            #messages.error(request, "Debés seleccionar ambas fechas para continuar.")
+
     return render(request, 'estadisticasAlquileres.html', {
         'localidades': localidades,
         'localidad_seleccionada': localidad_seleccionada,
         'form': form,
         'datos': dict(datos),
         'mostrar_form_fecha': mostrar_form_fecha,
-    })
+        'mostrar_errores': mostrar_errores, })

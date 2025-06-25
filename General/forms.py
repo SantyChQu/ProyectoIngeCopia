@@ -182,7 +182,7 @@ class FiltroFechaForm(forms.Form):
         fecha_hasta = cleaned_data.get("fecha_hasta")
 
         if fecha_desde and fecha_desde < date(2000, 1, 1):
-          raise forms.ValidationError("La fecha 'Desde' no puede ser anterior al año 2000.")
+          raise forms.ValidationError("La fecha de inicio no debe ser anterior al año 2000.")
 
         if fecha_desde and fecha_hasta and fecha_hasta < fecha_desde:
-          raise forms.ValidationError("La fecha 'Hasta' no puede ser anterior a la fecha 'Desde'.")
+          raise forms.ValidationError("La fecha de inicio no debe ser posterior a la de fin..")
