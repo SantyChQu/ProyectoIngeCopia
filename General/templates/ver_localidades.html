@@ -28,13 +28,37 @@
     }
 </style>
 
-    <!-- Bootstrap JS 
 <h1 class="text-center mb-4">Listado de Localidades</h1>
 
+<!-- Botón para abrir el modal -->
 <div class="text-center mb-3">
-    <a href="{% url 'agregar_localidad' %}" class="btn btn-success">Agregar Localidad</a>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregarLocalidad">
+        Agregar Localidad
+    </button>
 </div>
--->
+
+<!-- Modal para agregar localidad -->
+<div class="modal fade" id="modalAgregarLocalidad" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'ver_localidades' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAgregarLabel">Agregar Localidad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Localidad</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% if localidades %}
     <div class="table-responsive">
         <table class="table table-bordered table-hover tabla-localidades">
@@ -62,7 +86,11 @@
                                 </button>
                             </form>
                         </td>
-                        <td><a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|urlencode }}" target="_blank"><button >Ver Mapa</button> </a></td>
+                        <td>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|urlencode }}" target="_blank">
+                                <button class="btn btn-info btn-sm">Ver Mapa</button>
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

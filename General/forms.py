@@ -145,7 +145,7 @@ class tarjetaForm(forms.Form):
     )
 
 
-    class LocalidadForm(forms.ModelForm):
+class LocalidadForm(forms.ModelForm):
         class Meta:
           model = Localidad
           fields = ['nombre', 'codigo_postal', 'ubicacion']
@@ -153,7 +153,8 @@ class tarjetaForm(forms.Form):
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'codigo_postal': forms.TextInput(attrs={'class': 'form-control'}),
             'ubicacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-        }       
+        }    
+             
 class FiltroFechaForm(forms.Form):
 
     fecha_desde = forms.DateField(
