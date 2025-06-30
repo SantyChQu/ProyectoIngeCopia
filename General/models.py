@@ -114,7 +114,7 @@ class Observacion(models.Model):
 class Calificacion(models.Model):
     codigo_calif = models.AutoField(primary_key=True)
     estrellas = models.PositiveSmallIntegerField() 
-    nota = models.TextField(blank=True, null=True)
+    calificacion  = models.TextField(blank=True, null=True)
 
 class Tarjeta(models.Model):
     numero_tarjeta = models.CharField(max_length=16)

@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load humanize %}
+
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Mis Alquileres</h2>
@@ -16,7 +18,7 @@
                         <th style="background-color: #FFA726; color: white;">Desde</th>
                         <th style="background-color: #FFA726; color: white;">Hasta</th>
                         <th style="background-color: #FFA726; color: white;">Costo total</th>
-                        <th style="background-color: #FFA726; color: white;">Politica de Cancelacion</th>
+                        <th style="background-color: #FFA726; color: white;">Política de Cancelación</th>
                         <th style="background-color: #FFA726; color: white;">Acciones</th>
                     </tr>
                 </thead>
@@ -30,9 +32,8 @@
                             <td>{{ a.estado }}</td>
                             <td>{{ a.desde }}</td>
                             <td>{{ a.hasta }}</td>
-                            <td>${{ a.precio }}</td>
-                            <td>{{ a.politica_cancelacion}}</td>
-                          
+                            <td>${{ a.precio|floatformat:2 }}</td>
+                            <td>{{ a.politica_cancelacion }}</td>
                             <td>
                                 {% if a.estado == 'pendienteRetiro' or a.estado == 'enCurso' %}
                                     <a href="{% url 'cancelar_alquiler' alquiler_id=a.id %}" 
@@ -41,7 +42,39 @@
                                        Cancelar alquiler
                                     </a>
                                 {% else %}
-                                    <span class="text-muted">No disponible</span>
+                                    <!-- Botón para abrir el modal -->
+                                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalPuntuar{{ a.id }}">
+                                        Puntuar
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modalPuntuar{{ a.id }}" tabindex="-1" aria-labelledby="modalPuntuarLabel{{ a.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form method="POST" action="{% url 'puntuar_alquiler' a.id %}">
+                                                    {% csrf_token %}
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modalPuntuarLabel{{ a.id }}">Calificar alquiler {{ a.codigo_identificador }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {% if forms_puntaje.a.id %}
+                                                            {{ forms_puntaje.a.id.estrellas.label_tag }}
+                                                            {{ forms_puntaje.a.id.estrellas }}
+                                                            {{ forms_puntaje.a.id.nota.label_tag }}
+                                                            {{ forms_puntaje.a.id.nota }}
+                                                        {% else %}
+                                                            <p>Este alquiler ya fue calificado.</p>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 {% endif %}
                             </td>
                         </tr>
@@ -56,6 +89,7 @@
     {% endif %}
 </div>
 {% endblock %}
+
 
 
 <!-- {%for a in alquileres%}

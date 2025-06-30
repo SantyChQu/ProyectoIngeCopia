@@ -1,7 +1,7 @@
 # yo cree este archivo 
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Cliente,Localidad
+from .models import Cliente,Localidad,Calificacion
 from django.core.validators import RegexValidator
 from django.forms import DateInput
 from datetime import date, timedelta
@@ -198,3 +198,15 @@ class FiltroFechaForm(forms.Form):
 
         if fecha_desde and fecha_hasta and fecha_hasta < fecha_desde:
           raise forms.ValidationError("La fecha de inicio no debe ser posterior a la de fin..")
+        
+class CalificacionForm(forms.Form):
+    estrellas = forms.ChoiceField(
+        choices=[(i, f"{i} ⭐") for i in range(1, 6)],
+        widget=forms.RadioSelect,
+        label="Puntaje"
+    )
+    nota = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3}),
+        required=False,
+        label="Comentario (opcional)"
+    )

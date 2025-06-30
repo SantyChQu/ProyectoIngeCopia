@@ -49,6 +49,9 @@ urlpatterns = [
     path('RealizarPago/',general.realizar_pago , name='pago'),
     path('misalquileres/',general.misalquileres),
     path('cancelar_alquiler/<int:alquiler_id>/', general.cancelar_alquiler, name='cancelar_alquiler'),
+    
+    path('alquileres/<int:alquiler_id>/puntuar/', general.puntuar_alquiler, name='puntuar_alquiler'),
+
     path('proximamente/',general.proximo),
     path('estadisticas/', cliente_views.estadisticas_clientes, name='estadisticas_clientes'),
     path('localidades/', general.ver_localidades, name='ver_localidades'),

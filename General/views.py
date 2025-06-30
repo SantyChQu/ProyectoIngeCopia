@@ -3,10 +3,10 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, LocalidadForm, EmpleadoRegistroForm
+from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, LocalidadForm, EmpleadoRegistroForm,CalificacionForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
-from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler
+from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler,Calificacion
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
 from django.db import connection
@@ -321,19 +321,27 @@ def realizar_pago(request):
         form = tarjetaForm()
         return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
-
 def misalquileres(request):
-
     if 'cliente_id' not in request.session:
-        return redirect('/registro/')  # o a tu vista de login
+        return redirect('/registro/')
 
     cliente_id = request.session['cliente_id']
     cliente = Cliente.objects.get(id=cliente_id)
 
-    # Obtener todos los alquileres del cliente
     alquileres = Alquiler.objects.filter(mail=cliente).order_by('desde')
 
-    return render(request, 'misalquileres.html', {'alquileres': alquileres})          
+    # Diccionario simple: clave = id del alquiler (int)
+    forms_puntaje = {
+        a.id: CalificacionForm()
+        for a in alquileres if a.estado == 'finalizado' and a.calificacion is None
+    }
+
+    context = {
+        'alquileres': alquileres,
+        'forms_puntaje': forms_puntaje
+    }
+
+    return render(request, 'misalquileres.html', context)    
 
 
 def cancelar_alquiler(request, alquiler_id):
@@ -381,6 +389,26 @@ def cancelar_alquiler(request, alquiler_id):
         f'Alquiler cancelado. Se devolvieron ${monto_a_devolver:.2f} según la política de cancelación.'
     )
     return redirect('/misalquileres')
+
+
+def puntuar_alquiler(request, alquiler_id):
+    if request.method == 'POST':
+        alquiler = get_object_or_404(Alquiler, id=alquiler_id, mail_id=request.session.get("cliente_id"))
+
+        if alquiler.estado != 'finalizado' or alquiler.calificacion:
+            return redirect('/misalquileres')
+
+        form = CalificacionForm(request.POST)
+        if form.is_valid():
+            calificacion = Calificacion.objects.create(
+                estrellas=form.cleaned_data['estrellas'],
+                nota=form.cleaned_data['nota']
+            )
+            alquiler.calificacion = calificacion
+            alquiler.save()
+
+    return redirect('/misalquileres')
+
 
 
 def ver_localidades(request):
