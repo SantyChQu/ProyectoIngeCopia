@@ -100,14 +100,14 @@
                             {% if cliente.estado == 'habilitado' %}
                                 <button type="submit" class="boton-inhabilitar"
                                         style="background-color: #f8d7da; border-color: rgb(224, 53, 70);"
-                                        onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'inhabilitar')">
-                                    Inhabilitar
+                                        onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'Dar de Baja')">
+                                    Dar de Baja
                                 </button>
                             {% else %}
                                 <button type="submit" class="boton-habilitar"
                                         style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);"
-                                        onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'habilitar')">
-                                    Habilitar
+                                        onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'Recuperar')">
+                                    Recuperar
                                 </button>
                             {% endif %}
                         </form>

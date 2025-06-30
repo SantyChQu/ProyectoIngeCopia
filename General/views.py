@@ -543,9 +543,9 @@ def cambiar_estado_Empleado(request, id):
         cliente = get_object_or_404(Cliente, id=id)
         if cliente.estado == 'habilitado':
             cliente.estado = 'inhabilitado'
-            messages.error(request, f"El empleado  '{cliente.mail} ' fue inhabilitado correctamente")
+            messages.error(request, f"El empleado  '{cliente.mail} ' fue dado de baja correctamente")
         else:
             cliente.estado = 'habilitado'
-            messages.success(request, f"El empleado  '{cliente.mail}' fue habilitado correctamente")
+            messages.success(request, f"El empleado  '{cliente.mail}' fue recuperado correctamente")
         cliente.save()
         return redirect('verEmpleados')  
