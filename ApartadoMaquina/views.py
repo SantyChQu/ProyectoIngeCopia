@@ -166,4 +166,22 @@ def modificar_maquina(request, id):
     #maquinaria.save()
     #return redirect('ver_maquinarias')
 
+from django.db.models import Count
+from django.shortcuts import render
+from General.models import Maquinaria  # o desde donde tengas tu modelo
 
+def alquileres_por_maquina(request):
+    # Traer todas las máquinas que NO están eliminadas
+    maquinas = Maquinaria.objects.exclude(estado='eliminado').annotate(
+        cantidad_alquileres=Count('alquiler')  # Usa related_name si es distinto
+    )
+
+    # Preparar los datos para Chart.js
+    labels = [f"{m.marca} {m.modelo}" for m in maquinas]
+    data = [m.cantidad_alquileres for m in maquinas]
+
+    return render(request, 'alquileresPorMaquinaria.html', {
+        'labels': labels,
+        'data': data,
+        'maquinas': maquinas,
+    })

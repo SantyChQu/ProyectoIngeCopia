@@ -97,8 +97,6 @@
                     <li><a class="dropdown-item" href="/agregar_maquina/">Agregar Máquina</a></li>   
                     <li><a class="dropdown-item" href="/clientes/">Ver Listado Clientes</a></li>
                     <li><a class="dropdown-item" href="/maquinarias/">Ver Listado Maquinarias</a></li>
-                    <li><a class="dropdown-item" href="{% url 'estadisticas_clientes' %}">Ver Estadísticas Clientes</a></li>
-                    <li><a class="dropdown-item" href="{% url 'estadisticas_alquileres_localidad' %}">Ver Estadísticas Alquileres</a></li>
                     <li><a class="dropdown-item" href="/agregar_empleado/">Agregar Empleado</a></li>
                     <li><a class="dropdown-item" href="/empleados/">Ver Listado Empleados</a></li>
                 {% endif %}
@@ -133,7 +131,10 @@
                         {% endif %}
 
                         {% if request.session.cliente_rol == "jefe" %}
-                            <li><a class="dropdown-item" href="/proximamente">Estamos Trabajando en ello </a></li>
+                                <li><a class="dropdown-item" href="{% url 'estadisticas_clientes' %}">Ver Estadísticas Clientes</a></li>
+                                <li><a class="dropdown-item" href="{% url 'estadisticas_alquileres_localidad' %}">Ver Estadísticas Alquileres</a></li>
+                                <li><a class="dropdown-item" href="{% url 'alquileres_por_maquina' %}">Ver Estadísticas Alquileres por maquina</a></li>
+                                <li><a class="dropdown-item" href="/proximamente">Estamos Trabajando en ello </a></li>
                         {% endif %}
                     </ul>
                 </div>
