@@ -4,7 +4,6 @@ from django.db import IntegrityError
 from django.contrib import messages
 from General.models import Maquinaria, Localidad, Alquiler, Politica
 from datetime import datetime
-#import imghdr
 from PIL import Image
 
 def agregar_maquina(request):
@@ -166,4 +165,20 @@ def modificar_maquina(request, id):
     #maquinaria.save()
     #return redirect('ver_maquinarias')
 
+from django.db.models import Count
 
+def alquileres_por_maquina(request):
+    # Traer todas las máquinas que NO están eliminadas
+    maquinas = Maquinaria.objects.exclude(estado='eliminado').annotate(
+        cantidad_alquileres=Count('alquiler')  
+    )
+
+    # Chart.js
+    labels = [f"{m.marca} {m.modelo}" for m in maquinas]
+    data = [m.cantidad_alquileres for m in maquinas]
+
+    return render(request, 'alquileresPorMaquinaria.html', {
+        'labels': labels,
+        'data': data,
+        'maquinas': maquinas,
+    })

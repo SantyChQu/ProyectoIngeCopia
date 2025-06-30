@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2 style="text-align:center;">Cantidad de alquileres por máquina</h2>
+
+  <div style="width: 80%; margin: 0 auto;">
+    <canvas id="graficoMaquinas"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('graficoMaquinas').getContext('2d');
+    const grafico = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ labels|safe }},
+        datasets: [{
+          label: 'Cantidad de Alquileres',
+          data: {{ data|safe }},
+          backgroundColor: 'rgba(255, 167, 38, 0.7)',
+          borderColor: 'rgba(255, 167, 38, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'x',
+        scales: {
+          y: {
+            beginAtZero: true,
+            precision: 0,
+            stepSize: 1
+          }
+        }
+      }
+    });
+  </script>
+
+  <h3 style="text-align:center; margin-top: 40px;">Detalle</h3>
+  <table style="margin: 0 auto; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="border: 1px solid #ddd; padding: 8px;">Máquina</th>
+        <th style="border: 1px solid #ddd; padding: 8px;">Cantidad de Alquileres</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for maquina in maquinas %}
+      <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;">{{ maquina.marca }} {{ maquina.modelo }}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">{{ maquina.cantidad_alquileres }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'ver_maquinarias' %}">
+      <button style="background-color: #FFA726; border: none; padding: 10px 20px; border-radius: 5px; color: white; cursor: pointer;">
+        Volver al Listado de Maquinarias
+      </button>
+    </a>
+  </div>
+{% endblock %}
