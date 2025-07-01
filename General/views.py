@@ -330,18 +330,20 @@ def misalquileres(request):
 
     alquileres = Alquiler.objects.filter(mail=cliente).order_by('desde')
 
-    # Diccionario simple: clave = id del alquiler (int)
-    forms_puntaje = {
-        a.id: CalificacionForm()
-        for a in alquileres if a.estado == 'finalizado' and a.calificacion is None
-    }
+    # Emparejamos alquiler con su formulario (solo si se puede puntuar)
+    alquileres_forms = []
+    for a in alquileres:
+        if a.estado == 'finalizado' and a.calificacion is None:
+            form = CalificacionForm()
+        else:
+            form = None
+        alquileres_forms.append((a, form))
 
     context = {
-        'alquileres': alquileres,
-        'forms_puntaje': forms_puntaje
+        'alquileres_forms': alquileres_forms
     }
 
-    return render(request, 'misalquileres.html', context)    
+    return render(request, 'misalquileres.html', context) 
 
 
 def cancelar_alquiler(request, alquiler_id):
@@ -390,12 +392,12 @@ def cancelar_alquiler(request, alquiler_id):
     )
     return redirect('/misalquileres')
 
-
 def puntuar_alquiler(request, alquiler_id):
     if request.method == 'POST':
         alquiler = get_object_or_404(Alquiler, id=alquiler_id, mail_id=request.session.get("cliente_id"))
 
-        if alquiler.estado != 'finalizado' or alquiler.calificacion:
+
+        if alquiler.estado != 'finalizado' or alquiler.calificacion is not None:
             return redirect('/misalquileres')
 
         form = CalificacionForm(request.POST)

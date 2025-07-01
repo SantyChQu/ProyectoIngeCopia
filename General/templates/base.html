@@ -90,7 +90,8 @@
                 <li><a class="dropdown-item" href="/">Home</a></li>
                
                 
-                {% if request.session.cliente_rol == "jefe" %}
+                {% if request.session.cliente_rol == "jefe" or request.session.cliente_rol == "empleados" %}
+
                 
                     <li><a class="dropdown-item" href="{% url 'ver_localidades' %}">Ver Localidades</a></li>
 

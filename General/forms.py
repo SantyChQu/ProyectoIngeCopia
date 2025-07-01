@@ -203,7 +203,7 @@ class CalificacionForm(forms.Form):
     estrellas = forms.ChoiceField(
         choices=[(i, f"{i} ⭐") for i in range(1, 6)],
         widget=forms.RadioSelect,
-        label="Puntaje"
+        label="Puntaje, entre mas estrellas mejor"
     )
     nota = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 3}),

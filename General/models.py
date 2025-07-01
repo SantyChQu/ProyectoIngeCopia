@@ -114,7 +114,7 @@ class Observacion(models.Model):
 class Calificacion(models.Model):
     codigo_calif = models.AutoField(primary_key=True)
     estrellas = models.PositiveSmallIntegerField() 
-    calificacion  = models.TextField(blank=True, null=True)
+    nota = models.TextField(blank=True, null=True)
 
 class Tarjeta(models.Model):
     numero_tarjeta = models.CharField(max_length=16)
@@ -143,9 +143,6 @@ class Alquiler(models.Model):
     tarjeta = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True, blank=True)
     precio = models.DecimalField(max_digits=100, decimal_places=2, default=0)
 
-
-
-   
     marca = models.CharField(max_length=100)
     modelo = models.CharField(max_length=100)
     localidad = models.CharField(max_length=100)

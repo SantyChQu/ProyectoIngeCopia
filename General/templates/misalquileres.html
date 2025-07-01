@@ -5,7 +5,7 @@
 <div class="container mt-4">
     <h2 class="mb-4">Mis Alquileres</h2>
 
-    {% if alquileres %}
+    {% if alquileres_forms %}
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-center align-middle">
                 <thead>
@@ -23,7 +23,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for a in alquileres %}
+                    {% for a, form in alquileres_forms %}
                         <tr>
                             <td>{{ a.codigo_identificador }}</td>
                             <td>{{ a.codigo_maquina.codigo_serie }}</td>
@@ -58,11 +58,11 @@
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        {% if forms_puntaje.a.id %}
-                                                            {{ forms_puntaje.a.id.estrellas.label_tag }}
-                                                            {{ forms_puntaje.a.id.estrellas }}
-                                                            {{ forms_puntaje.a.id.nota.label_tag }}
-                                                            {{ forms_puntaje.a.id.nota }}
+                                                        {% if form %}
+                                                            {{ form.estrellas.label_tag }}
+                                                            {{ form.estrellas }}
+                                                            {{ form.nota.label_tag }}
+                                                            {{ form.nota }}
                                                         {% else %}
                                                             <p>Este alquiler ya fue calificado.</p>
                                                         {% endif %}
@@ -89,7 +89,6 @@
     {% endif %}
 </div>
 {% endblock %}
-
 
 
 <!-- {%for a in alquileres%}

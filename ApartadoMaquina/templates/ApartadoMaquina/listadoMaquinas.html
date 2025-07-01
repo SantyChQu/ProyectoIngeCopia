@@ -118,20 +118,24 @@
                             Modificar
                         </button>
                     </td>
-                    <td>
-    <form method="post" action="{% url 'eliminar_maquinaria' maquina.id %}">
-        {% csrf_token %}
-        {% if maquina.estado != 'eliminado' %}
-            <button type="submit"
-                    class="boton-inhabilitar"
-                    style="background-color: #f5c6cb; border-color: #dc3545;"
-                    onclick="return confirm('¿Estás seguro de que querés eliminar la maquinaria {{ maquina.codigo_serie }}?')">
-                Eliminar
-            </button>
-        {% else %}
-            <span style="color: red;">Eliminada</span>
-        {% endif %}
-    </form>
+<td>
+    {% if request.session.cliente_rol != "empleado" %}
+        <form method="post" action="{% url 'eliminar_maquinaria' maquina.id %}">
+            {% csrf_token %}
+            {% if maquina.estado != 'eliminado' %}
+                <button type="submit"
+                        class="boton-inhabilitar"
+                        style="background-color: #f5c6cb; border-color: #dc3545;"
+                        onclick="return confirm('¿Estás seguro de que querés eliminar la maquinaria {{ maquina.codigo_serie }}?')">
+                    Eliminar
+                </button>
+            {% else %}
+                <span style="color: red;">Eliminada</span>
+            {% endif %}
+        </form>
+    {% else %}
+        <span style="color: grey;">Sin permiso</span>
+    {% endif %}
 </td>
                 </tr>
 
