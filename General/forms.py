@@ -5,6 +5,8 @@ from .models import Cliente,Localidad,Calificacion
 from django.core.validators import RegexValidator
 from django.forms import DateInput
 from datetime import date, timedelta
+import string
+import secrets
 
 solo_letras = RegexValidator(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
                              'Solo se permiten letras y espacios.',
@@ -87,15 +89,16 @@ class ClienteEdicionForm(forms.ModelForm):
           return fecha  
 
 class EmpleadoRegistroForm(ClienteRegistroForm):
-    class Meta(ClienteRegistroForm.Meta):
-        fields = ClienteRegistroForm.Meta.fields
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop('contraseña', None)  # Elimina correctamente el campo visible
 
     def save(self, commit=True):
         empleado = super().save(commit=False)
-        empleado.rol = 'empleados'  # Forzamos el rol empleado
+        empleado.rol = 'empleados'
         if commit:
             empleado.save()
-        return empleado    
+        return empleado
     
     
 class CambiarContraseñaForm(forms.Form):

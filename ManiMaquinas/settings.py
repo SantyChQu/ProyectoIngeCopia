@@ -28,8 +28,16 @@ SECRET_KEY = "django-insecure-o3xag9gf77+5xnfsrq-#-ee5!-_re2$4221z$v$ydz%fe6^ju-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+EMAIL_BACKEND = 'General.email_backend.NonVerifyingSMTPBackend'
 
-ALLOWED_HOSTS = []
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mariajefainge@gmail.com'
+EMAIL_HOST_PASSWORD = 'zbes mpaf tnto wkcr'
+DEFAULT_FROM_EMAIL = 'no-reply@manimaquinas.com'
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition

@@ -510,6 +510,50 @@ def estadisticas_alquileres_localidad(request):
     })
 
 
+import secrets
+import string
+from django.contrib.auth.hashers import make_password
+
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
+def generar_password_aleatoria(longitud=10):
+    caracteres = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(caracteres) for _ in range(longitud))
+
+
+
+from django.core.mail import EmailMultiAlternatives
+from email.header import Header
+
+def enviar_mail(empleado, password):
+    try:
+        
+        asunto = Header('Tu cuenta fue creada', 'utf-8').encode()
+        cuerpo = f'Hola {empleado.nombre}, tu contraseña es: {password}'
+
+        
+
+        
+        email = EmailMultiAlternatives(
+            subject=asunto,
+            body=cuerpo,
+            from_email='no-reply@manimaquinas.com',
+            to=[empleado.mail],
+        )
+        email.encoding = 'utf-8'
+
+       
+        email.send(fail_silently=False)
+
+    except Exception as e:
+        
+        print(f"Tipo: {type(e)}")
+        print(f"Mensaje: {e}")
+        raise
+
+
+
 def registro_empleado(request):
     if request.session.get('cliente_rol') != 'jefe':
         messages.error(request, "No tenés permiso para acceder a esta sección.")
@@ -518,8 +562,20 @@ def registro_empleado(request):
     if request.method == 'POST':
         form = EmpleadoRegistroForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Empleado registrado exitosamente.")
+            empleado = form.save(commit=False)
+
+            password = generar_password_aleatoria()
+            empleado.contraseña = make_password(password)
+            empleado.save()
+           
+            try:
+                enviar_mail(empleado, password)
+            except Exception as e:
+             
+                messages.error(request, f"No se pudo enviar el correo: {e}")
+
+
+            messages.success(request, "Empleado registrado exitosamente. Se le envió la contraseña por mail.")
             return redirect('registro_empleado')
     else:
         form = EmpleadoRegistroForm()
