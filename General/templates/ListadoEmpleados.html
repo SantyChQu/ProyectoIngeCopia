@@ -95,7 +95,7 @@
                     <td>{{ cliente.telefono }}</td>
                     <td>{{ cliente.estado }}</td>
                     <td>
-                        <form method="post" action="{% url 'cambiar_estado_Cliente' cliente.id %}">
+                        <form method="post" action="{% url 'cambiar_estado_Empleado' cliente.id %}">
                             {% csrf_token %}
                             {% if cliente.estado == 'habilitado' %}
                                 <button type="submit" class="boton-inhabilitar"
