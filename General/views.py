@@ -500,6 +500,53 @@ def estadisticas_alquileres_localidad(request):
         'fecha_desde': fecha_desde,
         'fecha_hasta': fecha_hasta,})
 
+import secrets
+import string
+from django.contrib.auth.hashers import make_password
+
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
+def generar_password_aleatoria(longitud=10):
+    caracteres = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(caracteres) for _ in range(longitud))
+
+
+
+from django.core.mail import EmailMultiAlternatives
+from email.header import Header
+
+def enviar_mail(empleado, password):
+    try:
+        # Construcción explícita de strings
+        asunto = Header('Tu cuenta fue creada', 'utf-8').encode()
+        cuerpo = f'Hola {empleado.nombre}, tu contraseña es: {password}'
+
+        # DEBUG: Verificación antes de enviar
+        print("Asunto codificado:", asunto)
+        print("Cuerpo repr:", repr(cuerpo))
+        print("Email destino:", empleado.mail)
+
+        # Construcción del mail
+        email = EmailMultiAlternatives(
+            subject=asunto,
+            body=cuerpo,
+            from_email='no-reply@manimaquinas.com',
+            to=[empleado.mail],
+        )
+        email.encoding = 'utf-8'
+
+        # Enviar
+        email.send(fail_silently=False)
+
+    except Exception as e:
+        print("⚠️ EXCEPCIÓN DETECTADA ⚠️")
+        print(f"Tipo: {type(e)}")
+        print(f"Mensaje: {e}")
+        raise
+
+
+
 def registro_empleado(request):
     if request.session.get('cliente_rol') != 'jefe':
         messages.error(request, "No tenés permiso para acceder a esta sección.")
@@ -508,8 +555,29 @@ def registro_empleado(request):
     if request.method == 'POST':
         form = EmpleadoRegistroForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Empleado registrado exitosamente.")
+            empleado = form.save(commit=False)
+
+            password = generar_password_aleatoria()
+            empleado.contraseña = make_password(password)
+            empleado.save()
+             # 🚨 DEBUG - Mostrar contenido antes de enviar
+            print("======== DEBUG REGISTRO EMPLEADO ========")
+            print("Nombre:", empleado.nombre)
+            print("repr(Nombre):", repr(empleado.nombre))
+            print("Tipo de nombre:", type(empleado.nombre))
+            print("Mail:", empleado.mail)
+            print("Contraseña generada:", password)
+            print("repr(Contraseña):", repr(password))
+
+            # Intentar enviar mail
+            try:
+                enviar_mail(empleado, password)
+            except Exception as e:
+                print("❌ ERROR al enviar correo:", repr(e))
+                messages.error(request, f"No se pudo enviar el correo: {e}")
+
+
+            messages.success(request, "Empleado registrado exitosamente. Se le envió la contraseña por mail.")
             return redirect('registro_empleado')
     else:
         form = EmpleadoRegistroForm()
