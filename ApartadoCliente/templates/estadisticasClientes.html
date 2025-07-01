@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 style="text-align: center;">📊 Estadísticas de Clientes</h1>
+<h1 style="text-align: center;"> Estadísticas de Clientes</h1>
 
 <form method="get" style="text-align: center; margin-bottom: 20px;">
     <label for="{{ form.fecha_desde.id_for_label }}">Desde:</label>
@@ -17,46 +17,77 @@
 
     <button type="submit" class="boton-VolverAlInicio">Generar gráfico</button>
 </form>
-       
-{% if etiquetas %}
-    <div style="width: 80%; margin: 0 auto;">
-        <canvas id="graficoClientes"></canvas>
+
+{% if hay_rango %}
+  {% if hay_datos %}
+    <div style="text-align: right; margin-bottom: 10px;">
+      <button id="btnDescargar" style="
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      "> Descargar Estadística </button>
     </div>
-{% else %}
-    <p style="text-align: center;">No hay datos para el rango seleccionado.</p>
+
+    <div style="width: 80%; margin: auto;">
+      <canvas id="graficoClientes"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('graficoClientes');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: {{ etiquetas|safe }},
+          datasets: [
+            {
+              label: 'Habilitados',
+              data: {{ habilitados|safe }},
+              backgroundColor: 'rgba(40, 167, 69, 0.7)',
+              borderColor: 'rgba(40, 167, 69, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Inhabilitados',
+              data: {{ inhabilitados|safe }},
+              backgroundColor: 'rgba(220, 53, 69, 0.7)',
+              borderColor: 'rgba(220, 53, 69, 1)',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          indexAxis: 'y',
+          scales: {
+            x: { beginAtZero: true, stacked: true },
+            y: { stacked: true }
+          }
+        }
+      });
+
+      document.getElementById('btnDescargar').addEventListener('click', function() {
+        const link = document.createElement('a');
+        const canvas = document.getElementById('graficoClientes');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'estadistica_clientes.png';
+        link.click();
+      });
+    </script>
+  {% else %}
+    <p style="text-align: center; color: red;">
+      No hay datos para el rango seleccionado.
+    </p>
+  {% endif %}
 {% endif %}
+
 
 <a href="{% url 'ver_clientes' %}">
     <button class="boton-VolverAlInicio">Volver al listado</button>
 </a>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('graficoClientes');
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ etiquetas|safe }},
-            datasets: [
-                {
-                    label: 'Habilitados',
-                    data: {{ habilitados|safe }},
-                    backgroundColor: 'rgba(38, 207, 61, 0.7)'
-                },
-                {
-                    label: 'Inhabilitados',
-                    data: {{ inhabilitados|safe }},
-                    backgroundColor: 'rgba(239, 83, 80, 0.7)'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
-</script>
+
 
 {% endblock %}

@@ -3,10 +3,23 @@
 {% block content %}
   <h2 style="text-align:center;">Cantidad de alquileres por máquina</h2>
 
+  
+  {#-----------------------------------------------#}
+
+  <div style="text-align: right; margin-bottom: 10px;">
+      <button id="btnDescargar" style="
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      "> Descargar Estadística </button>
+    </div>
+    {#-----------------------------------------------#}
   <div style="width: 80%; margin: 0 auto;">
     <canvas id="graficoMaquinas"></canvas>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const ctx = document.getElementById('graficoMaquinas').getContext('2d');
@@ -23,9 +36,9 @@
         }]
       },
       options: {
-        indexAxis: 'x',
+        indexAxis: 'y',
         scales: {
-          y: {
+          x: {
             beginAtZero: true,
             precision: 0,
             stepSize: 1
@@ -33,6 +46,17 @@
         }
       }
     });
+    
+{#-----------------------------------------------#}
+document.getElementById('btnDescargar').addEventListener('click', function() {
+        const link = document.createElement('a');
+        const canvas = document.getElementById('graficoClientes');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'estadistica_clientes.png';
+        link.click();
+      });
+{#-----------------------------------------------#}
+
   </script>
 
   <h3 style="text-align:center; margin-top: 40px;">Detalle</h3>

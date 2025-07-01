@@ -1,90 +1,128 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="text-center">📊 Alquileres por Localidad y Estado</h2>
+
+<h2 class="text-center">Alquileres por Localidad y Estado</h2>
+
 <h3 class="text-center">
-   desde {{ fecha_desde }} hasta {{ fecha_hasta }}
+  {% if fecha_desde and fecha_hasta %}
+    desde {{ fecha_desde }} hasta {{ fecha_hasta }}
+  {% endif %}
 </h3>
-{#<form method="get" class="text-center mb-4">#}
-{#    {{ form.as_p }}#}
-{#    <button type="submit">Filtrar</button>#}
-{#</form>#}
-    <form method="get" class="text-center mb-4">
-        <input type="hidden" name="localidad" value="{{ localidad_seleccionada }}">
 
-        <label for="{{ form.fecha_desde.id_for_label }}" class="required-label">Desde:</label>
-        {{ form.fecha_desde }}
+<form method="get" class="text-center mb-4">
+  <input type="hidden" name="localidad" value="{{ localidad_seleccionada }}">
 
-        <label for="{{ form.fecha_hasta.id_for_label }}" class="required-label">Hasta:</label>
-        {{ form.fecha_hasta }}
+  <label for="{{ form.fecha_desde.id_for_label }}" class="required-label">Desde:</label>
+  {{ form.fecha_desde }}
 
-        <button type="submit">Filtrar por Fecha</button>
-    </form>
+  <label for="{{ form.fecha_hasta.id_for_label }}" class="required-label">Hasta:</label>
+  {{ form.fecha_hasta }}
 
-    {% if form.errors %}
-        <div class="alert alert-danger text-center">
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
+  <button type="submit">Generar gráfico</button>
+</form>
 
-
-<div style="width: 90%; margin: auto;">
-    <canvas id="graficoAlquileres"></canvas>
-</div>
-{% if etiquetas %}
-    <div style="width: 80%; margin: 0 auto;">
-        <canvas id="graficoClientes"></canvas>
-    </div>
-{% else %}
-    <p style="text-align: center;">No hay datos para el rango seleccionado.</p>
+{% if form.errors %}
+  <div class="alert alert-danger text-center">
+    {% for field in form %}
+      {% for error in field.errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+  </div>
 {% endif %}
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('graficoAlquileres');
-    new Chart(ctx, {
+{% if hay_rango %}
+  {% if hay_datos %}
+    <div style="text-align: right; margin-bottom: 10px;">
+      <button id="btnDescargar" style="
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      "> Descargar Estadística </button>
+    </div>
+    {#-------------------------------#}
+    <div style="width: 80%; max-width: 1000px; margin: 0 auto;">
+      <canvas id="graficoAlquileres"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('graficoAlquileres');
+      new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: {{ etiquetas|safe }},
-            datasets: [
-                {
-                    label: 'Pendiente de Retiro',
-                    data: {{ pendiente|safe}},
-                    backgroundColor: 'rgba(255, 193, 7, 0.7)'
-                },
-                {
-                    label: 'En Curso',
-                    data: {{ en_curso|safe }},
-                    backgroundColor: 'rgba(33, 150, 243, 0.7)'
-                },
-                {
-                    label: 'Finalizado',
-                    data: {{ finalizado|safe }},
-                    backgroundColor: 'rgba(76, 175, 80, 0.7)'
-                }
-            ]
+          labels: {{ etiquetas|safe }},
+          datasets: [
+            {
+              label: 'Pendiente de Retiro',
+              data: {{ pendiente|safe }},
+              backgroundColor: 'rgba(255, 193, 7, 0.7)',  
+              borderColor: 'rgba(255, 193, 7, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'En Curso',
+              data: {{ en_curso|safe }},
+              backgroundColor: 'rgba(33, 150, 243, 0.7)', 
+              borderColor: 'rgba(33, 150, 243, 1)',
+              borderWidth: 1
+            },
+            {
+              label: 'Finalizado',
+              data: {{ finalizado|safe }},
+              backgroundColor: 'rgba(76, 175, 80, 0.7)', 
+              borderColor: 'rgba(76, 175, 80, 1)',
+              borderWidth: 1
+            }
+          ]
         },
         options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    }
-                }
+          responsive: true,
+          indexAxis: 'y',  
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0,
+                stepSize: 1
+              }
             }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                font: {
+                  size: 14
+                }
+              }
+            }
+          }
         }
-    });
-</script>
+      });
+      {#-----------------------------------------------#}
+      document.getElementById('btnDescargar').addEventListener('click', function() {
+        const link = document.createElement('a');
+        const canvas = document.getElementById('graficoClientes');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'estadistica_clientes.png';
+        link.click();
+      });
+    </script>
+  {% else %}
+    <p style="text-align: center; color: #c0392b; font-weight: bold; margin-top: 20px;">
+       No hay datos para el rango seleccionado.
+    </p>
+  {% endif %}
+{% endif %}
 
 <a href="{% url 'ver_localidades' %}">
-    <button class="boton-VolverAlInicio">Volver</button>
+  <button class="boton-VolverAlInicio">Volver</button>
 </a>
+
 {% endblock %}

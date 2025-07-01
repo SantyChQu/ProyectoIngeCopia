@@ -459,11 +459,11 @@ from datetime import date, datetime
 from General.forms import FiltroFechaForm
 from datetime import datetime, time
 from django.contrib import messages
-
 def estadisticas_alquileres_localidad(request):
     form = FiltroFechaForm(request.GET or None)
     etiquetas, pendiente, en_curso, finalizado = [], [], [], []
-
+    hay_datos = False  # 🔑 NUEVO
+    hay_rango = False
     fecha_desde = None
     fecha_hasta = None
 
@@ -473,23 +473,29 @@ def estadisticas_alquileres_localidad(request):
         localidades = Localidad.objects.all()
         estados = ['pendienteRetiro', 'enCurso', 'finalizado']
         datos = defaultdict(lambda: {estado: 0 for estado in estados})
-        
-        for localidad in localidades:
-           fecha_desde_dt = datetime.combine(fecha_desde, time.min)
-           fecha_hasta_dt = datetime.combine(fecha_hasta, time.max)
+        hay_rango = fecha_desde is not None and fecha_hasta is not None
 
-           alquileres = Alquiler.objects.filter(
+        for localidad in localidades:
+            fecha_desde_dt = datetime.combine(fecha_desde, time.min)
+            fecha_hasta_dt = datetime.combine(fecha_hasta, time.max)
+
+            alquileres = Alquiler.objects.filter(
                 codigo_maquina__localidad=localidad,
                 desde__range=(fecha_desde_dt, fecha_hasta_dt)
             )
-           datos[localidad.nombre]['pendienteRetiro'] = alquileres.filter(estado='pendienteRetiro').count()
-           datos[localidad.nombre]['enCurso'] = alquileres.filter(estado='enCurso').count()
-           datos[localidad.nombre]['finalizado'] = alquileres.filter(estado='finalizado').count()
+            datos[localidad.nombre]['pendienteRetiro'] = alquileres.filter(estado='pendienteRetiro').count()
+            datos[localidad.nombre]['enCurso'] = alquileres.filter(estado='enCurso').count()
+            datos[localidad.nombre]['finalizado'] = alquileres.filter(estado='finalizado').count()
 
         etiquetas = list(datos.keys())
         pendiente = [datos[loc]['pendienteRetiro'] for loc in etiquetas]
         en_curso = [datos[loc]['enCurso'] for loc in etiquetas]
         finalizado = [datos[loc]['finalizado'] for loc in etiquetas]
+
+        
+        hay_datos = any(
+            valor > 0 for valor in pendiente + en_curso + finalizado
+        )
 
     return render(request, 'estadisticasAlquileres.html', {
         'form': form,  
@@ -498,7 +504,11 @@ def estadisticas_alquileres_localidad(request):
         'en_curso': en_curso,
         'finalizado': finalizado,
         'fecha_desde': fecha_desde,
-        'fecha_hasta': fecha_hasta,})
+        'fecha_hasta': fecha_hasta,
+        'hay_datos': hay_datos,  
+        'hay_rango': hay_rango, 
+    })
+
 
 def registro_empleado(request):
     if request.session.get('cliente_rol') != 'jefe':
