@@ -518,16 +518,13 @@ from email.header import Header
 
 def enviar_mail(empleado, password):
     try:
-        # Construcción explícita de strings
+        
         asunto = Header('Tu cuenta fue creada', 'utf-8').encode()
         cuerpo = f'Hola {empleado.nombre}, tu contraseña es: {password}'
 
-        # DEBUG: Verificación antes de enviar
-        print("Asunto codificado:", asunto)
-        print("Cuerpo repr:", repr(cuerpo))
-        print("Email destino:", empleado.mail)
+        
 
-        # Construcción del mail
+        
         email = EmailMultiAlternatives(
             subject=asunto,
             body=cuerpo,
@@ -536,11 +533,11 @@ def enviar_mail(empleado, password):
         )
         email.encoding = 'utf-8'
 
-        # Enviar
+       
         email.send(fail_silently=False)
 
     except Exception as e:
-        print("⚠️ EXCEPCIÓN DETECTADA ⚠️")
+        
         print(f"Tipo: {type(e)}")
         print(f"Mensaje: {e}")
         raise
@@ -560,20 +557,11 @@ def registro_empleado(request):
             password = generar_password_aleatoria()
             empleado.contraseña = make_password(password)
             empleado.save()
-             # 🚨 DEBUG - Mostrar contenido antes de enviar
-            print("======== DEBUG REGISTRO EMPLEADO ========")
-            print("Nombre:", empleado.nombre)
-            print("repr(Nombre):", repr(empleado.nombre))
-            print("Tipo de nombre:", type(empleado.nombre))
-            print("Mail:", empleado.mail)
-            print("Contraseña generada:", password)
-            print("repr(Contraseña):", repr(password))
-
-            # Intentar enviar mail
+           
             try:
                 enviar_mail(empleado, password)
             except Exception as e:
-                print("❌ ERROR al enviar correo:", repr(e))
+             
                 messages.error(request, f"No se pudo enviar el correo: {e}")
 
 
