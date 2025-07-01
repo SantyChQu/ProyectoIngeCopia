@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-center"> Ingresos Mensuales</h2>
+
+<form method="get" class="text-center mb-4">
+  {{ form.anio.label_tag }} 
+  {{ form.anio }}
+  <button type="submit">Generar gráfico</button>
+</form>
+
+{% if hay_anio %}
+  {% if hay_datos %}
+    <div style="text-align: right; margin-bottom: 10px;">
+      <button id="btnDescargar" style="
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      ">Descargar Estadística</button>
+    </div>
+
+    <div style="width: 80%; margin: auto;">
+      <canvas id="graficoIngresos"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('graficoIngresos');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: {{ etiquetas|safe }},
+          datasets: [{
+            label: 'Ingresos ($)',
+            data: {{ ingresos|safe }},
+            backgroundColor: 'rgba(40, 167, 69, 0.5)',
+            borderColor: 'rgba(40, 167, 69, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + value;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      document.getElementById('btnDescargar').addEventListener('click', function() {
+        const link = document.createElement('a');
+        const canvas = document.getElementById('graficoIngresos');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'estadistica_ingresos_mes.png';
+        link.click();
+      });
+    </script>
+  {% else %}
+    <p style="text-align: center; color: red;">
+      No hay ingresos registrados para el año seleccionado.
+    </p>
+  {% endif %}
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'inicio' %}">
+      <button class="boton-VolverAlInicio" style="background-color: #FFA726; border: none; padding: 10px 20px; border-radius: 5px; color: white; cursor: pointer;">Volver</button>
+    </a>
+  </div> 
+{% endif %}
+
+
+
+{% endblock %}

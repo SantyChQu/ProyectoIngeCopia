@@ -62,6 +62,7 @@ urlpatterns = [
     path('empleados/', general.verEmpleados , name="verEmpleados"),
     path('empleados/cambiar_estado/<int:id>/', general.cambiar_estado_Empleado, name='cambiar_estado_Empleado'),
     path('estadisticas/alquileresPorMaquina/', maquinas_views.alquileres_por_maquina, name='alquileres_por_maquina'),
+    path('estadisticas/ingresosMensuales/', general.estadisticas_ingresos_por_mes, name='estadisticasMensuales'),
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

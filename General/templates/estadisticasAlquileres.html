@@ -119,10 +119,13 @@
        No hay datos para el rango seleccionado.
     </p>
   {% endif %}
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'ver_localidades' %}">
+      <button class="boton-VolverAlInicio"style="background-color: #FFA726; border: none; padding: 10px 20px; border-radius: 5px; color: white; cursor: pointer;">Volver</button>
+    </a>
+  </div>
 {% endif %}
 
-<a href="{% url 'ver_localidades' %}">
-  <button class="boton-VolverAlInicio">Volver</button>
-</a>
+
 
 {% endblock %}

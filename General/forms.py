@@ -213,3 +213,13 @@ class CalificacionForm(forms.Form):
         required=False,
         label="Comentario (opcional)"
     )
+
+class FiltroAnioForm(forms.Form):
+    hoy = date.today().year
+    anio = forms.IntegerField(
+        label="Año",
+        min_value=2000,  
+        max_value=hoy,
+        initial=hoy,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )

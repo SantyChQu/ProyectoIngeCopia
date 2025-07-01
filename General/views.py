@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, LocalidadForm, EmpleadoRegistroForm,CalificacionForm
+from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, LocalidadForm, EmpleadoRegistroForm,CalificacionForm, FiltroAnioForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
 from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler,Calificacion
@@ -617,3 +617,41 @@ def cambiar_estado_Empleado(request, id):
             messages.success(request, f"El empleado  '{cliente.mail}' fue recuperado correctamente")
         cliente.save()
         return redirect('verEmpleados')  
+
+def estadisticas_ingresos_por_mes(request):
+    form = FiltroAnioForm(request.GET or None)
+
+    etiquetas = []
+    ingresos = []
+    hay_anio = False
+    hay_datos = False
+
+    if form.is_valid():
+        anio = form.cleaned_data['anio']
+        hay_anio = True
+
+        alquileres = Alquiler.objects.filter(
+            estado__in=['finalizado', 'pendienteRetiro', 'enCurso'],
+            desde__year=anio
+        )
+
+        agrupados = defaultdict(float)
+
+        for alquiler in alquileres:
+            mes = alquiler.desde.strftime('%Y-%m')
+            agrupados[mes] += float(alquiler.precio)
+
+        meses = [f"{anio}-{str(m).zfill(2)}" for m in range(1, 13)]
+
+        etiquetas = meses
+        ingresos = [round(agrupados.get(mes, 0), 2) for mes in meses]
+
+        hay_datos = sum(ingresos) > 0
+
+    return render(request, 'estadisticaIngresos.html', {
+        'form': form,
+        'etiquetas': etiquetas,
+        'ingresos': ingresos,
+        'hay_anio': hay_anio,
+        'hay_datos': hay_datos,
+    })
