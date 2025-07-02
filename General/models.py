@@ -69,6 +69,7 @@ class Localidad(models.Model):
     nombre = models.CharField(max_length=100)
     codigo_postal = models.CharField(max_length=10)
     ubicacion = models.TextField()
+    telefono = models.CharField(max_length=20)
 
     def __str__(self):
         return self.nombre
@@ -142,7 +143,7 @@ class Alquiler(models.Model):
     hasta = models.DateField()
     calificacion = models.ForeignKey(Calificacion, on_delete=models.SET_NULL, null=True, blank=True)
     tarjeta = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True, blank=True)
-    precioTotal = models.DecimalField(max_digits=100, decimal_places=2, default=0)
+    precio = models.DecimalField(max_digits=100, decimal_places=2, default=0)
     precioPorDia = models.DecimalField(max_digits=100, decimal_places=2, default=0)
 
     marca = models.CharField(max_length=100)

@@ -162,11 +162,13 @@ class tarjetaForm(forms.Form):
 class LocalidadForm(forms.ModelForm):
         class Meta:
           model = Localidad
-          fields = ['nombre', 'codigo_postal', 'ubicacion']
+          fields = ['nombre', 'codigo_postal', 'ubicacion','telefono']
           widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'codigo_postal': forms.TextInput(attrs={'class': 'form-control'}),
             'ubicacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+
         }    
              
 class FiltroFechaForm(forms.Form):

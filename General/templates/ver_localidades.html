@@ -64,9 +64,10 @@
         <table class="table table-bordered table-hover tabla-localidades">
             <thead>
                 <tr>
-                    <th>Nombre</th>
+                    <th>Ciudad</th>
                     <th>Código Postal</th>
-                    <th>Ubicación</th>
+                    <th>Direccion</th>
+                    <th>Telefono</th>
                     <th>Acciones</th>
                     <th>Mapa</th>
                 </tr>
@@ -77,6 +78,7 @@
                         <td>{{ loc.nombre }}</td>
                         <td>{{ loc.codigo_postal }}</td>
                         <td>{{ loc.ubicacion }}</td>
+                        <td>{{ loc.telefono }}</td>
                         <td>
                             <form method="post" action="{% url 'eliminar_localidad' loc.id %}" style="display:inline;">
                                 {% csrf_token %}

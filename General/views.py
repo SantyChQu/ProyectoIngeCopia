@@ -311,7 +311,7 @@ def realizar_pago(request):
                 # Pago por devolución con retraso
                 alquiler.estado = 'finalizado'
                 alquiler.tarjeta = tarjeta
-                alquiler.precioTotal += monto_total  # sumamos recargo
+                alquiler.precio += monto_total  # sumamos recargo
                 alquiler.save()
                 messages.success(request, 'Pago de devolución con retraso realizado correctamente.')
                 return redirect('ver_alquileres')
@@ -324,7 +324,7 @@ def realizar_pago(request):
                     desde=datos_reserva['fecha_inicio'],
                     hasta=datos_reserva['fecha_fin'],
                     tarjeta=tarjeta,
-                    precioTotal=monto_total,
+                    precio=monto_total,
                     precioPorDia=Decimal(maquinaria.precio_alquiler_diario),
                 )
                 alquiler.save()
@@ -467,6 +467,8 @@ def eliminar_localidad(request, localidad_id):
 
     return render(request, 'confirmar_eliminacion.html', {'localidad': localidad})
 
+
+
 def proximo(request):
 
     return render(request,'proximamente.html')
@@ -535,10 +537,13 @@ from django.contrib.auth.hashers import make_password
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
+import string
+import random
 
 def generar_password_aleatoria(longitud=10):
     caracteres = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(caracteres) for _ in range(longitud))
+    return ''.join(random.choice(caracteres) for _ in range(longitud))
+
 
 
 
@@ -584,7 +589,7 @@ def registro_empleado(request):
             empleado = form.save(commit=False)
 
             password = generar_password_aleatoria()
-            empleado.contraseña = make_password(password)
+            empleado.contraseña =password
             empleado.save()
            
             try:
