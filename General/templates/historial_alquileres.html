@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 style="text-align: center;">Historial de Alquileres Finalizados</h1>
+
+<form method="get" action="{% url 'historial_alquileres' %}" style="text-align:center; margin-bottom: 20px;">
+    <input type="text" name="buscar" placeholder="Buscar por código o mail" value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+{% if alquileres %}
+<table class="table table-bordered" style="width: 90%; margin: auto;">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Cliente</th>
+            <th>DNI</th>
+            <th>Máquina</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alquiler in alquileres %}
+        <tr>
+            <td>{{ alquiler.id }}</td>
+            <td>{{ alquiler.codigo_identificador }}</td>
+            <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
+            <td>{{ alquiler.mail.dni }}</td>
+            <td>{{ alquiler.marca }} {{ alquiler.modelo }}</td>
+            <td>{{ alquiler.desde }}</td>
+            <td>{{ alquiler.hasta }}</td>
+            <td>
+                <!-- Botón que abre modal -->
+                <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detalleModal{{ alquiler.id }}">
+                    Ver Detalle
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="detalleModal{{ alquiler.id }}" tabindex="-1" aria-labelledby="detalleModalLabel{{ alquiler.id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="detalleModalLabel{{ alquiler.id }}">Detalle Alquiler {{ alquiler.codigo_identificador }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                      </div>
+                      <div class="modal-body">
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item"><strong>ID:</strong> {{ alquiler.id }}</li>
+                          <li class="list-group-item"><strong>Código:</strong> {{ alquiler.codigo_identificador }}</li>
+                          <li class="list-group-item"><strong>Cliente:</strong> {{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</li>
+                          <li class="list-group-item"><strong>DNI:</strong> {{ alquiler.mail.dni }}</li>
+                          <li class="list-group-item"><strong>Email:</strong> {{ alquiler.mail.mail }}</li>
+                          <li class="list-group-item"><strong>Máquina:</strong> {{ alquiler.marca }} {{ alquiler.modelo }}</li>
+                          <li class="list-group-item"><strong>Localidad:</strong> {{ alquiler.localidad }}</li>
+                          <li class="list-group-item"><strong>Fecha Inicio:</strong> {{ alquiler.desde }}</li>
+                          <li class="list-group-item"><strong>Fecha Fin:</strong> {{ alquiler.hasta }}</li>
+                          <li class="list-group-item"><strong>Estado:</strong> {{ alquiler.estado }}</li>
+                          <li class="list-group-item"><strong>Precio Total:</strong> ${{ alquiler.precioTotal }}</li>
+                          <li class="list-group-item"><strong>Precio Por Día:</strong> ${{ alquiler.precioPorDia }}</li>
+                          <li class="list-group-item"><strong>Política Cancelación:</strong> {{ alquiler.politica_cancelacion }}</li>
+                          <!-- Agregá más detalles si querés -->
+                        </ul>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="text-align: center;">No hay alquileres finalizados registrados.</p>
+{% endif %}
+{% endblock %}

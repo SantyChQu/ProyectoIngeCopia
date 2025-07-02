@@ -130,6 +130,7 @@ class Alquiler(models.Model):
     ESTADO_CHOICES = [
         ('pendienteRetiro', 'Pendiente de retiro'),
         ('enCurso', 'En curso'),
+        ('pendienteDevolucion', 'Pendiente de devolución'),
         ('finalizado', 'Finalizado'),
     ]
 
@@ -141,7 +142,8 @@ class Alquiler(models.Model):
     hasta = models.DateField()
     calificacion = models.ForeignKey(Calificacion, on_delete=models.SET_NULL, null=True, blank=True)
     tarjeta = models.ForeignKey(Tarjeta, on_delete=models.SET_NULL, null=True, blank=True)
-    precio = models.DecimalField(max_digits=100, decimal_places=2, default=0)
+    precioTotal = models.DecimalField(max_digits=100, decimal_places=2, default=0)
+    precioPorDia = models.DecimalField(max_digits=100, decimal_places=2, default=0)
 
     marca = models.CharField(max_length=100)
     modelo = models.CharField(max_length=100)

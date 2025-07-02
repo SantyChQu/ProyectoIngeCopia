@@ -11,12 +11,15 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
 from django.db import connection
 from django.contrib.auth.decorators import login_required
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from django.utils.crypto import get_random_string
 from decimal import Decimal
 from django.db.models import Q
 from django.utils import timezone
 from django.db.models import Q, Case, When, Value, IntegerField
+from django.views.decorators.http import require_POST
+from django.urls import reverse
+from math import ceil
 
 def inicio(request):
     localidad_filtro = request.GET.get('localidad')
@@ -220,10 +223,7 @@ def cambiar_contraseña(request):
     })
 
 
-
-#REALIZAR PAGO
-
-
+from decimal import Decimal
 def realizar_pago(request):
     if 'cliente_id' not in request.session:
         return redirect('/registro/')
@@ -231,29 +231,47 @@ def realizar_pago(request):
     cliente_id = request.session.get('cliente_id')
     c = Cliente.objects.get(id=cliente_id)
 
-    try:
-        datos_reserva = request.session.get('reserva')
-        maquinaria = Maquinaria.objects.get(id=datos_reserva['maquinaria_id'])
+    alquiler_id = request.GET.get('alquiler_id')
+    monto_total = request.GET.get('monto')
+    if monto_total:
+        try:
+            monto_total = Decimal(monto_total)
+        except:
+            messages.error(request, 'Monto inválido.')
+            return redirect('ver_alquileres')
+    # Si es pago por devolución con retraso (pago pendiente)
+    if alquiler_id and monto_total:
+        alquiler = get_object_or_404(Alquiler, id=alquiler_id)
 
-        fecha_inicio = datetime.strptime(datos_reserva['fecha_inicio'], "%Y-%m-%d").date()
-        fecha_fin = datetime.strptime(datos_reserva['fecha_fin'], "%Y-%m-%d").date()
-        dias = (fecha_fin - fecha_inicio).days
+        try:
+            monto_total = Decimal(monto_total)
+        except ValueError:
+            messages.error(request, 'Monto inválido.')
+            return redirect('ver_alquileres')
 
-        if dias <= 0:
-            messages.error(request, 'La fecha de fin debe ser posterior a la de inicio.')
+    else:
+        # Pago normal (reserva nueva)
+        try:
+            datos_reserva = request.session.get('reserva')
+            maquinaria = Maquinaria.objects.get(id=datos_reserva['maquinaria_id'])
+
+            fecha_inicio = datetime.strptime(datos_reserva['fecha_inicio'], "%Y-%m-%d").date()
+            fecha_fin = datetime.strptime(datos_reserva['fecha_fin'], "%Y-%m-%d").date()
+            dias = (fecha_fin - fecha_inicio).days
+
+            if dias <= 0:
+                messages.error(request, 'La fecha de fin debe ser posterior a la de inicio.')
+                return redirect('/')
+            monto_total = maquinaria.precio_alquiler_diario * dias
+
+        except (KeyError, Maquinaria.DoesNotExist, TypeError, ValueError):
+            messages.error(request, 'Hubo un problema con la reserva. Volvé a intentarlo.')
             return redirect('/')
-
-        monto_total = maquinaria.precio_alquiler_diario * dias
-
-    except (KeyError, Maquinaria.DoesNotExist, TypeError, ValueError):
-        messages.error(request, 'Hubo un problema con la reserva. Volvé a intentarlo.')
-        return redirect('/')
 
     if request.method == 'POST':
         form = tarjetaForm(request.POST)
         if form.is_valid():
-            numero = form.cleaned_data['numero']
-            numero = numero.replace(" ", "").replace("-", "") 
+            numero = form.cleaned_data['numero'].replace(" ", "").replace("-", "")
             numeroseguridad = form.cleaned_data['numeroseguridad']
             nombre_propietario = form.cleaned_data['nombre_propietario']
             fecha_desde = form.cleaned_data['fecha_desde']
@@ -265,53 +283,53 @@ def realizar_pago(request):
                 messages.error(request, 'Tarjeta no registrada')
                 return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
-            # Validaciones adicionales
             errores = []
             if tarjeta.numero_seguridad != numeroseguridad:
                 errores.append('Número de seguridad inválido.')
-
             if tarjeta.nombre_propietario.lower() != nombre_propietario.lower():
                 errores.append('El nombre del propietario no coincide.')
-
             if tarjeta.fecha_desde != fecha_desde:
                 errores.append('La fecha de inicio de vigencia no coincide.')
-
             if tarjeta.fecha_hasta != fecha_hasta:
                 errores.append('La fecha de vencimiento no coincide.')
 
-        
             if errores:
                 for e in errores:
                     messages.error(request, e)
                 return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
-                        
-            try:
-                    if tarjeta.monto < monto_total:
-                         raise ValueError('Saldo insuficiente.')
-            except ValueError as e:
-                errores.append(str(e))
-                for e in errores:
-                    messages.error(request, e)
+
+            if tarjeta.monto < monto_total:
+                messages.error(request, 'Saldo insuficiente.')
                 return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
 
-            # Si todo está OK, se guarda el pago y el alquiler
+            # Todo OK: descontar monto
+  
             tarjeta.monto -= monto_total
             tarjeta.save()
 
-            alquiler = Alquiler(
-                codigo_identificador=datos_reserva['codigo'],
-                codigo_maquina=maquinaria,
-                mail=c,
-                desde=datos_reserva['fecha_inicio'],
-                hasta=datos_reserva['fecha_fin'],
-                tarjeta=tarjeta,
-                precio=monto_total,
-            )
-
-            alquiler.save()
-
-            messages.success(request, 'Pago realizado correctamente.')
-            return redirect('/misalquileres/')
+            if alquiler_id and monto_total:
+                # Pago por devolución con retraso
+                alquiler.estado = 'finalizado'
+                alquiler.tarjeta = tarjeta
+                alquiler.precioTotal += monto_total  # sumamos recargo
+                alquiler.save()
+                messages.success(request, 'Pago de devolución con retraso realizado correctamente.')
+                return redirect('ver_alquileres')
+            else:
+                # Pago normal: crear alquiler nuevo
+                alquiler = Alquiler(
+                    codigo_identificador=datos_reserva['codigo'],
+                    codigo_maquina=maquinaria,
+                    mail=c,
+                    desde=datos_reserva['fecha_inicio'],
+                    hasta=datos_reserva['fecha_fin'],
+                    tarjeta=tarjeta,
+                    precioTotal=monto_total,
+                    precioPorDia=Decimal(maquinaria.precio_alquiler_diario),
+                )
+                alquiler.save()
+                messages.success(request, 'Pago realizado correctamente.')
+                return redirect('/misalquileres/')
 
         else:
             messages.error(request, 'Formulario inválido.')
@@ -320,6 +338,7 @@ def realizar_pago(request):
     else:
         form = tarjetaForm()
         return render(request, 'RealizarPago.html', {'form': form, 'monto_total': monto_total})
+
 
 def misalquileres(request):
     if 'cliente_id' not in request.session:
@@ -655,3 +674,83 @@ def estadisticas_ingresos_por_mes(request):
         'hay_anio': hay_anio,
         'hay_datos': hay_datos,
     })
+
+def ver_alquileres(request):
+    alquileres = Alquiler.objects.all()
+
+    hoy = date.today()
+
+    # Actualizar estado a pendienteDevolucion si la fecha actual superó 'hasta' y está en enCurso
+    alquileres_en_curso = alquileres.filter(estado='enCurso', hasta__lt=hoy)
+    for alquiler in alquileres_en_curso:
+        alquiler.estado = 'pendienteDevolucion'
+        alquiler.save()
+
+    buscar = request.GET.get('buscar', '')
+    if buscar:
+        alquileres = alquileres.filter(
+            Q(codigo_identificador__icontains=buscar) |
+            Q(mail__mail__icontains=buscar)
+        )
+
+    alquileres = alquileres.order_by('-desde')
+
+    return render(request, 'listadoAlquileres.html', {'alquileres': alquileres})
+
+
+@require_POST
+def aceptar_retiro(request, alquiler_id):
+    alquiler = get_object_or_404(Alquiler, id=alquiler_id)
+    if alquiler.estado == 'pendienteRetiro':
+        alquiler.estado = 'enCurso'
+        alquiler.save()
+        messages.success(request, f"Alquiler {alquiler.codigo_identificador} ahora está En Curso.")
+    else:
+        messages.warning(request, "No se puede aceptar retiro para este alquiler.")
+    return redirect('ver_alquileres')
+
+
+@require_POST
+def aceptar_devolucion(request, alquiler_id):
+    alquiler = get_object_or_404(Alquiler, id=alquiler_id)
+    if alquiler.estado == 'enCurso':
+        alquiler.estado = 'finalizado'
+        alquiler.save()
+        messages.success(request, f"Alquiler {alquiler.codigo_identificador} finalizado correctamente.")
+    else:
+        messages.warning(request, "No se puede aceptar devolución para este alquiler.")
+    return redirect('ver_alquileres')
+
+
+@require_POST
+def aceptar_devolucion_con_retraso(request, alquiler_id):
+    alquiler = get_object_or_404(Alquiler, id=alquiler_id)
+    if alquiler.estado == 'pendienteDevolucion':
+        hoy = date.today()
+        dias_atraso = (hoy - alquiler.hasta).days
+        if dias_atraso < 1:
+            dias_atraso = 0
+
+        monto_recargo = alquiler.precioPorDia * dias_atraso
+
+        url_pago = reverse('pago') + f'?monto={monto_recargo}&alquiler_id={alquiler.id}'
+        return redirect(url_pago)
+    else:
+        messages.warning(request, "No se puede aceptar devolución con retraso para este alquiler.")
+        return redirect('ver_alquileres')
+    
+from django.db.models import Q
+
+def historial_alquileres(request):
+    buscar = request.GET.get('buscar', '')
+    alquileres = Alquiler.objects.filter(estado='finalizado')
+
+    if buscar:
+        alquileres = alquileres.filter(
+            Q(codigo_identificador__icontains=buscar) |
+            Q(mail__mail__icontains=buscar)
+        )
+
+    alquileres = alquileres.order_by('-desde')
+
+    return render(request, 'historial_alquileres.html', {'alquileres': alquileres})

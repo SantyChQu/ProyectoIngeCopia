@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 style="text-align: center;">Listado de Alquileres</h1>
+
+<form method="get" action="{% url 'ver_alquileres' %}" style="text-align:center; margin-bottom: 20px;">
+    <input type="text" name="buscar" placeholder="Buscar por código o mail" value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+{% if alquileres %}
+<table class="table table-bordered" style="width: 90%; margin: auto;">
+    <thead style="background-color: #FFA726; color: black;">
+        <tr>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Cliente</th>
+            <th>DNI</th>
+            <th>Máquina</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alquiler in alquileres %}
+        <tr>
+            <td>{{ alquiler.id }}</td>
+            <td>{{ alquiler.codigo_identificador }}</td>
+            <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
+            <td>{{ alquiler.mail.dni }}</td>
+            <td>{{ alquiler.marca }} {{ alquiler.modelo }}</td>
+            <td>{{ alquiler.desde }}</td>
+            <td>{{ alquiler.hasta }}</td>
+            <td>{{ alquiler.get_estado_display }}</td>
+
+            <td>
+                {% if alquiler.estado == 'pendienteRetiro' %}
+                    <form method="post" action="{% url 'aceptar_retiro' alquiler.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-sm">Aceptar Retiro</button>
+                    </form>
+                {% elif alquiler.estado == 'enCurso' %}
+                    <form method="post" action="{% url 'aceptar_devolucion' alquiler.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm">Aceptar Devolución</button>
+                    </form>
+                {% elif alquiler.estado == 'pendienteDevolucion' %}
+                    <form method="post" action="{% url 'aceptar_devolucion_con_retraso' alquiler.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Aceptar Devolución (con Retraso)</button>
+                    </form>
+                {% else %}
+                    <span>-</span>
+                {% endif %}
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="text-align: center;">No hay alquileres registrados.</p>
+{% endif %}
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{% url 'inicio' %}">
+        <button class="btn btn-primary">Volver al Inicio</button>
+    </a>
+</div>
+
+{% endblock %}

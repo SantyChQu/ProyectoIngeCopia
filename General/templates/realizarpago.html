@@ -1,19 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Realizar Pago</h1>
+<h1 style="text-align: center;">Realizar Pago</h1>
 
-
-{% if monto_total %}
-    <div class="alert alert-warning">
-        Monto total a pagar: <strong>${{ monto_total }}</strong>
-    </div>
+{% if messages %}
+  <div style="width: 90%; margin: auto; max-width: 600px;">
+    {% for message in messages %}
+      <div class="alert 
+        {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" 
+        role="alert" style="margin-bottom: 10px;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
 {% endif %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-primary">Realizar Pago</button>
-</form>
+<div style="width: 90%; margin: auto; max-width: 600px;">
+
+  {% if monto_total %}
+    <div class="alert alert-warning" role="alert" style="font-weight: bold; text-align: center; margin-bottom: 20px;">
+      Monto total a pagar: ${{ monto_total }}
+    </div>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary btn-block" style="width: 100%;">Realizar Pago</button>
+  </form>
+</div>
 
 {% endblock %}

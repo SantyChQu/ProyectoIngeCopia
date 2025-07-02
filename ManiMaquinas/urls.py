@@ -63,6 +63,11 @@ urlpatterns = [
     path('empleados/cambiar_estado/<int:id>/', general.cambiar_estado_Empleado, name='cambiar_estado_Empleado'),
     path('estadisticas/alquileresPorMaquina/', maquinas_views.alquileres_por_maquina, name='alquileres_por_maquina'),
     path('estadisticas/ingresosMensuales/', general.estadisticas_ingresos_por_mes, name='estadisticasMensuales'),
+    path('alquileres/', general.ver_alquileres, name='ver_alquileres'),
+    path('alquileres/<int:alquiler_id>/aceptar_retiro/', general.aceptar_retiro, name='aceptar_retiro'),
+    path('alquileres/<int:alquiler_id>/aceptar_devolucion/', general.aceptar_devolucion, name='aceptar_devolucion'),
+    path('alquileres/<int:alquiler_id>/aceptar_devolucion_con_mora/', general.aceptar_devolucion_con_retraso, name='aceptar_devolucion_con_retraso'),
+    path('historial_alquileres/', general.historial_alquileres, name='historial_alquileres'),
     ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
