@@ -1,10 +1,12 @@
 # yo cree este archivo 
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Cliente,Localidad,Calificacion
+from .models import Cliente,Localidad,Calificacion,Alquiler,Maquinaria
 from django.core.validators import RegexValidator
 from django.forms import DateInput
 from datetime import date, timedelta
+from django.db.models import Avg
+
 import string
 import secrets
 
@@ -225,3 +227,46 @@ class FiltroAnioForm(forms.Form):
         initial=hoy,
         widget=forms.NumberInput(attrs={'type': 'number'})
     )
+
+
+
+class MaquinariaForm(forms.ModelForm):
+    class Meta:
+        model = Maquinaria
+        exclude = ['estado']
+        widgets = {
+            'codigo_serie': forms.TextInput(attrs={'minlength': 1}),
+        }
+
+    def clean_año_compra(self):
+        año = self.cleaned_data.get('año_compra')
+        año_actual = datetime.now().year
+        if año < 1950 or año > año_actual:
+            raise forms.ValidationError(f"El año de compra debe estar entre 1950 y {año_actual}.")
+        return año
+    
+    def clean_codigo_serie(self):
+        codigo = self.cleaned_data.get('codigo_serie')
+        if not codigo.isalnum():
+            raise forms.ValidationError("El código de serie debe contener sólo letras y/o números.")
+        return codigo
+    
+    def clean_imagen(self):
+        imagen = self.cleaned_data.get('imagen')
+        if not imagen:
+            raise forms.ValidationError("La imagen es obligatoria.")
+        return imagen
+    
+    def clean_precio_alquiler_diario(self):
+        precio = self.cleaned_data.get('precio_alquiler_diario')
+        if precio is None or precio <= 0:
+            raise forms.ValidationError("El precio de alquiler diario debe ser un número positivo.")
+        return precio
+    
+    def puntuacion_promedio(self):
+        promedio = Alquiler.objects.filter(
+            maquinaria=self,
+            calificacion__isnull=False
+        ).aggregate(prom=Avg('calificacion__estrellas'))['prom']
+
+        return round(promedio, 2) if promedio is not None else 'Sin calificaciones'

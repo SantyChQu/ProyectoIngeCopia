@@ -67,6 +67,13 @@
       <div><strong>Año de compra: </strong> {{ maquinaria.año_compra }}</div>
       <div><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</div>
       <div><strong>Política de cancelación:</strong> {{ maquinaria.politica.nombre }}</div>
+       <div><strong>Puntuación:</strong>
+    {% if maquinaria.puntuacion_promedio %}
+        {{ maquinaria.puntuacion_promedio }}
+    {% else %}
+        Sin calificaciones
+    {% endif %}
+</div>
         </div>
         <div class="imagen">
             <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">

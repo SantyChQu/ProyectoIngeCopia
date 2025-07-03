@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import date
 from django.utils import timezone
+
+from django.db.models import Avg
 # Create your models here.
 
 # dios sabra si estan bien creados
@@ -83,6 +85,28 @@ class Politica(models.Model):
         return self.nombre
 
 
+
+
+
+
+class Calificacion(models.Model):
+    codigo_calif = models.AutoField(primary_key=True)
+    estrellas = models.PositiveSmallIntegerField() 
+    nota = models.TextField(blank=True, null=True)
+
+class Tarjeta(models.Model):
+    numero_tarjeta = models.CharField(max_length=16)
+    numero_seguridad = models.CharField(max_length=4)
+    nombre_propietario = models.CharField(max_length=100)
+    fecha_desde = models.DateField()
+    fecha_hasta = models.DateField()
+    monto = models.DecimalField(max_digits=100, decimal_places=2)
+
+   
+
+
+
+  
 class Maquinaria(models.Model):
     ESTADO_CHOICES = [
         ('habilitado', 'Habilitado'),
@@ -99,12 +123,24 @@ class Maquinaria(models.Model):
     precio_alquiler_diario = models.DecimalField(max_digits=30, decimal_places=2)
     politica = models.ForeignKey(Politica, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='maquinas/')
+   
+   
+   # Puntuacion= models.PositiveSmallIntegerField() 
 
 
+    def puntuacion_promedio(self):
+        from .models import Alquiler  # evitar import circular si hace falta
+        promedio = Alquiler.objects.filter(
+            codigo_maquina=self,
+            calificacion__isnull=False
+        ).aggregate(prom=Avg('calificacion__estrellas'))['prom']
+        return round(promedio, 2) if promedio is not None else None
+         
+
+ 
 class Mantenimiento(models.Model):
     maquinaria = models.ForeignKey(Maquinaria, on_delete=models.CASCADE)
     fecha = models.DateField()
-
 
 class Observacion(models.Model):
     observacion = models.TextField()
@@ -112,20 +148,7 @@ class Observacion(models.Model):
     codigo_maquina = models.ForeignKey(Maquinaria, null=True, blank=True, on_delete=models.SET_NULL)
     fecha = models.DateField()
 
-class Calificacion(models.Model):
-    codigo_calif = models.AutoField(primary_key=True)
-    estrellas = models.PositiveSmallIntegerField() 
-    nota = models.TextField(blank=True, null=True)
 
-class Tarjeta(models.Model):
-    numero_tarjeta = models.CharField(max_length=16)
-    numero_seguridad = models.CharField(max_length=4)
-    nombre_propietario = models.CharField(max_length=100)
-    fecha_desde = models.DateField()
-    fecha_hasta = models.DateField()
-    monto = models.DecimalField(max_digits=100, decimal_places=2)
-
-   
 
 class Alquiler(models.Model):
     ESTADO_CHOICES = [
@@ -158,3 +181,5 @@ class Alquiler(models.Model):
             self.localidad = self.codigo_maquina.localidad.nombre
             self.politica_cancelacion = self.codigo_maquina.politica.nombre
         super().save(*args, **kwargs)
+
+        
