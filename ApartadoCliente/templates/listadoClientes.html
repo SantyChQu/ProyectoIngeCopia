@@ -44,6 +44,26 @@
         color: white;
         cursor: pointer;
     }
+
+    .boton-inhabilitar {
+        background-color: #f8d7da;
+        border: 1px solid #dc3545;
+        color: #721c24;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .boton-habilitar {
+        background-color: rgb(172, 219, 157);
+        border: 1px solid rgb(17, 179, 44);
+        color: #155724;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+    }
 </style>
 
 <h1 style="text-align: center;">Listado de Clientes</h1>
@@ -75,7 +95,9 @@
                 <th style="background-color: #FFA726; color: black;">Edad</th>
                 <th style="background-color: #FFA726; color: black;">Telefono</th>
                 <th style="background-color: #FFA726; color: black;">Estado</th>
-                <th style="background-color: #FFA726; color: black;">Cambiar Estado</th>
+                {% if cliente_actual.rol != 'empleados' %}
+                    <th style="background-color: #FFA726; color: black;">Cambiar Estado</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -89,16 +111,18 @@
                     <td>{{ cliente.edad }}</td>
                     <td>{{ cliente.telefono }}</td>
                     <td>{{ cliente.estado }}</td>
-                    <td>
-                        <form method="post" action="{% url 'cambiar_estado_Cliente' cliente.id %}" >
-                            {% csrf_token %}
-                            {% if cliente.estado == 'habilitado' %}
-                                <button type="submit" class="boton-inhabilitar" style="background-color: #f8d7da; border-color: rgb(224, 53, 70);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'inhabilitar')">Inhabilitar</button>  
-                            {% else %}
-                                <button type="submit" class="boton-habilitar" style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'Habilitar')">Habilitar</button>
-                            {% endif %}
-                        </form>
-                    </td>
+                    {% if cliente_actual.rol != 'empleados' %}
+                        <td>
+                            <form method="post" action="{% url 'cambiar_estado_Cliente' cliente.id %}">
+                                {% csrf_token %}
+                                {% if cliente.estado == 'habilitado' %}
+                                    <button type="submit" class="boton-inhabilitar" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'inhabilitar')">Inhabilitar</button>  
+                                {% else %}
+                                    <button type="submit" class="boton-habilitar" onclick="return confirmarCambioEstado('{{ cliente.nombre }}', '{{ cliente.apellido }}', 'habilitar')">Habilitar</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>

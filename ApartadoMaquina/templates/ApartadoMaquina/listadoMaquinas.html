@@ -45,6 +45,25 @@
         color: white;
         cursor: pointer;
     }
+    .boton-inhabilitar {
+    background-color: #f8d7da;
+    border: 1px solid #dc3545;
+    color: #721c24;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.boton-habilitar {
+    background-color: rgb(172, 219, 157);
+    border: 1px solid rgb(17, 179, 44);
+    color: #155724;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
 </style>
 
 <h1 style="text-align: center;">Listado de Maquinarias</h1>
@@ -55,13 +74,12 @@
     </p>
 {% else %}
 
-    <!-- Botón de autodestrucción chico y discreto -->
+    {% if not empleado %}
     <form method="post" action="{% url 'autodestruir_maquinarias' %}" onsubmit="return confirm('¿Estás seguro que querés borrar a todas las Maquinas? Esta acción no se puede deshacer.')">
         {% csrf_token %}
-        <button type="submit" class="boton-autodestruir">
-            🔥 Autodestruir
-        </button>
+        <button type="submit" class="boton-autodestruir">🔥 Autodestruir</button>
     </form>
+    {% endif %}
 
     <table class="table table-bordered table-hover text-center align-middle">
         <thead>
@@ -77,117 +95,119 @@
                 <th style="background-color: #FFA726; color: black;">Politica</th>
                 <th style="background-color: #FFA726; color: black;">Acción</th>
                 <th style="background-color: #FFA726; color: black;">Modificar Maquinaria</th>
-                <th style="background-color: #FFA726; color: black;">Eliminar maquina</th>
+                {% if not empleado %}
+                    <th style="background-color: #FFA726; color: black;">Eliminar maquina</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
             {% for maquina in maquinarias %}
-                <tr style="text-align: left; border-bottom: 1px solid #ccc;">
-                    <td>{{ maquina.codigo_serie }}</td>
-                    <td>{{ maquina.marca }}</td>
-                    <td>{{ maquina.modelo }}</td>
-                    <td>{{ maquina.año_compra }}</td>
-                    <td>{{ maquina.estado }}</td>
-                    <td>${{ maquina.precio_alquiler_diario }}</td>
-                    <td>{{ maquina.localidad }}</td>
-                    <td>
-                        {% if maquina.imagen %}
-                            <img src="{{ maquina.imagen.url }}" width="100">
+            <tr>
+                <td>{{ maquina.codigo_serie }}</td>
+                <td>{{ maquina.marca }}</td>
+                <td>{{ maquina.modelo }}</td>
+                <td>{{ maquina.año_compra }}</td>
+                <td>{{ maquina.estado }}</td>
+                <td>${{ maquina.precio_alquiler_diario }}</td>
+                <td>{{ maquina.localidad }}</td>
+                <td>
+                    {% if maquina.imagen %}
+                        <img src="{{ maquina.imagen.url }}" width="100">
+                    {% else %}
+                        Sin imagen
+                    {% endif %}
+                </td>
+                <td>{{ maquina.politica }}</td>
+                <td>
+                    <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
+                        {% csrf_token %}
+                        {% if maquina.estado == 'habilitado' %}
+                            <button type="submit" class="boton-inhabilitar"
+                                onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'inhabilitar')">
+                                Inhabilitar
+                            </button>
                         {% else %}
-                            Sin imagen
+                            <button type="submit" class="boton-habilitar"
+                                onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'habilitar')">
+                                Habilitar
+                            </button>
                         {% endif %}
-                    </td>
-                    <td>{{ maquina.politica }}</td>
-                    
-                    <td>
-                        <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
-                            {% csrf_token %}
-                            {% if maquina.estado == 'habilitado' %}
-                                <button type="submit" class="boton-inhabilitar" style="background-color: #f8d7da; border-color: rgb(224, 53, 70);" onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'inhabilitar')">Inhabilitar</button>
-                            {% else %}
-                                <button type="submit" class="boton-habilitar" style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);" onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'habilitar')">Habilitar</button>
-                            {% endif %}
-                        </form>
-                    </td>
-                    <td>
-                        <button type="button"
-                                class="boton-habilitar"
-                                style="background-color: rgb(172, 219, 157); border-color: rgb(17, 179, 44);"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalModificar{{ maquina.id }}">
-                            Modificar
-                        </button>
-                    </td>
-<td>
-    {% if request.session.cliente_rol != "empleado" %}
-        <form method="post" action="{% url 'eliminar_maquinaria' maquina.id %}">
-            {% csrf_token %}
-            {% if maquina.estado != 'eliminado' %}
-                <button type="submit"
-                        class="boton-inhabilitar"
-                        style="background-color: #f5c6cb; border-color: #dc3545;"
-                        onclick="return confirm('¿Estás seguro de que querés eliminar la maquinaria {{ maquina.codigo_serie }}?')">
-                    Eliminar
-                </button>
-            {% else %}
-                <span style="color: red;">Eliminada</span>
-            {% endif %}
-        </form>
-    {% else %}
-        <span style="color: grey;">Sin permiso</span>
-    {% endif %}
-</td>
-                </tr>
+                    </form>
+                </td>
+                <td>
+                    <button type="button" class="boton-habilitar"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalModificar{{ maquina.id }}">
+                        Modificar
+                    </button>
+                </td>
+                {% if not empleado %}
+                <td>
+                    <form method="post" action="{% url 'eliminar_maquinaria' maquina.id %}">
+                        {% csrf_token %}
+                        {% if maquina.estado != 'eliminado' %}
+                            <button type="submit"
+                                    class="boton-inhabilitar"
+                                    onclick="return confirm('¿Estás seguro de que querés eliminar la maquinaria {{ maquina.codigo_serie }}?')">
+                                Eliminar
+                            </button>
+                        {% else %}
+                            <span style="color: red;">Eliminada</span>
+                        {% endif %}
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
 
-                <!-- Modal para modificar maquinaria -->
-                <div class="modal fade" id="modalModificar{{ maquina.id }}" tabindex="-1" aria-labelledby="modalLabel{{ maquina.id }}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form method="POST" action="{% url 'modificar_maquina' maquina.id %}" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalLabel{{ maquina.id }}">Modificar Maquinaria</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="text" name="marca" value="{{ maquina.marca }}" class="form-control mb-2" required>
-                                    <input type="text" name="modelo" value="{{ maquina.modelo }}" class="form-control mb-2" required>
-                                    <input type="number" name="año_compra" value="{{ maquina.año_compra }}" class="form-control mb-2" required>
-                                    <select name="localidad" class="form-control mb-2" required>
-                                        {% for loc in localidades %}
-                                            <option value="{{ loc.id }}" {% if maquina.localidad.id == loc.id %}selected{% endif %}>{{ loc.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <select name="politica" class="form-control mb-2" required>
-                                        {% for politica in politicas %}
-                                            <option value="{{ politica.id }}" {% if maquina.politica.id == politica.id %}selected{% endif %}>{{ politica.nombre }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <input type="number" step="0.01" name="precio_alquiler_diario" value="{{ maquina.precio_alquiler_diario|stringformat:'0.2f' }}" class="form-control mb-2" required>
-                                    <label for="imagen">Actualizar imagen (opcional):</label>
-                                    <input type="file" name="imagen" class="form-control mb-2">
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                                </div>
-                            </form>
-                        </div>
+            <!-- Modal modificar maquinaria -->
+            <div class="modal fade" id="modalModificar{{ maquina.id }}" tabindex="-1" aria-labelledby="modalLabel{{ maquina.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="POST" action="{% url 'modificar_maquina' maquina.id %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel{{ maquina.id }}">Modificar Maquinaria</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text" name="marca" value="{{ maquina.marca }}" class="form-control mb-2" required>
+                                <input type="text" name="modelo" value="{{ maquina.modelo }}" class="form-control mb-2" required>
+                                <input type="number" name="año_compra" value="{{ maquina.año_compra }}" class="form-control mb-2" required>
+                                <select name="localidad" class="form-control mb-2" required>
+                                    {% for loc in localidades %}
+                                        <option value="{{ loc.id }}" {% if maquina.localidad.id == loc.id %}selected{% endif %}>{{ loc.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <select name="politica" class="form-control mb-2" required>
+                                    {% for politica in politicas %}
+                                        <option value="{{ politica.id }}" {% if maquina.politica.id == politica.id %}selected{% endif %}>{{ politica.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="number" step="0.01" name="precio_alquiler_diario" value="{{ maquina.precio_alquiler_diario|stringformat:'0.2f' }}" class="form-control mb-2" required>
+                                <label for="imagen">Actualizar imagen (opcional):</label>
+                                <input type="file" name="imagen" class="form-control mb-2">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
             {% endfor %}
         </tbody>
     </table>
 
     <script>
         function confirmarCambioEstado(codigo, accion) {
-            return confirm(`¿Estás seguro que quieres ${accion} a la maquina con código: ${codigo}?`);
+            return confirm(`¿Estás seguro que querés ${accion} a la máquina con código: ${codigo}?`);
         }
     </script>
+
 {% endif %}
 
-<a href="{% url 'inicio' %}"> 
-    <button type="submit" class="boton-VolverAlInicio">Volver al inicio</button>
+<a href="{% url 'inicio' %}">
+    <button class="boton-VolverAlInicio">Volver al inicio</button>
 </a>
-
 {% endblock %}

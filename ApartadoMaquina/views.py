@@ -34,10 +34,17 @@ def ver_maquinarias(request):
     maquinarias = Maquinaria.objects.exclude(estado='eliminado')
     localidades = Localidad.objects.all()
     politicas = Politica.objects.all()
+
+    if request.session.get('cliente_rol') == "empleados":
+        soyEmpleado = True
+    else:
+        soyEmpleado = False    
+
     return render(request, 'ApartadoMaquina/listadoMaquinas.html', {
         'maquinarias': maquinarias,
         'localidades': localidades,
         'politicas': politicas,
+        'empleado': soyEmpleado
     })
 
 ##

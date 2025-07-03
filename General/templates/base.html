@@ -92,7 +92,7 @@
                 <li><a class="dropdown-item" href="/">Home</a></li>
                
                 
-                {% if request.session.cliente_rol == "jefe" or request.session.cliente_rol == "empleados" %}
+                {% if request.session.cliente_rol == "jefe" %}
 
                 
                     <li><a class="dropdown-item" href="{% url 'ver_localidades' %}">Ver Localidades</a></li>
@@ -102,6 +102,13 @@
                     <li><a class="dropdown-item" href="/maquinarias/">Ver Listado Maquinarias</a></li>
                     <li><a class="dropdown-item" href="/agregar_empleado/">Agregar Empleado</a></li>
                     <li><a class="dropdown-item" href="/empleados/">Ver Listado Empleados</a></li>
+                    <li><a class="dropdown-item" href="{% url 'ver_alquileres' %}">Ver Alquileres</a></li>
+                {% endif %}
+
+                {% if request.session.cliente_rol == "empleados" %}
+
+                    <li><a class="dropdown-item" href="/clientes/">Ver Listado Clientes</a></li>
+                    <li><a class="dropdown-item" href="/maquinarias/">Ver Listado Maquinarias</a></li>
                     <li><a class="dropdown-item" href="{% url 'ver_alquileres' %}">Ver Alquileres</a></li>
                 {% endif %}
 
