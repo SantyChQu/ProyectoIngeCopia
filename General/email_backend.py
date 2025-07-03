@@ -9,6 +9,7 @@ class NonVerifyingSMTPBackend(EmailBackend):
         try:
             context = ssl._create_unverified_context()
             self.connection = smtplib.SMTP(self.host, self.port, timeout=self.timeout)
+            self.connection.local_hostname = 'localhost'  
             self.connection.starttls(context=context)
             if self.username and self.password:
                 self.connection.login(self.username, self.password)

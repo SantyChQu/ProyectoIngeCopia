@@ -35,8 +35,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mariajefainge@gmail.com'
 EMAIL_HOST_PASSWORD = 'zbes mpaf tnto wkcr'
-DEFAULT_FROM_EMAIL = 'no-reply@manimaquinas.com'
-
+#DEFAULT_FROM_EMAIL = 'no-reply@manimaquinas.com'
+DEFAULT_FROM_EMAIL = 'mariajefainge@gmail.com'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 

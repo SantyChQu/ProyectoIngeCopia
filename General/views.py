@@ -534,7 +534,6 @@ def estadisticas_alquileres_localidad(request):
 import secrets
 import string
 from django.contrib.auth.hashers import make_password
-
 import random
 def generar_password_aleatoria(longitud=10):
     caracteres = string.ascii_letters + string.digits
@@ -545,20 +544,23 @@ def generar_password_aleatoria(longitud=10):
 
 from django.core.mail import EmailMultiAlternatives
 from email.header import Header
-
+from django.core.mail import send_mail
+from django.conf import settings
 def enviar_mail(empleado, password):
     try:
-        
-        asunto = Header('Tu cuenta fue creada', 'utf-8').encode()
-        cuerpo = f'Hola {empleado.nombre}, tu contraseña es: {password}'
-
+        asunto = 'Tu cuenta fue creada'
+        #asunto = Header('Tu cuenta fue creada', 'utf-8').encode()
+        nombre = str(empleado.nombre)
+        cuerpo = f'Hola {nombre}, tu contraseña es: {password}'
+        from_email = settings.DEFAULT_FROM_EMAIL
         
 
         
         email = EmailMultiAlternatives(
             subject=asunto,
             body=cuerpo,
-            from_email='no-reply@manimaquinas.com',
+            #from_email='no-reply@manimaquinas.com',
+            from_email = from_email, 
             to=[empleado.mail],
         )
         email.encoding = 'utf-8'
@@ -570,10 +572,7 @@ def enviar_mail(empleado, password):
         
         print(f"Tipo: {type(e)}")
         print(f"Mensaje: {e}")
-        raise
-
-
-
+        raise   
 def registro_empleado(request):
     if request.session.get('cliente_rol') != 'jefe':
         messages.error(request, "No tenés permiso para acceder a esta sección.")
