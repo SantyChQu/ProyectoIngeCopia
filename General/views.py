@@ -702,12 +702,18 @@ def ver_alquileres(request):
 @require_POST
 def aceptar_retiro(request, alquiler_id):
     alquiler = get_object_or_404(Alquiler, id=alquiler_id)
-    if alquiler.estado == 'pendienteRetiro':
-        alquiler.estado = 'enCurso'
-        alquiler.save()
-        messages.success(request, f"Alquiler {alquiler.codigo_identificador} ahora está En Curso.")
+    hoy = date.today()
+    if alquiler.desde > hoy:
+        messages.warning(
+        request, f"Aún no estamos en la fecha de inicio del alquiler "
+        f"({alquiler.desde}). No se puede aceptar el retiro.")
     else:
-        messages.warning(request, "No se puede aceptar retiro para este alquiler.")
+        if alquiler.estado == 'pendienteRetiro':
+            alquiler.estado = 'enCurso'
+            alquiler.save()
+            messages.success(request, f"Alquiler {alquiler.codigo_identificador} ahora está En Curso.")
+        else:
+            messages.warning(request, "No se puede aceptar retiro para este alquiler.")
     return redirect('ver_alquileres')
 
 
