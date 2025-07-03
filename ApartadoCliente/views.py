@@ -93,39 +93,3 @@ def estadisticas_clientes(request):
     })
 
 
-#def estadisticas_clientes(request):
-
- #   se_presiono_filtrar = 'fecha_desde' in request.GET or 'fecha_hasta' in request.GET
-  #  mostrar_errores = se_presiono_filtrar
-
-   # form = FiltroFechaForm(request.GET if se_presiono_filtrar else None)
-    
-#    etiquetas = []
- #   datos_habilitados = []
-  #  datos_inhabilitados = []
-    
-   # if se_presiono_filtrar and form.is_valid(): #if form.is_valid():
-    #    fecha_desde = form.cleaned_data['fecha_desde']
-     #   fecha_hasta = form.cleaned_data['fecha_hasta']
-
-    #    clientes = Cliente.objects.exclude(rol='jefe') \
-     #               .filter(fecha_registro__range=[fecha_desde, fecha_hasta])
-
-  #      agrupados = defaultdict(lambda: {'habilitado': 0, 'inhabilitado': 0})
-
-   #     for cliente in clientes:
-      #      fecha = cliente.fecha_registro.strftime('%Y-%m-%d')
-       #     agrupados[fecha][cliente.estado] += 1
-
-        # Ordenamos por fecha
-       # etiquetas = sorted(agrupados.keys())
-       # datos_habilitados = [agrupados[fecha]['habilitado'] for fecha in etiquetas]
-       #datos_inhabilitados = [agrupados[fecha]['inhabilitado'] for fecha in etiquetas]
-
-    #return render(request, 'estadisticasClientes.html', {
-     #   'form': form,
-      #  'etiquetas': etiquetas,
-       # 'habilitados': datos_habilitados,
-        #'inhabilitados': datos_inhabilitados,
-        #'mostrar_errores': mostrar_errores,
-    #})

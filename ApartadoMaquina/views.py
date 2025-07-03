@@ -171,7 +171,7 @@ def alquileres_por_maquina(request):
     # Traer todas las máquinas que NO están eliminadas
     maquinas = Maquinaria.objects.exclude(estado='eliminado').annotate(
         cantidad_alquileres=Count('alquiler')  
-    )
+    ).order_by('-cantidad_alquileres')
 
     # Chart.js
     labels = [f"{m.marca} {m.modelo}" for m in maquinas]

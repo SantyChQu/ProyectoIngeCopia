@@ -108,9 +108,9 @@
       {#-----------------------------------------------#}
       document.getElementById('btnDescargar').addEventListener('click', function() {
         const link = document.createElement('a');
-        const canvas = document.getElementById('graficoClientes');
+        const canvas = document.getElementById('graficoAlquileres');
         link.href = canvas.toDataURL('image/png');
-        link.download = 'estadistica_clientes.png';
+        link.download = 'estadisticas_alquileres_localidad.png';
         link.click();
       });
     </script>
@@ -125,7 +125,5 @@
     </a>
   </div>
 {% endif %}
-
-
 
 {% endblock %}

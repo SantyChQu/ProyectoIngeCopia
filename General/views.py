@@ -483,7 +483,7 @@ from django.contrib import messages
 def estadisticas_alquileres_localidad(request):
     form = FiltroFechaForm(request.GET or None)
     etiquetas, pendiente, en_curso, finalizado = [], [], [], []
-    hay_datos = False  # 🔑 NUEVO
+    hay_datos = False 
     hay_rango = False
     fecha_desde = None
     fecha_hasta = None
@@ -535,11 +535,7 @@ import secrets
 import string
 from django.contrib.auth.hashers import make_password
 
-from django.contrib import messages
-from django.shortcuts import render, redirect
-import string
 import random
-
 def generar_password_aleatoria(longitud=10):
     caracteres = string.ascii_letters + string.digits
     return ''.join(random.choice(caracteres) for _ in range(longitud))
