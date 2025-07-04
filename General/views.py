@@ -458,11 +458,31 @@ def agregar_localidad(request):
         form = LocalidadForm()
     return render(request, 'agregar_localidad.html', {'form': form})
 
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from .models import Localidad, Alquiler
+
 def eliminar_localidad(request, localidad_id):
     localidad = get_object_or_404(Localidad, id=localidad_id)
 
     if request.method == 'POST':
+        tiene_alquileres = Alquiler.objects.filter(
+            localidad=localidad,
+            estado__in=['pendienteRetiro', 'enCurso', 'pendienteDevolucion']
+        ).exists()
+
+        if tiene_alquileres:
+            messages.error(
+                request,
+                f"No se puede eliminar la localidad '{localidad.nombre}' porque tiene alquileres pendientes o en curso."
+            )
+            return redirect('ver_localidades')
+
         localidad.delete()
+        messages.success(
+            request,
+            f"Localidad '{localidad.nombre}' eliminada correctamente."
+        )
         return redirect('ver_localidades')
 
     return render(request, 'confirmar_eliminacion.html', {'localidad': localidad})
