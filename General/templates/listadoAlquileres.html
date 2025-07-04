@@ -8,7 +8,9 @@
     <button type="submit" class="btn btn-primary">Buscar</button>
 </form>
 
-{% if alquileres %}
+<!-- ALQUILERES ACTIVOS -->
+{% if alquileres_no_finalizados %}
+<h2 style="text-align: center;">Alquileres Activos</h2>
 <table class="table table-bordered" style="width: 90%; margin: auto;">
     <thead style="background-color: #FFA726; color: black;">
         <tr>
@@ -24,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for alquiler in alquileres %}
+        {% for alquiler in alquileres_no_finalizados %}
         <tr>
             <td>{{ alquiler.id }}</td>
             <td>{{ alquiler.codigo_identificador }}</td>
@@ -34,7 +36,6 @@
             <td>{{ alquiler.desde }}</td>
             <td>{{ alquiler.hasta }}</td>
             <td>{{ alquiler.get_estado_display }}</td>
-
             <td>
                 {% if alquiler.estado == 'pendienteRetiro' %}
                     <form method="post" action="{% url 'aceptar_retiro' alquiler.id %}">
@@ -55,13 +56,51 @@
                     <span>-</span>
                 {% endif %}
             </td>
-
         </tr>
         {% endfor %}
     </tbody>
 </table>
 {% else %}
-<p style="text-align: center;">No hay alquileres registrados.</p>
+<p style="text-align: center;">No hay alquileres activos.</p>
+{% endif %}
+
+<!-- ALQUILERES FINALIZADOS -->
+<h2 style="text-align: center; margin-top: 40px;">Alquileres Finalizados</h2>
+{% if alquileres_finalizados %}
+<table class="table table-bordered" style="width: 90%; margin: auto;">
+    <thead style="background-color: #8BC34A; color: black;">
+        <tr>
+            <th>ID</th>
+            <th>Código</th>
+            <th>Cliente</th>
+            <th>DNI</th>
+            <th>Máquina</th>
+            <th>Fecha Inicio</th>
+            <th>Fecha Fin</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alquiler in alquileres_finalizados %}
+        <tr>
+            <td>{{ alquiler.id }}</td>
+            <td>{{ alquiler.codigo_identificador }}</td>
+            <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
+            <td>{{ alquiler.mail.dni }}</td>
+            <td>{{ alquiler.marca }} {{ alquiler.modelo }}</td>
+            <td>{{ alquiler.desde }}</td>
+            <td>{{ alquiler.hasta }}</td>
+            <td>{{ alquiler.get_estado_display }}</td>
+            <td>
+                <span>-</span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="text-align: center;">No hay alquileres finalizados.</p>
 {% endif %}
 
 <div style="text-align: center; margin-top: 20px;">
@@ -71,3 +110,4 @@
 </div>
 
 {% endblock %}
+

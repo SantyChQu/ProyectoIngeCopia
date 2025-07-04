@@ -695,17 +695,20 @@ def estadisticas_ingresos_por_mes(request):
         'hay_datos': hay_datos,
     })
 
+from django.db.models import Q
+from datetime import date
 def ver_alquileres(request):
     alquileres = Alquiler.objects.all()
 
     hoy = date.today()
 
-    # Actualizar estado a pendienteDevolucion si la fecha actual superó 'hasta' y está en enCurso
+    # Actualizar a pendienteDevolucion si corresponde
     alquileres_en_curso = alquileres.filter(estado='enCurso', hasta__lt=hoy)
     for alquiler in alquileres_en_curso:
         alquiler.estado = 'pendienteDevolucion'
         alquiler.save()
 
+    # Búsqueda
     buscar = request.GET.get('buscar', '')
     if buscar:
         alquileres = alquileres.filter(
@@ -715,7 +718,18 @@ def ver_alquileres(request):
 
     alquileres = alquileres.order_by('-desde')
 
-    return render(request, 'listadoAlquileres.html', {'alquileres': alquileres})
+    # 👇 División en dos listas
+    alquileres_finalizados = alquileres.filter(estado='finalizado')
+    alquileres_no_finalizados = alquileres.exclude(estado='finalizado')
+
+    context = {
+        'alquileres_finalizados': alquileres_finalizados,
+        'alquileres_no_finalizados': alquileres_no_finalizados,
+        'buscar': buscar,
+    }
+
+    return render(request, 'listadoAlquileres.html', context)
+
 
 
 @require_POST
