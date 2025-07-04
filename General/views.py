@@ -722,6 +722,19 @@ def ver_alquileres(request):
     alquileres_finalizados = alquileres.filter(estado='finalizado')
     alquileres_no_finalizados = alquileres.exclude(estado='finalizado')
 
+
+    def calcular_retraso_y_recargo(alquiler):
+        dias_atraso = max((hoy - alquiler.hasta).days, 0)
+        monto_recargo = alquiler.precioPorDia * dias_atraso
+        alquiler.dias_atraso = dias_atraso
+        alquiler.monto_recargo = monto_recargo
+
+    for alquiler in alquileres_no_finalizados:
+        calcular_retraso_y_recargo(alquiler)
+
+    for alquiler in alquileres_finalizados:
+        calcular_retraso_y_recargo(alquiler)
+
     context = {
         'alquileres_finalizados': alquileres_finalizados,
         'alquileres_no_finalizados': alquileres_no_finalizados,
@@ -729,7 +742,6 @@ def ver_alquileres(request):
     }
 
     return render(request, 'listadoAlquileres.html', context)
-
 
 
 @require_POST
@@ -767,17 +779,23 @@ def aceptar_devolucion_con_retraso(request, alquiler_id):
     alquiler = get_object_or_404(Alquiler, id=alquiler_id)
     if alquiler.estado == 'pendienteDevolucion':
         hoy = date.today()
-        dias_atraso = (hoy - alquiler.hasta).days
-        if dias_atraso < 1:
-            dias_atraso = 0
-
+        dias_atraso = max((hoy - alquiler.hasta).days, 0)
         monto_recargo = alquiler.precioPorDia * dias_atraso
-
-        url_pago = reverse('pago') + f'?monto={monto_recargo}&alquiler_id={alquiler.id}'
-        return redirect(url_pago)
+        alquiler.dias_atraso = dias_atraso
+        alquiler.monto_recargo = monto_recargo
+        alquiler.estado = 'finalizado'
+        alquiler.save()
+        if dias_atraso > 0:
+            messages.warning(
+                request,
+                f"⚠️ Se aceptó la devolución con {dias_atraso} día(s) de retraso. "
+                f"Recargo a cobrar: ${monto_recargo:.2f}."
+            )
+        else:
+            messages.success(request, "Devolución aceptada sin recargo.")
     else:
-        messages.warning(request, "No se puede aceptar devolución con retraso para este alquiler.")
-        return redirect('ver_alquileres')
+        messages.error(request, "El alquiler no está en estado 'pendienteDevolucion'.")
+    return redirect('ver_alquileres')
     
 from django.db.models import Q
 

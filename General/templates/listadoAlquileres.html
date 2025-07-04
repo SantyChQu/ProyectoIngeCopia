@@ -14,7 +14,6 @@
 <table class="table table-bordered" style="width: 90%; margin: auto;">
     <thead style="background-color: #FFA726; color: black;">
         <tr>
-            <th>ID</th>
             <th>Código</th>
             <th>Cliente</th>
             <th>DNI</th>
@@ -28,7 +27,6 @@
     <tbody>
         {% for alquiler in alquileres_no_finalizados %}
         <tr>
-            <td>{{ alquiler.id }}</td>
             <td>{{ alquiler.codigo_identificador }}</td>
             <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
             <td>{{ alquiler.mail.dni }}</td>
@@ -36,30 +34,55 @@
             <td>{{ alquiler.desde }}</td>
             <td>{{ alquiler.hasta }}</td>
             <td>{{ alquiler.get_estado_display }}</td>
+           
+            
             <td>
                 {% if alquiler.estado == 'pendienteRetiro' %}
                     <form method="post" action="{% url 'aceptar_retiro' alquiler.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-warning btn-sm">Aceptar Retiro</button>
+                        <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar Retiro')">Aceptar Retiro</button>
                     </form>
                 {% elif alquiler.estado == 'enCurso' %}
                     <form method="post" action="{% url 'aceptar_devolucion' alquiler.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-success btn-sm">Aceptar Devolución</button>
+                        <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar devolucion')">Aceptar Devolución</button>
                     </form>
                 {% elif alquiler.estado == 'pendienteDevolucion' %}
                     <form method="post" action="{% url 'aceptar_devolucion_con_retraso' alquiler.id %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Aceptar Devolución (con Retraso)</button>
+                        <button style="background-color:rgb(206, 16, 16);" 
+                                type="submit" 
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirmarCambioEstado2(
+                                    '{{ alquiler.codigo_identificador }}',
+                                    '{{ alquiler.mail.dni }}',
+                                    '{{ alquiler.monto_recargo|floatformat:2 }}',
+                                    '{{ alquiler.dias_atraso }}')">
+                            Aceptar Devolución (con Retraso)
+                        </button>
                     </form>
                 {% else %}
                     <span>-</span>
+
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+<script>
+    function confirmarCambioEstado(nombre, apellido, accion) {
+        const mensaje = `¿Estás seguro que quieres ${accion} de la maquina ${nombre} al cliente ${apellido}?`;
+        return confirm(mensaje);
+    }
+</script>
+<script>
+    function confirmarCambioEstado2(codigo, dni, monto, dias) {
+        const mensaje = `No aceptar devolución hasta de la maquina ${codigo} hasta que el cliente con DNI ${dni} haya pagado el recargo.\n\n` + `Días de atraso: ${dias}\n` +
+            `Monto a cobrar: ${monto }\n\n` + `¿Confirmar que desea continuar?`
+        return confirm(mensaje);
+    }
+</script>
 {% else %}
 <p style="text-align: center;">No hay alquileres activos.</p>
 {% endif %}
@@ -70,7 +93,6 @@
 <table class="table table-bordered" style="width: 90%; margin: auto;">
     <thead style="background-color: #8BC34A; color: black;">
         <tr>
-            <th>ID</th>
             <th>Código</th>
             <th>Cliente</th>
             <th>DNI</th>
@@ -84,7 +106,6 @@
     <tbody>
         {% for alquiler in alquileres_finalizados %}
         <tr>
-            <td>{{ alquiler.id }}</td>
             <td>{{ alquiler.codigo_identificador }}</td>
             <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
             <td>{{ alquiler.mail.dni }}</td>
