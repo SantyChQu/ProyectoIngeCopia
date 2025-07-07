@@ -35,19 +35,19 @@
             <td>{{ alquiler.hasta }}</td>
             <td>{{ alquiler.get_estado_display }}</td>
            
-            
-            <td>
-                {% if alquiler.estado == 'pendienteRetiro' %}
+           {% if cliente.rol == 'empleados' %} 
+             <td>
+                 {% if alquiler.estado == 'pendienteRetiro' %}
                     <form method="post" action="{% url 'aceptar_retiro' alquiler.id %}">
                         {% csrf_token %}
                         <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar Retiro')">Aceptar Retiro</button>
                     </form>
-                {% elif alquiler.estado == 'enCurso' %}
+                 {% elif alquiler.estado == 'enCurso' %}
                     <form method="post" action="{% url 'aceptar_devolucion' alquiler.id %}">
                         {% csrf_token %}
                         <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar devolucion')">Aceptar Devolución</button>
                     </form>
-                {% elif alquiler.estado == 'pendienteDevolucion' %}
+                 {% elif alquiler.estado == 'pendienteDevolucion' %}
                     <form method="post" action="{% url 'aceptar_devolucion_con_retraso' alquiler.id %}">
                         {% csrf_token %}
                         <button style="background-color:rgb(206, 16, 16);" 
@@ -61,11 +61,16 @@
                             Aceptar Devolución (con Retraso)
                         </button>
                     </form>
-                {% else %}
-                    <span>-</span>
+                 {% else %}
+                     <span>-</span>
 
-                {% endif %}
-            </td>
+                 {% endif %}
+             </td>
+            {% else %}
+                <td>
+                 <span>-</span>
+                </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

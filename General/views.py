@@ -702,6 +702,12 @@ def ver_alquileres(request):
 
     hoy = date.today()
 
+    if 'cliente_id' not in request.session:
+        return redirect('/registro/')
+    cliente_id = request.session['cliente_id']
+    cliente = Cliente.objects.get(id=cliente_id)
+
+
     # Actualizar a pendienteDevolucion si corresponde
     alquileres_en_curso = alquileres.filter(estado='enCurso', hasta__lt=hoy)
     for alquiler in alquileres_en_curso:
@@ -739,6 +745,7 @@ def ver_alquileres(request):
         'alquileres_finalizados': alquileres_finalizados,
         'alquileres_no_finalizados': alquileres_no_finalizados,
         'buscar': buscar,
+        'cliente': cliente,
     }
 
     return render(request, 'listadoAlquileres.html', context)
@@ -788,7 +795,7 @@ def aceptar_devolucion_con_retraso(request, alquiler_id):
         if dias_atraso > 0:
             messages.warning(
                 request,
-                f"⚠️ Se aceptó la devolución con {dias_atraso} día(s) de retraso. "
+                f" Se aceptó la devolución con {dias_atraso} día(s) de retraso. "
                 f"Recargo a cobrar: ${monto_recargo:.2f}."
             )
         else:

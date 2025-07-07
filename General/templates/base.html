@@ -89,7 +89,7 @@
                 Menú
             </button>
             <ul class="dropdown-menu" aria-labelledby="menuButton">
-                <li><a class="dropdown-item" href="/">Home</a></li>
+                <li><a class="dropdown-item" href="/">Catálogo</a></li>
                
                 
                 {% if request.session.cliente_rol == "jefe" %}
@@ -113,7 +113,7 @@
                 {% endif %}
 
                 {% if request.session.cliente_rol == "cliente" %}
-                 <li><a class="dropdown-item" href="/proximamente">Estamos trabajando en ello</a></li>
+                 {#<li><a class="dropdown-item" href="/proximamente">Estamos trabajando en ello</a></li>#}
                 {% endif %}
             </ul>
         </div>
