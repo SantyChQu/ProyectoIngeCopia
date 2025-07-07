@@ -468,32 +468,38 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from .models import Localidad, Alquiler
 
+
 def eliminar_localidad(request, localidad_id):
     localidad = get_object_or_404(Localidad, id=localidad_id)
 
-    if request.method == 'POST':
-        tiene_alquileres = Alquiler.objects.filter(
-            localidad=localidad,
-            estado__in=['pendienteRetiro', 'enCurso', 'pendienteDevolucion']
-        ).exists()
+    tiene_alquileres = Alquiler.objects.filter(
+        localidad=localidad,
+        estado__in=['pendienteRetiro', 'enCurso', 'pendienteDevolucion']
+    ).exists()
 
-        if tiene_alquileres:
-            messages.error(
-                request,
-                f"No se puede eliminar la localidad '{localidad.nombre}' porque tiene alquileres pendientes o en curso."
-            )
+    maquinaria_asociada = Maquinaria.objects.filter(localidad=localidad).exists()
+
+    if request.method == 'POST':
+        if tiene_alquileres or maquinaria_asociada:
+            mensaje = f"No se puede eliminar la localidad '{localidad.nombre}' porque "
+            motivos = []
+            if tiene_alquileres:
+                motivos.append("tiene alquileres pendientes o en curso")
+            if maquinaria_asociada:
+                motivos.append("tiene maquinarias asociadas")
+            mensaje += " y ".join(motivos) + "."
+            messages.error(request, mensaje)
             return redirect('ver_localidades')
 
         localidad.delete()
-        messages.success(
-            request,
-            f"Localidad '{localidad.nombre}' eliminada correctamente."
-        )
+        messages.success(request, f"Localidad '{localidad.nombre}' eliminada correctamente.")
         return redirect('ver_localidades')
 
-    return render(request, 'confirmar_eliminacion.html', {'localidad': localidad})
-
-
+    return render(request, 'confirmar_eliminacion.html', {
+        'localidad': localidad,
+        'maquinaria_asociada': maquinaria_asociada,
+        'tiene_alquileres': tiene_alquileres,
+    })
 
 def proximo(request):
 
