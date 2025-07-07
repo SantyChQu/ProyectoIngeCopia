@@ -29,7 +29,10 @@
 </style>
 
 <h1 class="text-center mb-4">Listado de Localidades</h1>
-
+<form method="get" action="{% url 'ver_localidades' %}" style="text-align:center; margin-bottom: 20px;">
+    <input type="text" name="buscar" placeholder="Buscar por nombre" value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
 <!-- Botón para abrir el modal -->
 <div class="text-center mb-3">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregarLocalidad">

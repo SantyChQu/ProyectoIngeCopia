@@ -440,7 +440,13 @@ def puntuar_alquiler(request, alquiler_id):
 
 def ver_localidades(request):
     localidades = Localidad.objects.all()
-    
+
+    buscar = request.GET.get('buscar', '')
+    if buscar:
+        localidades = localidades.filter(nombre__icontains=buscar)
+
+    localidades = localidades.order_by('nombre')  
+
     if request.method == 'POST':
         form = LocalidadForm(request.POST)
         if form.is_valid():
@@ -453,6 +459,7 @@ def ver_localidades(request):
         'localidades': localidades,
         'form': form
     })
+
 
 def agregar_localidad(request):
     if request.method == 'POST':
@@ -570,8 +577,6 @@ import random
 def generar_password_aleatoria(longitud=10):
     caracteres = string.ascii_letters + string.digits
     return ''.join(random.choice(caracteres) for _ in range(longitud))
-
-
 
 
 from django.core.mail import EmailMultiAlternatives
