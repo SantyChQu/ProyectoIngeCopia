@@ -14,7 +14,6 @@ class Cliente(models.Model):
         ('habilitado', 'Habilitado'),
         ('inhabilitado', 'Inhabilitado'),
     ]               
-
     ROL_CHOICES = [
          ('cliente', 'Cliente'),
          ('jefe', 'Jefe'),
