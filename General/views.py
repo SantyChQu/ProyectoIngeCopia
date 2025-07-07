@@ -47,7 +47,6 @@ def hacer_reserva(request, maquinaria_id):
 
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
     cliente = Cliente.objects.get(id=request.session['cliente_id'])
-
     alquileres_existentes = Alquiler.objects.filter(
        codigo_maquina=maquinaria,
       estado='pendienteRetiro'
