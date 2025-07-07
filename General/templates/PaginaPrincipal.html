@@ -51,9 +51,9 @@
             </div>
             <div class="botones">
                 <button type="button" class="btn-ver-obs" onclick="abrirModal('modal-{{ maquinaria.id }}')">Ver Observaciones</button>
-                {% if request.session.cliente_rol != "jefe" %}
-                    <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary">Hacer reserva</a>
-                {% endif %}
+                <!--  {% if request.session.cliente_rol != "jefe" %}
+                    <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary btn-hacer-reserva">Hacer reserva</a>
+                {% endif %} -->
             </div>
             <!-- Modal oculto -->
             <div id="modal-{{ maquinaria.id }}" class="modal" style="display: none;">
@@ -75,12 +75,15 @@
                 </div>
                 
             </div>
-            
+        </div>    
+        <div class="imagen">
+            <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
+        </div> <br>
+        <div class="botones">
+                {% if request.session.cliente_rol != "jefe" %}
+                    <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary btn-hacer-reserva">Hacer reserva</a>
+                {% endif %}
         </div>
-            
-            <div class="imagen">
-                <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
-            </div>
     </div>
 {% empty %}
     <p>No hay maquinarias disponibles con esos filtros.</p>
@@ -118,6 +121,7 @@ window.onclick = function(event) {
   border-radius: 8px;
   max-width: 900px;
   margin-bottom: 20px;
+  position: relative;
 }
 
 .info-superior {
@@ -154,7 +158,20 @@ window.onclick = function(event) {
   align-items: flex-end;
   min-width: 140px;
 }
-
+.btn-hacer-reserva {
+  position: absolute;
+  right: 20px;  
+  bottom: 20px; 
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
 .btn-ver-obs {
   padding: 5px 10px;
   font-size: 0.85rem; /* un poco más pequeño */
@@ -164,6 +181,7 @@ window.onclick = function(event) {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
+  text-decoration: none;
 }
 
 .btn-ver-obs:hover {
