@@ -91,8 +91,11 @@ class Politica(models.Model):
 
 class Calificacion(models.Model):
     codigo_calif = models.AutoField(primary_key=True)
+    cliente = models.ForeignKey(Cliente, null=True, on_delete=models.CASCADE)
     estrellas = models.PositiveSmallIntegerField() 
     nota = models.TextField(blank=True, null=True)
+
+
 
 class Tarjeta(models.Model):
     numero_tarjeta = models.CharField(max_length=16)
@@ -135,7 +138,12 @@ class Maquinaria(models.Model):
             calificacion__isnull=False
         ).aggregate(prom=Avg('calificacion__estrellas'))['prom']
         return round(promedio, 2) if promedio is not None else None
-         
+    
+    def puntuaciones(self):
+        from .models import Calificacion, Alquiler
+        return Calificacion.objects.filter(
+            alquiler__codigo_maquina=self,
+        ).exclude(nota__isnull=True).exclude(nota__exact='')
 
  
 class Mantenimiento(models.Model):

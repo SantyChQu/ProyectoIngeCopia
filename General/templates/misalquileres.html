@@ -37,11 +37,11 @@
                             <td>
                                 {% if a.estado == 'pendienteRetiro' or a.estado == 'enCurso' %}
                                     <a href="{% url 'cancelar_alquiler' alquiler_id=a.id %}" 
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('¿Estás seguro de que querés cancelar este alquiler?')">
-                                       Cancelar alquiler
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('¿Estás seguro de que querés cancelar este alquiler?')">
+                                    Cancelar alquiler
                                     </a>
-                                {% else %}
+                                {% elif not a.cancelado %}
                                     <!-- Botón para abrir el modal -->
                                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalPuntuar{{ a.id }}">
                                         Puntuar
@@ -75,6 +75,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                {% else %}
+                                    <span btn-danger btn-sm; style = "background:#dc3545; color: #fff"> Cancelado </span>    
                                 {% endif %}
                             </td>
                         </tr>

@@ -9,34 +9,6 @@
     .filtros {
         margin-bottom: 20px;
     }
-    .maquinaria {
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        margin: 20px 0;
-        padding: 15px;
-        box-shadow: 0 0 10px #eee;
-    }
-    .info-superior {
-        display: flex;
-        justify-content: space-between;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .imagen {
-        text-align: center;
-        margin-bottom: 10px;
-    }
-    .imagen img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 10px;
-    }
-    .precio {
-        font-size: 18px;
-        color: #e76f51;
-        font-weight: bold;
-        text-align: center;
-    }
 </style>
 
 <div class="filtros">
@@ -61,42 +33,144 @@
 {% for maquinaria in maquinarias %}
     <div class="maquinaria">
         <div class="info-superior"> 
-      <div><strong>nro Serie:</strong> </br>{{ maquinaria.codigo_serie }}</div>
-      <div><strong>Marca:</strong> </br>{{ maquinaria.marca }}</div>
-      <div><strong>Modelo:</strong> </br>{{ maquinaria.modelo }}</div>
-      <div><strong>Año de compra: </strong> </br>{{ maquinaria.año_compra }}</div>
-      <div><strong>Localidad:</strong> </br>{{ maquinaria.localidad.nombre }}</div>
-      <div><strong>Política de cancelación:</strong> </br>{{ maquinaria.politica.nombre }}</div>
-       <div><strong>Puntuación:</strong></br>
-    {% if maquinaria.puntuacion_promedio %}
-        {{ maquinaria.puntuacion_promedio }}
-    {% else %}
-        Sin calificaciones
-    {% endif %}
-</div>
-        </div>
-        <div class="imagen">
-            <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
-        </div>
-        <div class="precio">
-            Precio por día: ${{ maquinaria.precio_alquiler_diario }}
-        </div>
-        {% if request.session.cliente_rol != "jefe" %}
-            <div style="text-align: right; margin-top: 10px;">
-                <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary">Hacer reserva</a>
+            <div><strong>nro Serie:</strong> <br>{{ maquinaria.codigo_serie }}</div>
+            <div><strong>Marca:</strong> <br>{{ maquinaria.marca }}</div>
+            <div><strong>Modelo:</strong> <br>{{ maquinaria.modelo }}</div>
+            <div><strong>Año de compra: </strong> <br>{{ maquinaria.año_compra }}</div>
+            <div><strong>Localidad:</strong> <br>{{ maquinaria.localidad.nombre }}</div>
+            <div><strong>Política de cancelación:</strong> <br>{{ maquinaria.politica.nombre }}</div>
+            <div><strong>Puntuación:</strong><br>
+                {% if maquinaria.puntuacion_promedio %}
+                    {{ maquinaria.puntuacion_promedio }}
+                {% else %}
+                    Sin calificaciones
+                {% endif %}
             </div>
-        {% endif %}
+            <div class="precio">
+                    Precio por día: ${{ maquinaria.precio_alquiler_diario }}
+            </div>
+            <div class="botones">
+                <button type="button" class="btn-ver-obs" onclick="abrirModal('modal-{{ maquinaria.id }}')">Ver Observaciones</button>
+                {% if request.session.cliente_rol != "jefe" %}
+                    <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary">Hacer reserva</a>
+                {% endif %}
+            </div>
+            <!-- Modal oculto -->
+            <div id="modal-{{ maquinaria.id }}" class="modal" style="display: none;">
+                <div class="modal-contenido">
+                    <span class="cerrar" onclick="cerrarModal('modal-{{ maquinaria.id }}')">&times;</span>
+                    <h2>Observaciones de {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
+                    {% if maquinaria.puntuaciones %}
+                        <ul>
+                        {% for puntuacion in maquinaria.puntuaciones %}
+                            <li>
+                            <small> Cliente: {{ puntuacion.cliente.nombre }} {{ puntuacion.cliente.apellido }}</small> <br>
+                            <small> Observacion: "{{ puntuacion.nota }}"</small> <br>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No hay observaciones.</p>
+                    {% endif %}
+                </div>
+                
+            </div>
+            
+        </div>
+            
+            <div class="imagen">
+                <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
+            </div>
     </div>
-    
 {% empty %}
     <p>No hay maquinarias disponibles con esos filtros.</p>
 {% endfor %}
 
 {% include "footer.html" %}
+<script>
+  function abrirModal(id) {
+  document.getElementById(id).style.display = 'flex';
+}
+
+function cerrarModal(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+window.onclick = function(event) {
+  const modals = document.querySelectorAll('.modal');
+  modals.forEach(modal => {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  });
+}
+
+</script>
 
 
 <style>
-  .modal {
+.maquinaria {
+  display: flex;
+  gap: 20px; /* espacio entre columnas */
+  align-items: flex-start;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin-bottom: 20px;
+}
+
+.info-superior {
+  flex: 1; /* ocupa el espacio disponible */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.imagen {
+  width: 400px;
+  text-align: center;
+}
+
+.imagen img {
+  max-width: 100%;
+  width: 350px;  
+  height: auto;
+  border-radius: 8px;
+}
+
+.precio {
+  margin-top: 10px;
+  color: #e76f51;
+  font-weight: bold;
+}
+
+.botones {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: flex-end;
+  min-width: 140px;
+}
+
+.btn-ver-obs {
+  padding: 5px 10px;
+  font-size: 0.85rem; /* un poco más pequeño */
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-ver-obs:hover {
+  background-color: #0056b3;
+}
+
+.modal {
     position: fixed;
     z-index: 999;
     left: 0; top: 0;
@@ -104,7 +178,7 @@
     background-color: rgba(0,0,0,0.4);
   }
 
-  .modal-content {
+.modal-content {
     background-color: #fff;
     margin: 20% auto;
     padding: 20px;
@@ -112,9 +186,9 @@
     width: 250px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  }
+}
 
-  .modal-content button {
+.modal-content button {
     margin-top: 10px;
     padding: 5px 15px;
     border: none;
@@ -122,14 +196,31 @@
     color: white;
     border-radius: 5px;
     cursor: pointer;
-  }
+}
 
-  .modal-content button:hover {
+.modal-content button:hover {
     background-color: #45a049;
-  }
+}
+.modal-contenido {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.cerrar {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
 </style>
-
-
-
 
 {% endblock %}
