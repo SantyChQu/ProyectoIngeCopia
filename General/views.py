@@ -403,6 +403,7 @@ def cancelar_alquiler(request, alquiler_id):
 
     alquiler.precio = monto_total - monto_a_devolver
     alquiler.estado = 'finalizado'
+    alquiler.cancelado = True
     alquiler.save()
 
     messages.success(
@@ -704,6 +705,7 @@ def ver_alquileres(request):
 
     if 'cliente_id' not in request.session:
         return redirect('/registro/')
+
     cliente_id = request.session['cliente_id']
     cliente = Cliente.objects.get(id=cliente_id)
 
@@ -724,7 +726,7 @@ def ver_alquileres(request):
 
     alquileres = alquileres.order_by('-desde')
 
-    # 👇 División en dos listas
+    # División en dos listas
     alquileres_finalizados = alquileres.filter(estado='finalizado')
     alquileres_no_finalizados = alquileres.exclude(estado='finalizado')
 
@@ -808,14 +810,25 @@ from django.db.models import Q
 
 def historial_alquileres(request):
     buscar = request.GET.get('buscar', '')
-    alquileres = Alquiler.objects.filter(estado='finalizado')
+    #alquileres = Alquiler.objects.filter(estado='finalizado')
+
+    finalizados = Alquiler.objects.filter(estado='finalizado', cancelado=False)
+    cancelados = Alquiler.objects.filter(estado='finalizado', cancelado=True)
 
     if buscar:
-        alquileres = alquileres.filter(
+        finalizados = finalizados.filter(
+            Q(codigo_identificador__icontains=buscar) |
+            Q(mail__mail__icontains=buscar)
+        )
+        cancelados = cancelados.filter(
             Q(codigo_identificador__icontains=buscar) |
             Q(mail__mail__icontains=buscar)
         )
 
-    alquileres = alquileres.order_by('-desde')
+    finalizados = finalizados.order_by('-desde')
+    cancelados = cancelados.order_by('-desde')
 
-    return render(request, 'historial_alquileres.html', {'alquileres': alquileres})
+    return render(request, 'historial_alquileres.html', {
+        'alquileres_finalizados': finalizados,
+        'alquileres_cancelados': cancelados
+    })

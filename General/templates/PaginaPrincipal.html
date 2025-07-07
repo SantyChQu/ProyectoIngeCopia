@@ -61,13 +61,13 @@
 {% for maquinaria in maquinarias %}
     <div class="maquinaria">
         <div class="info-superior"> 
-      <div><strong>nro Serie:</strong> {{ maquinaria.codigo_serie }}</div>
-      <div><strong>Marca:</strong> {{ maquinaria.marca }}</div>
-      <div><strong>Modelo:</strong> {{ maquinaria.modelo }}</div>
-      <div><strong>Año de compra: </strong> {{ maquinaria.año_compra }}</div>
-      <div><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</div>
-      <div><strong>Política de cancelación:</strong> {{ maquinaria.politica.nombre }}</div>
-       <div><strong>Puntuación:</strong>
+      <div><strong>nro Serie:</strong> </br>{{ maquinaria.codigo_serie }}</div>
+      <div><strong>Marca:</strong> </br>{{ maquinaria.marca }}</div>
+      <div><strong>Modelo:</strong> </br>{{ maquinaria.modelo }}</div>
+      <div><strong>Año de compra: </strong> </br>{{ maquinaria.año_compra }}</div>
+      <div><strong>Localidad:</strong> </br>{{ maquinaria.localidad.nombre }}</div>
+      <div><strong>Política de cancelación:</strong> </br>{{ maquinaria.politica.nombre }}</div>
+       <div><strong>Puntuación:</strong></br>
     {% if maquinaria.puntuacion_promedio %}
         {{ maquinaria.puntuacion_promedio }}
     {% else %}
