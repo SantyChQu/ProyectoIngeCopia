@@ -51,9 +51,7 @@
             </div>
             <div class="botones">
                 <button type="button" class="btn-ver-obs" onclick="abrirModal('modal-{{ maquinaria.id }}')">Ver Observaciones</button>
-                <!--  {% if request.session.cliente_rol != "jefe" %}
-                    <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary btn-hacer-reserva">Hacer reserva</a>
-                {% endif %} -->
+                
             </div>
             <!-- Modal oculto -->
             <div id="modal-{{ maquinaria.id }}" class="modal" style="display: none;">

@@ -93,16 +93,13 @@
                
                 
                 {% if request.session.cliente_rol == "jefe" %}
-
                 
                     <li><a class="dropdown-item" href="{% url 'ver_localidades' %}">Ver Localidades</a></li>
-
                     <li><a class="dropdown-item" href="/agregar_maquina/">Agregar Máquina</a></li>   
                     <li><a class="dropdown-item" href="/clientes/">Ver Listado Clientes</a></li>
                     <li><a class="dropdown-item" href="/maquinarias/">Ver Listado Maquinarias</a></li>
                     <li><a class="dropdown-item" href="/agregar_empleado/">Agregar Empleado</a></li>
                     <li><a class="dropdown-item" href="/empleados/">Ver Listado Empleados</a></li>
-                    <li><a class="dropdown-item" href="{% url 'ver_alquileres' %}">Ver Alquileres</a></li>
                 {% endif %}
 
                 {% if request.session.cliente_rol == "empleados" %}
@@ -137,7 +134,7 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilMenu">
                         <li><a class="dropdown-item" href="/verMisDatos">Ver mis datos</a></li>
 
-                        {% if request.session.cliente_rol == "cliente" %}
+                        {% if request.session.cliente_rol != "jefe" %}
                             <li><a class="dropdown-item" href="/misalquileres">Mis alquileres</a></li>
                         {% endif %}
 
