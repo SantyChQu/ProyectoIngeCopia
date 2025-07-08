@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import MaquinariaForm
 from django.db import IntegrityError
 from django.contrib import messages
-from General.models import Maquinaria, Localidad, Alquiler, Politica
+from General.models import Maquinaria, Localidad, Alquiler, Politica, Observacion, Cliente
 from datetime import datetime
 from PIL import Image
 
@@ -14,11 +14,11 @@ def agregar_maquina(request):
         form = MaquinariaForm(request.POST, request.FILES)
         if form.is_valid():
             try:
-                maquinaria_agregada = form.save(commit=False)  # No guardamos todavía
-                maquinaria_agregada.estado = 'habilitado'      # Asignamos estado
+                maquinaria_agregada = form.save(commit=False)  
+                maquinaria_agregada.estado = 'habilitado'      
                 maquinaria_agregada.save()
                 mensaje = '¡Maquinaria agregada correctamente!'
-                form = MaquinariaForm()  # reiniciar el form vacío
+                form = MaquinariaForm()  
             except IntegrityError:
                 form.add_error('numero_de_serie', 'Ya existe una máquina con ese número de serie.')
     else:
@@ -29,9 +29,25 @@ def agregar_maquina(request):
         'mensaje': mensaje,
         'maquinaria_agregada': maquinaria_agregada
     })
+from django.utils import timezone
+
+def agregar_observacion_maquinaria(request, id):
+    maquinaria = get_object_or_404(Maquinaria, id=id)
+    cliente = get_object_or_404(Cliente, id=request.session.get("cliente_id"))
+    if request.method == 'POST':
+        descripcion = request.POST.get('descripcion')
+        if descripcion:
+            obs = Observacion(
+                observacion=descripcion,
+                mail=cliente.mail,
+                codigo_maquina=maquinaria,
+                fecha=timezone.now().date()
+            )
+            obs.save()
+            messages.success(request, f"Observación agregada a {maquinaria.codigo_serie}.")
+    return redirect('ver_maquinarias')
 
 def ver_maquinarias(request):
-    # Primero, actualiza estados vencidos
     maquinarias = Maquinaria.objects.exclude(estado='eliminado')
     for maquina in maquinarias:
         maquina.verificar_estado()
@@ -53,7 +69,6 @@ from django.shortcuts import get_object_or_404
 
 from django.utils import timezone
 from datetime import timedelta
-
 def cambiar_estado_maquinaria(request, id):
     if request.method == 'POST':
         maquina = get_object_or_404(Maquinaria, id=id)
@@ -63,12 +78,18 @@ def cambiar_estado_maquinaria(request, id):
             if opcion == '1':
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=1)
-                messages.info(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por 1 día.")
+                Observacion.objects.create(
+                    maquinaria=maquina,
+                    descripcion=f"Inhabilitada automáticamente por 1 día."
+                )
             elif opcion == 'varios':
                 dias = int(request.POST.get('dias_extra', 1))
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias)
-                messages.info(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por {dias} días.")
+                Observacion.objects.create(
+                    maquinaria=maquina,
+                    descripcion=f"Inhabilitada automáticamente por {dias} días."
+                )
         else:
             maquina.estado = 'habilitado'
             maquina.fecha_habilitacion = None

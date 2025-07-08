@@ -100,6 +100,7 @@
                     <th style="background-color: #FFA726; color: black;">Eliminar maquina</th>
                 {% endif %}
                 <th style="background-color: #FFA726; color: black;"> Habilitar maquina el:</th>
+                <th style="background-color: #FFA726; color: black;"> Observaciones </th>
             </tr>
         </thead>
         <tbody>
@@ -199,6 +200,48 @@
                         <span> - </span>    
                     {% endif %}
                 </td>
+                 <td>
+                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalObservaciones{{ maquina.id }}">
+                        Ver Observaciones
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="modalObservaciones{{ maquina.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title">Observaciones de {{ maquina.codigo_serie }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                            <!-- Historial -->
+                                {% if maquina.observacion_set.all %}
+                                <ul class="list-group mb-3" style="text-align: left;">
+                                    {% for obs in maquina.observacion_set.all %}
+                                    <li class="list-group-item">
+                                        <strong>{{ obs.mail }}</strong><br>
+                                        {{ obs.observacion }}<br>
+                                        <small>{{ obs.fecha|date:"d/m/Y" }}</small>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p style="text-align:left;">No hay observaciones para esta máquina.</p>
+                                {% endif %}
+
+                            <!-- Formulario nueva observación -->
+                            <form method="post" action="{% url 'agregar_observacion_maquinaria' maquina.id %}">
+                                {% csrf_token %}
+                                <textarea name="descripcion" rows="3" class="form-control mb-2" placeholder="Escribí tu observación..." required></textarea>
+                                <button type="submit" class="btn btn-primary btn-sm">Agregar Observación</button>
+                            </form>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </td>
+
             </tr>
 
             <!-- Modal modificar maquinaria -->
@@ -237,6 +280,7 @@
                     </div>
                 </div>
             </div>
+           
             {% endfor %}
         </tbody>
     </table>

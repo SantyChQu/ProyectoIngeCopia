@@ -104,9 +104,6 @@ class Tarjeta(models.Model):
     fecha_hasta = models.DateField()
     monto = models.DecimalField(max_digits=100, decimal_places=2)
 
-   
-
-
 
   
 class Maquinaria(models.Model):
@@ -133,6 +130,10 @@ class Maquinaria(models.Model):
                 self.estado = 'habilitado'
                 self.fecha_habilitacion = None
                 self.save()
+                ObservacionMaquinaria.objects.create(
+                    maquinaria=self,
+                    descripcion=f"La maquinaria '{self.codigo_serie}' se habilitó automáticamente el {timezone.now().strftime('%d/%m/%Y %H:%M')}."
+                )
 
    
    # Puntuacion= models.PositiveSmallIntegerField() 
