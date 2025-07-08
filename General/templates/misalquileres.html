@@ -59,8 +59,21 @@
                                                     </div>
                                                     <div class="modal-body">
                                                         {% if form %}
-                                                            {{ form.estrellas.label_tag }}
-                                                            {{ form.estrellas }}
+                                                            <div class="mb-3">
+                                                            <label class="form-label">Calificación:</label>
+                                                            <div class="star-rating">
+                                                                <input type="radio" id="star5-{{ a.id }}" name="estrellas" value="5" />
+                                                                <label for="star5-{{ a.id }}">&#9733;</label>
+                                                                <input type="radio" id="star4-{{ a.id }}" name="estrellas" value="4" />
+                                                                <label for="star4-{{ a.id }}">&#9733;</label>
+                                                                <input type="radio" id="star3-{{ a.id }}" name="estrellas" value="3" />
+                                                                <label for="star3-{{ a.id }}">&#9733;</label>
+                                                                <input type="radio" id="star2-{{ a.id }}" name="estrellas" value="2" />
+                                                                <label for="star2-{{ a.id }}">&#9733;</label>
+                                                                <input type="radio" id="star1-{{ a.id }}" name="estrellas" value="1" />
+                                                                <label for="star1-{{ a.id }}">&#9733;</label>
+                                                            </div>
+                                                            </div>
                                                             {{ form.nota.label_tag }}
                                                             {{ form.nota }}
                                                         {% else %}
@@ -90,4 +103,33 @@
         </div>
     {% endif %}
 </div>
+<style>
+.star-rating {
+  direction: rtl; /* para que se pinten bien de derecha a izquierda */
+  display: inline-flex;
+}
+
+.star-rating input {
+  display: none; /* oculta los radios */
+}
+
+.star-rating label {
+  font-size: 2rem;
+  color: #ddd; /* gris por defecto */
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+/* Cuando el input está chequeado, pinta todas las anteriores */
+.star-rating input:checked ~ label {
+  color: #ffc107; /* amarillo dorado */
+}
+
+/* Hover: pinta al pasar el mouse */
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: #ffc107;
+}
+
+</style>
 {% endblock %}

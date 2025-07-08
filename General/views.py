@@ -440,7 +440,6 @@ def agregar_observacion(request, maquina_id):
         maquinaria = get_object_or_404(Maquinaria, id=maquina_id)
         texto = request.POST.get('observacion')
         cliente = get_object_or_404(Cliente, id=request.session.get("cliente_id"))
-        print("Mail guardado:", cliente.mail)
         Observacion.objects.create(
             observacion=texto,
             mail = cliente.mail,

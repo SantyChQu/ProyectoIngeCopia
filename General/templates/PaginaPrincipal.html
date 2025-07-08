@@ -66,8 +66,17 @@
                           <ul>
                           {% for puntuacion in maquinaria.puntuaciones %}
                               <li>
-                              <small> Cliente: {{ puntuacion.cliente.nombre }} {{ puntuacion.cliente.apellido }}</small> <br>
-                              <small> Observacion: "{{ puntuacion.nota }}"</small> <br>
+                              <small><strong> Cliente:</strong>  {{ puntuacion.cliente.nombre }} {{ puntuacion.cliente.apellido }}</small> <br>
+                              <small><strong>Estrellas:</strong> 
+                              {% for i in "12345" %}
+                                  {% if forloop.counter <= puntuacion.estrellas %}
+                                    ⭐
+                                  {% else %}
+                                    ☆
+                                  {% endif %}
+                              {% endfor %}
+                              </small><br>
+                              <small> <strong> Observacion:</strong>  "{{ puntuacion.nota }}"</small> <br>
                               </li>
                           {% endfor %}
                           </ul>
