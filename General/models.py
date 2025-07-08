@@ -126,9 +126,17 @@ class Maquinaria(models.Model):
     politica = models.ForeignKey(Politica, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to='maquinas/')
    
+    fecha_habilitacion = models.DateTimeField(null=True, blank=True) 
+    def verificar_estado(self):
+        if self.estado == 'inhabilitado' and self.fecha_habilitacion:
+            if timezone.now() >= self.fecha_habilitacion:
+                self.estado = 'habilitado'
+                self.fecha_habilitacion = None
+                self.save()
+
    
    # Puntuacion= models.PositiveSmallIntegerField() 
-
+    
 
     def puntuacion_promedio(self):
         from .models import Alquiler  # evitar import circular si hace falta

@@ -31,14 +31,15 @@ def agregar_maquina(request):
     })
 
 def ver_maquinarias(request):
+    # Primero, actualiza estados vencidos
     maquinarias = Maquinaria.objects.exclude(estado='eliminado')
+    for maquina in maquinarias:
+        maquina.verificar_estado()
+
     localidades = Localidad.objects.all()
     politicas = Politica.objects.all()
 
-    if request.session.get('cliente_rol') == "empleados":
-        soyEmpleado = True
-    else:
-        soyEmpleado = False    
+    soyEmpleado = request.session.get('cliente_rol') == "empleados"
 
     return render(request, 'ApartadoMaquina/listadoMaquinas.html', {
         'maquinarias': maquinarias,
@@ -50,18 +51,33 @@ def ver_maquinarias(request):
 ##
 from django.shortcuts import get_object_or_404
 
+from django.utils import timezone
+from datetime import timedelta
+
 def cambiar_estado_maquinaria(request, id):
-   if request.method == 'POST':
+    if request.method == 'POST':
         maquina = get_object_or_404(Maquinaria, id=id)
+
         if maquina.estado == 'habilitado':
-            maquina.estado = 'inhabilitado'
-            messages.error(request, f"La maquinaria '{maquina.codigo_serie} ' fue inhabilitada correctamente.")
+            opcion = request.POST.get('opcion')
+            if opcion == '1':
+                maquina.estado = 'inhabilitado'
+                maquina.fecha_habilitacion = timezone.now() + timedelta(days=1)
+                messages.info(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por 1 día.")
+            elif opcion == 'varios':
+                dias = int(request.POST.get('dias_extra', 1))
+                maquina.estado = 'inhabilitado'
+                maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias)
+                messages.info(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por {dias} días.")
         else:
             maquina.estado = 'habilitado'
-            messages.success(request, f"La maquinaria '{maquina.codigo_serie} ' fue habilitada correctamente.")
+            maquina.fecha_habilitacion = None
+            messages.success(request, f"La maquinaria '{maquina.codigo_serie}' fue habilitada correctamente.")
+
         maquina.save()
         return redirect('ver_maquinarias')
-   
+
+
    
 def eliminar_maquinaria(request, maquinaria_id):
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)

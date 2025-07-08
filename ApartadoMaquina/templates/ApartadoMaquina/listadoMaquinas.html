@@ -88,16 +88,18 @@
                 <th style="background-color: #FFA726; color: black;">Marca</th>
                 <th style="background-color: #FFA726; color: black;">Modelo</th>
                 <th style="background-color: #FFA726; color: black;">Año</th>
-                <th style="background-color: #FFA726; color: black;">Estado</th>
                 <th style="background-color: #FFA726; color: black;">Precio por día</th>
                 <th style="background-color: #FFA726; color: black;">Localidad</th>
                 <th style="background-color: #FFA726; color: black;">Imagen</th>
                 <th style="background-color: #FFA726; color: black;">Politica</th>
+                <th style="background-color: #FFA726; color: black;">Estado</th>
                 <th style="background-color: #FFA726; color: black;">Acción</th>
-                <th style="background-color: #FFA726; color: black;">Modificar Maquinaria</th>
-                {% if not empleado %}
+                
+                {% if not empleado %}      
+                    <th style="background-color: #FFA726; color: black;">Modificar Maquinaria</th>
                     <th style="background-color: #FFA726; color: black;">Eliminar maquina</th>
                 {% endif %}
+                <th style="background-color: #FFA726; color: black;"> Habilitar maquina el:</th>
             </tr>
         </thead>
         <tbody>
@@ -107,7 +109,6 @@
                 <td>{{ maquina.marca }}</td>
                 <td>{{ maquina.modelo }}</td>
                 <td>{{ maquina.año_compra }}</td>
-                <td>{{ maquina.estado }}</td>
                 <td>${{ maquina.precio_alquiler_diario }}</td>
                 <td>{{ maquina.localidad }}</td>
                 <td>
@@ -118,29 +119,61 @@
                     {% endif %}
                 </td>
                 <td>{{ maquina.politica }}</td>
+                <td>{{ maquina.estado }}</td>
                 <td>
                     <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
                         {% csrf_token %}
                         {% if maquina.estado == 'habilitado' %}
-                            <button type="submit" class="boton-inhabilitar"
-                                onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'inhabilitar')">
+                            <button type="button" class="boton-inhabilitar"
+                                data-bs-toggle="modal" data-bs-target="#modalInhabilitar{{ maquina.id }}">
                                 Inhabilitar
                             </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="modalInhabilitar{{ maquina.id }}" tabindex="-1" aria-labelledby="modalInhabilitarLabel{{ maquina.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="modalInhabilitarLabel{{ maquina.id }}">Inhabilitar Maquinaria</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <p>¿Por cuánto tiempo querés inhabilitar la maquina <strong>{{ maquina.codigo_serie }}</strong>?</p>
+
+                                    <!-- Botón para 1 día -->
+                                    <button type="submit" name="opcion" value="1" class="btn btn-warning mb-2 w-100">Inhabilitar por 1 día</button>
+
+                                    <!-- Botón para más días -->
+                                    <p style="margin-top: 15px;"> Inhabilitar por más días:</p>
+                                    <input type="number" name="dias_extra" min="2" max="365" class="form-control mb-2" placeholder="Cantidad de días">
+                                    <button type="submit" name="opcion" value="varios" class="btn btn-danger w-100">Inhabilitar por varios días</button>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                            </div>
                         {% else %}
                             <button type="submit" class="boton-habilitar"
                                 onclick="return confirmarCambioEstado('{{ maquina.codigo_serie }}', 'habilitar')">
                                 Habilitar
                             </button>
+
                         {% endif %}
                     </form>
                 </td>
-                <td>
-                    <button type="button" class="boton-habilitar"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalModificar{{ maquina.id }}">
-                        Modificar
-                    </button>
-                </td>
+                {% if not empleado %}
+                    <td>
+                        <button type="button" class="boton-habilitar"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalModificar{{ maquina.id }}">
+                            Modificar
+                        </button>
+                    </td>
+                {% endif %}    
                 {% if not empleado %}
                 <td>
                     <form method="post" action="{% url 'eliminar_maquinaria' maquina.id %}">
@@ -157,6 +190,15 @@
                     </form>
                 </td>
                 {% endif %}
+                <td>
+                    {% if maquina.estado == 'inhabilitado' and maquina.fecha_habilitacion %}
+                        <p style="color:red; font-weight:bold;">
+                            {{ maquina.fecha_habilitacion|date:"d/m/Y H:i" }}
+                        </p>
+                    {% else %}
+                        <span> - </span>    
+                    {% endif %}
+                </td>
             </tr>
 
             <!-- Modal modificar maquinaria -->

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class Maquina(models.Model):
@@ -8,6 +9,11 @@ class Maquina(models.Model):
     año_compra = models.PositiveIntegerField()
     localidad = models.CharField(max_length=100)
     imagen = models.ImageField(upload_to='maquinas/')
+
+   
+     
     
+    
+
     def __str__(self):
         return f"Marca:{self.marca} Modelo:{self.modelo} N° de Serie:({self.numero_de_serie})"
