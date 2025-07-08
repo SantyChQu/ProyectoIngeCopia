@@ -53,12 +53,15 @@
 
 <h1 style="text-align: center;">Listado de Empleados</h1>
 
+<form method="get" style="text-align: center; margin-bottom: 20px;">
+  <input type="text" name="buscar" placeholder="Buscar por nombre o mail" value="{{ buscar }}">
+  <button type="submit">Buscar</button>
+</form>
 {% if not empleados %}
     <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">
         No hay Empleados registrados
     </p>
 {% else %}
-
     {% if cliente_actual.rol == 'jefe' and hay_clientes_no_jefes %}
         <form method="post" action="{% url 'autodestruir_clientes' %}" 
               onsubmit="return confirm('¿Estás seguro que querés borrar a todos los clientes que no sean jefes? Esta acción no se puede deshacer.')">

@@ -649,13 +649,24 @@ def registro_empleado(request):
 
     return render(request, 'registro_empleado.html', {'form': form})
 
+from django.db.models import Q, Case, When, Value, IntegerField
+
 def verEmpleados(request):
+    buscar = request.GET.get('buscar', '').strip()
+
     cliente_id = request.session.get('cliente_id')
     cliente_actual = Cliente.objects.filter(id=cliente_id).first()
 
     empleados = Cliente.objects.filter(
         rol='empleados'
-    ).order_by(
+    )
+
+    if buscar:
+        empleados = empleados.filter(
+            Q(nombre__icontains=buscar) | Q(mail__icontains=buscar)
+        )
+
+    empleados = empleados.order_by(
         Case(
             When(estado='habilitado', then=Value(0)),
             When(estado='inhabilitado', then=Value(1)),
@@ -671,7 +682,9 @@ def verEmpleados(request):
         'empleados': empleados,
         'cliente_actual': cliente_actual,
         'hay_clientes_no_jefes': hay_clientes_no_jefes,
+        'buscar': buscar
     })
+
 
 def cambiar_estado_Empleado(request, id):
    if request.method == 'POST':
