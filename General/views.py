@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from .forms import ClienteEdicionForm, ClienteRegistroForm, CambiarContraseñaForm, tarjetaForm, LocalidadForm, EmpleadoRegistroForm,CalificacionForm, FiltroAnioForm
 from django.contrib.auth import login,logout
 from django.db import IntegrityError
-from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler,Calificacion
+from .models import Cliente,Maquinaria, Localidad, Tarjeta, Alquiler,Calificacion, Observacion
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password 
 from django.db import connection
@@ -426,16 +426,28 @@ def puntuar_alquiler(request, alquiler_id):
         form = CalificacionForm(request.POST)
         if form.is_valid():
             calificacion = Calificacion.objects.create(
-                cliente_id=request.session.get("cliente_id"),  # ✔️ correcto
+                cliente_id=request.session.get("cliente_id"),
                 estrellas=form.cleaned_data['estrellas'],
                 nota=form.cleaned_data['nota']
             )
-            alquiler.calificacion = calificacion  # ✔️ se relaciona con alquiler, NO con maquinaria
+            alquiler.calificacion = calificacion  
             alquiler.save()
 
     return redirect('/misalquileres')
 
-
+def agregar_observacion(request, maquina_id):
+    if request.method == 'POST':
+        maquinaria = get_object_or_404(Maquinaria, id=maquina_id)
+        texto = request.POST.get('observacion')
+        cliente = get_object_or_404(Cliente, id=request.session.get("cliente_id"))
+        print("Mail guardado:", cliente.mail)
+        Observacion.objects.create(
+            observacion=texto,
+            mail = cliente.mail,
+            codigo_maquina=maquinaria,
+            fecha=timezone.now()
+        )
+    return redirect('/alquileres') 
 
 
 def ver_localidades(request):

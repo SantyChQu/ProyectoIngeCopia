@@ -7,133 +7,187 @@
     <input type="text" name="buscar" placeholder="Buscar por código o mail" value="{{ request.GET.buscar }}">
     <button type="submit" class="btn btn-primary">Buscar</button>
 </form>
-
-<!-- ALQUILERES ACTIVOS -->
-{% if alquileres_no_finalizados %}
-<h2 style="text-align: center;">Alquileres Activos</h2>
-<table class="table table-bordered" style="width: 90%; margin: auto;">
-    <thead style="background-color: #FFA726; color: black;">
-        <tr>
-            <th style="background-color: #FFA726; color: black;">Código</th>
-            <th style="background-color: #FFA726; color: black;">Cliente</th>
-            <th style="background-color: #FFA726; color: black;">DNI</th>
-            <th style="background-color: #FFA726; color: black;">Máquina</th>
-            <th style="background-color: #FFA726; color: black;">Fecha Inicio</th>
-            <th style="background-color: #FFA726; color: black;">Fecha Fin</th>
-            <th style="background-color: #FFA726; color: black;">Estado</th>
-            <th style="background-color: #FFA726; color: black;">Acción</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for alquiler in alquileres_no_finalizados %}
-        <tr>
-            <td>{{ alquiler.codigo_identificador }}</td>
-            <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
-            <td>{{ alquiler.mail.dni }}</td>
-            <td>{{ alquiler.marca }} {{ alquiler.modelo }}</td>
-            <td>{{ alquiler.desde }}</td>
-            <td>{{ alquiler.hasta }}</td>
-            <td>{{ alquiler.get_estado_display }}</td>
-           
-           {% if cliente.rol == 'empleados' %} 
-             <td>
-                 {% if alquiler.estado == 'pendienteRetiro' %}
-                    <form method="post" action="{% url 'aceptar_retiro' alquiler.id %}">
-                        {% csrf_token %}
-                        <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar Retiro')">Aceptar Retiro</button>
-                    </form>
-                 {% elif alquiler.estado == 'enCurso' %}
-                    <form method="post" action="{% url 'aceptar_devolucion' alquiler.id %}">
-                        {% csrf_token %}
-                        <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar devolucion')">Aceptar Devolución</button>
-                    </form>
-                 {% elif alquiler.estado == 'pendienteDevolucion' %}
-                    <form method="post" action="{% url 'aceptar_devolucion_con_retraso' alquiler.id %}">
-                        {% csrf_token %}
-                        <button style="background-color:rgb(206, 16, 16);" 
-                                type="submit" 
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirmarCambioEstado2(
-                                    '{{ alquiler.codigo_identificador }}',
-                                    '{{ alquiler.mail.dni }}',
-                                    '{{ alquiler.monto_recargo|floatformat:2 }}',
-                                    '{{ alquiler.dias_atraso }}')">
-                            Aceptar Devolución (con Retraso)
-                        </button>
-                    </form>
-                 {% else %}
-                     <span>-</span>
-
-                 {% endif %}
-             </td>
-            {% else %}
-                <td>
-                 <span>-</span>
-                </td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<script>
-    function confirmarCambioEstado(nombre, apellido, accion) {
-        const mensaje = `¿Estás seguro que quieres ${accion} de la maquina ${nombre} al cliente ${apellido}?`;
-        return confirm(mensaje);
-    }
-</script>
-<script>
-    function confirmarCambioEstado2(codigo, dni, monto, dias) {
-        const mensaje = `No aceptar devolución hasta de la maquina ${codigo} hasta que el cliente con DNI ${dni} haya pagado el recargo.\n\n` + `Días de atraso: ${dias}\n` +
-            `Monto a cobrar: ${monto }\n\n` + `¿Confirmar que desea continuar?`
-        return confirm(mensaje);
-    }
-</script>
-{% else %}
-<p style="text-align: center;">No hay alquileres activos.</p>
-{% endif %}
-
-<!-- ALQUILERES FINALIZADOS -->
-<h2 style="text-align: center; margin-top: 40px;">Alquileres Finalizados</h2>
-{% if alquileres_finalizados %}
-<table class="table table-bordered" style="width: 90%; margin: auto;">
-    <thead style="background-color: #8BC34A; color: black;">
-        <tr>
-            <th style="background-color: #FFA726; color: black;">Código</th>
-            <th style="background-color: #FFA726; color: black;">Cliente</th>
-            <th style="background-color: #FFA726; color: black;">DNI</th>
-            <th style="background-color: #FFA726; color: black;">Máquina</th>
-            <th style="background-color: #FFA726; color: black;">Fecha Inicio</th>
-            <th style="background-color: #FFA726; color: black;">Fecha Fin</th>
-            <th style="background-color: #FFA726; color: black;">Estado</th>
-            <th style="background-color: #FFA726; color: black;">Acción</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for alquiler in alquileres_finalizados %}
-        <tr>
-            <td>{{ alquiler.codigo_identificador }}</td>
-            <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
-            <td>{{ alquiler.mail.dni }}</td>
-            <td>{{ alquiler.marca }} {{ alquiler.modelo }}</td>
-            <td>{{ alquiler.desde }}</td>
-            <td>{{ alquiler.hasta }}</td>
-            <td>{{ alquiler.get_estado_display }}</td>
-            <td>
-                <span>-</span>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p style="text-align: center;">No hay alquileres finalizados.</p>
-{% endif %}
-
-<div style="text-align: center; margin-top: 20px;">
-    <a href="{% url 'inicio' %}">
-        <button class="btn btn-primary">Volver al Inicio</button>
-    </a>
+<div style="text-align: center; margin-bottom: 20px;">
+  <button onclick="mostrarSeccion('activos')">Alquileres Activos</button>
+  <button onclick="mostrarSeccion('finalizados')">Alquileres Finalizados</button>
 </div>
 
+<div id="activos" style="display: block;">
+    <!-- ALQUILERES ACTIVOS -->
+    {% if alquileres_no_finalizados %}
+    <h2 style="text-align: center;">Alquileres Activos</h2>
+    <table class="table table-bordered" style="width: 90%; margin: auto;">
+        <thead style="background-color: #FFA726; color: black;">
+            <tr>
+                <th style="background-color: #FFA726; color: black;">Código</th>
+                <th style="background-color: #FFA726; color: black;">Cliente</th>
+                <th style="background-color: #FFA726; color: black;">DNI</th>
+                <th style="background-color: #FFA726; color: black;">Máquina</th>
+                <th style="background-color: #FFA726; color: black;">Fecha Inicio</th>
+                <th style="background-color: #FFA726; color: black;">Fecha Fin</th>
+                <th style="background-color: #FFA726; color: black;">Estado</th>
+                <th style="background-color: #FFA726; color: black;">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alquiler in alquileres_no_finalizados %}
+            <tr>
+                <td>{{ alquiler.codigo_identificador }}</td>
+                <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
+                <td>{{ alquiler.mail.dni }}</td>
+                <td>{{ alquiler.marca }} {{ alquiler.modelo }}</td>
+                <td>{{ alquiler.desde }}</td>
+                <td>{{ alquiler.hasta }}</td>
+                <td>{{ alquiler.get_estado_display }}</td>
+            
+            {% if cliente.rol == 'empleados' %} 
+                <td>
+                    {% if alquiler.estado == 'pendienteRetiro' %}
+                        <form method="post" action="{% url 'aceptar_retiro' alquiler.id %}">
+                            {% csrf_token %}
+                            <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar Retiro')">Aceptar Retiro</button>
+                        </form>
+                    {% elif alquiler.estado == 'enCurso' %}
+                        <form method="post" action="{% url 'aceptar_devolucion' alquiler.id %}">
+                            {% csrf_token %}
+                            <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" onclick="return confirmarCambioEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Aceptar devolucion')">Aceptar Devolución</button>
+                        </form>
+                    {% elif alquiler.estado == 'pendienteDevolucion' %}
+                        <form method="post" action="{% url 'aceptar_devolucion_con_retraso' alquiler.id %}">
+                            {% csrf_token %}
+                            <button style="background-color:rgb(206, 16, 16);" 
+                                    type="submit" 
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmarCambioEstado2(
+                                        '{{ alquiler.codigo_identificador }}',
+                                        '{{ alquiler.mail.dni }}',
+                                        '{{ alquiler.monto_recargo|floatformat:2 }}',
+                                        '{{ alquiler.dias_atraso }}')">
+                                Aceptar Devolución (con Retraso)
+                            </button>
+                        </form>
+                    {% else %}
+                        <span>-</span>
+
+                    {% endif %}
+                </td>
+                {% else %}
+                    <td>
+                    <span>-</span>
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        function confirmarCambioEstado(nombre, apellido, accion) {
+            const mensaje = `¿Estás seguro que quieres ${accion} de la maquina ${nombre} al cliente ${apellido}?`;
+            return confirm(mensaje);
+        }
+    </script>
+    <script>
+        function confirmarCambioEstado2(codigo, dni, monto, dias) {
+            const mensaje = `No aceptar devolución hasta de la maquina ${codigo} hasta que el cliente con DNI ${dni} haya pagado el recargo.\n\n` + `Días de atraso: ${dias}\n` +
+                `Monto a cobrar: ${monto }\n\n` + `¿Confirmar que desea continuar?`
+            return confirm(mensaje);
+        }
+    </script>
+    {% else %}
+    <p style="text-align: center;">No hay alquileres activos.</p>
+    {% endif %}
+</div> <!-- Fin alquileres activos-->
+
+<div id="finalizados" style="display: none;">
+    <!-- ALQUILERES FINALIZADOS -->
+    <h2 style="text-align: center; margin-top: 40px;">Alquileres Finalizados</h2>
+    {% if alquileres_finalizados %}
+    <table class="table table-bordered" style="width: 90%; margin: auto;">
+        <thead style="background-color: #8BC34A; color: black;">
+            <tr>
+                <th style="background-color: #FFA726; color: black;">Código</th>
+                <th style="background-color: #FFA726; color: black;">Cliente</th>
+                <th style="background-color: #FFA726; color: black;">DNI</th>
+                <th style="background-color: #FFA726; color: black;">Máquina</th>
+                <th style="background-color: #FFA726; color: black;">Fecha Inicio</th>
+                <th style="background-color: #FFA726; color: black;">Fecha Fin</th>
+                <th style="background-color: #FFA726; color: black;">Estado</th>
+                <th style="background-color: #FFA726; color: black;">Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alquiler in alquileres_finalizados %}
+            <tr>
+                <td>{{ alquiler.codigo_identificador }}</td>
+                <td>{{ alquiler.mail.nombre }} {{ alquiler.mail.apellido }}</td>
+                <td>{{ alquiler.mail.dni }}</td>
+                <td>{{ alquiler.marca }} {{ alquiler.modelo }}</td>
+                <td>{{ alquiler.desde }}</td>
+                <td>{{ alquiler.hasta }}</td>
+                <td>{{ alquiler.get_estado_display }}</td>
+                <td>
+                    
+                    {% if alquiler.codigo_maquina %}
+                        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalObservaciones{{ alquiler.id }}">
+                            Ver Observaciones
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modalObservaciones{{ alquiler.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title">Observaciones de la máquina {{ alquiler.marca }} {{ alquiler.modelo }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                <!-- Historial de observaciones -->
+                                {% with alquiler.codigo_maquina as maquina %}
+                                    {% if maquina.observacion_set.all %}
+                                        <ul class="list-group mb-3">
+                                            {% for obs in maquina.observacion_set.all %}
+                                                <li class="list-group-item">
+                                                    <strong>{{ obs.mail }}:</strong> <br> {{ obs.observacion }}<br>
+                                                    <small>{{ obs.fecha }}</small>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p>No hay observaciones para esta máquina.</p>
+                                    {% endif %}
+                                {% endwith %}
+
+                                <!-- Formulario para nueva observación -->
+                                <form method="post" action="{% url 'agregar_observacion' alquiler.codigo_maquina.id %}">
+                                    {% csrf_token %}
+                                        <textarea name="observacion" rows="4" class="form-control" placeholder="Escribe tu observación..."></textarea>
+                                        <button type="submit" class="btn btn-primary mt-2">Agregar Observación</button>
+                                </form>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center;">No hay alquileres finalizados.</p>
+    {% endif %}
+</div> <!--Fin alquileres finalizados-->
+<div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'inicio' %}">
+            <button class="btn btn-primary">Volver al Inicio</button>
+        </a>
+</div>
+<script>
+  function mostrarSeccion(seccion) {
+    document.getElementById('activos').style.display = (seccion === 'activos') ? 'block' : 'none';
+    document.getElementById('finalizados').style.display = (seccion === 'finalizados') ? 'block' : 'none';
+  }
+</script>
 {% endblock %}
 

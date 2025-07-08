@@ -51,6 +51,7 @@ urlpatterns = [
     path('cancelar_alquiler/<int:alquiler_id>/', general.cancelar_alquiler, name='cancelar_alquiler'),
     
     path('alquileres/<int:alquiler_id>/puntuar/', general.puntuar_alquiler, name='puntuar_alquiler'),
+    path('observacion/<int:maquina_id>/agregar/', general.agregar_observacion, name='agregar_observacion'),
 
     path('proximamente/',general.proximo),
     path('estadisticas/', cliente_views.estadisticas_clientes, name='estadisticas_clientes'),
