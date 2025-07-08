@@ -70,26 +70,21 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
 def cambiar_estado_maquinaria(request, id):
+
     if request.method == 'POST':
         maquina = get_object_or_404(Maquinaria, id=id)
-
+        empleado_mail = get_object_or_404(Cliente, id=request.session.get("cliente_id"))
         if maquina.estado == 'habilitado':
             opcion = request.POST.get('opcion')
             if opcion == '1':
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=1)
-                Observacion.objects.create(
-                    maquinaria=maquina,
-                    descripcion=f"Inhabilitada automáticamente por 1 día."
-                )
+                
             elif opcion == 'varios':
                 dias = int(request.POST.get('dias_extra', 1))
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias)
-                Observacion.objects.create(
-                    maquinaria=maquina,
-                    descripcion=f"Inhabilitada automáticamente por {dias} días."
-                )
+                
         else:
             maquina.estado = 'habilitado'
             maquina.fecha_habilitacion = None

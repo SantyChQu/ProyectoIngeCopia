@@ -133,27 +133,36 @@
                             <div class="modal fade" id="modalInhabilitar{{ maquina.id }}" tabindex="-1" aria-labelledby="modalInhabilitarLabel{{ maquina.id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                <form method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
+                                <form id="formInhabilitar{{ maquina.id }}" method="post" action="{% url 'cambiar_estado_maquinaria' maquina.id %}">
                                     {% csrf_token %}
                                     <div class="modal-header">
-                                    <h5 class="modal-title" id="modalInhabilitarLabel{{ maquina.id }}">Inhabilitar Maquinaria</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                        <h5 class="modal-title">Inhabilitar Maquinaria</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                     </div>
                                     <div class="modal-body">
-                                    <p>¿Por cuánto tiempo querés inhabilitar la maquina <strong>{{ maquina.codigo_serie }}</strong>?</p>
+                                        <p>¿Por cuánto tiempo querés inhabilitar la maquina <strong>{{ maquina.codigo_serie }}</strong>?</p>
 
-                                    <!-- Botón para 1 día -->
-                                    <button type="submit" name="opcion" value="1" class="btn btn-warning mb-2 w-100">Inhabilitar por 1 día</button>
+                                        <!-- Botón para 1 día -->
+                                        <button type="submit" name="opcion" value="1" 
+                                        class="btn btn-warning mb-2 w-100"
+                                        onclick="toggleRequired{{ maquina.id }}(false)">
+                                        Inhabilitar por 1 día
+                                        </button>
 
-                                    <!-- Botón para más días -->
-                                    <p style="margin-top: 15px;"> Inhabilitar por más días:</p>
-                                    <input required type="number" name="dias_extra" min="2" max="365" class="form-control mb-2" placeholder="Cantidad de días">
-                                    <button type="submit" name="opcion" value="varios" class="btn btn-danger w-100">Inhabilitar por varios días</button>
+                                        <!-- Botón para más días -->
+                                        <p style="margin-top: 15px;">Inhabilitar por más días:</p>
+                                        <input id="diasExtra{{ maquina.id }}" type="number" name="dias_extra" min="2" max="365"
+                                            class="form-control mb-2" placeholder="Cantidad de días">
+                                        <button type="submit" name="opcion" value="varios"
+                                        class="btn btn-danger w-100"
+                                        onclick="toggleRequired{{ maquina.id }}(true)">
+                                        Inhabilitar por varios días
+                                        </button>
                                     </div>
                                     <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                     </div>
-                                </form>
+                                    </form>
                                 </div>
                             </div>
                             </div>
@@ -289,6 +298,11 @@
         function confirmarCambioEstado(codigo, accion) {
             return confirm(`¿Estás seguro que querés ${accion} a la máquina con código: ${codigo}?`);
         }
+        function toggleRequired{{ maquina.id }}(isRequired) {
+            const input = document.getElementById('diasExtra{{ maquina.id }}');
+            input.required = isRequired;
+        }
+
     </script>
 
 {% endif %}
