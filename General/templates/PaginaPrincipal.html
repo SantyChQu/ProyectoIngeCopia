@@ -7,10 +7,14 @@
 
 <style>
     .filtros {
-        margin-bottom: 20px;
+       margin-bottom: 20px;
+       text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
     }
 </style>
-
 <div class="filtros">
     <form method="get">
         <label for="localidad">Localidad:</label>
@@ -29,64 +33,64 @@
         <button type="submit">Filtrar</button>
     </form>
 </div>
-
-{% for maquinaria in maquinarias %}
-    <div class="maquinaria">
-        <div class="info-superior"> 
-            <div><strong>nro Serie:</strong> <br>{{ maquinaria.codigo_serie }}</div>
-            <div><strong>Marca:</strong> <br>{{ maquinaria.marca }}</div>
-            <div><strong>Modelo:</strong> <br>{{ maquinaria.modelo }}</div>
-            <div><strong>Año de compra: </strong> <br>{{ maquinaria.año_compra }}</div>
-            <div><strong>Localidad:</strong> <br>{{ maquinaria.localidad.nombre }}</div>
-            <div><strong>Política de cancelación:</strong> <br>{{ maquinaria.politica.nombre }}</div>
-            <div><strong>Puntuación:</strong><br>
-                {% if maquinaria.puntuacion_promedio %}
-                    {{ maquinaria.puntuacion_promedio }}
-                {% else %}
-                    Sin calificaciones
-                {% endif %}
-            </div>
-            <div class="precio">
-                    Precio por día: ${{ maquinaria.precio_alquiler_diario }}
-            </div>
-            <div class="botones">
-                <button type="button" class="btn-ver-obs" onclick="abrirModal('modal-{{ maquinaria.id }}')">Ver Observaciones</button>
-                
-            </div>
-            <!-- Modal oculto -->
-            <div id="modal-{{ maquinaria.id }}" class="modal" style="display: none;">
-                <div class="modal-contenido">
-                    <span class="cerrar" onclick="cerrarModal('modal-{{ maquinaria.id }}')">&times;</span>
-                    <h2>Observaciones de {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
-                    {% if maquinaria.puntuaciones %}
-                        <ul>
-                        {% for puntuacion in maquinaria.puntuaciones %}
-                            <li>
-                            <small> Cliente: {{ puntuacion.cliente.nombre }} {{ puntuacion.cliente.apellido }}</small> <br>
-                            <small> Observacion: "{{ puntuacion.nota }}"</small> <br>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No hay observaciones.</p>
-                    {% endif %}
-                </div>
-                
-            </div>
-        </div>    
-        <div class="imagen">
-            <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
-        </div> <br>
-        <div class="botones">
-                {% if request.session.cliente_rol != "jefe" %}
-                    <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary btn-hacer-reserva">Hacer reserva</a>
-                {% endif %}
-        </div>
-    </div>
-{% empty %}
-    <p>No hay maquinarias disponibles con esos filtros.</p>
-{% endfor %}
-
+<div class = "contenedor">
+  {% for maquinaria in maquinarias %}
+      <div class="maquinaria">
+          <div class="info-superior"> 
+              <div><strong>nro Serie:</strong> <br>{{ maquinaria.codigo_serie }}</div>
+              <div><strong>Marca:</strong> <br>{{ maquinaria.marca }}</div>
+              <div><strong>Modelo:</strong> <br>{{ maquinaria.modelo }}</div>
+              <div><strong>Año de compra: </strong> <br>{{ maquinaria.año_compra }}</div>
+              <div><strong>Localidad:</strong> <br>{{ maquinaria.localidad.nombre }}</div>
+              <div><strong>Política de cancelación:</strong> <br>{{ maquinaria.politica.nombre }}</div>
+              <div><strong>Puntuación:</strong><br>
+                  {% if maquinaria.puntuacion_promedio %}
+                      {{ maquinaria.puntuacion_promedio }}
+                  {% else %}
+                      Sin calificaciones
+                  {% endif %}
+              </div>
+              <div class="precio">
+                      Precio por día: ${{ maquinaria.precio_alquiler_diario }}
+              </div>
+              <div class="botones">
+                  <button type="button" class="btn-ver-obs" onclick="abrirModal('modal-{{ maquinaria.id }}')">Ver Observaciones</button>
+                  
+              </div>
+              <!-- Modal oculto -->
+              <div id="modal-{{ maquinaria.id }}" class="modal" style="display: none;">
+                  <div class="modal-contenido">
+                      <span class="cerrar" onclick="cerrarModal('modal-{{ maquinaria.id }}')">&times;</span>
+                      <h2>Observaciones de {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
+                      {% if maquinaria.puntuaciones %}
+                          <ul>
+                          {% for puntuacion in maquinaria.puntuaciones %}
+                              <li>
+                              <small> Cliente: {{ puntuacion.cliente.nombre }} {{ puntuacion.cliente.apellido }}</small> <br>
+                              <small> Observacion: "{{ puntuacion.nota }}"</small> <br>
+                              </li>
+                          {% endfor %}
+                          </ul>
+                      {% else %}
+                          <p>No hay observaciones.</p>
+                      {% endif %}
+                  </div>
+                  
+              </div>
+          </div>    
+          <div class="imagen">
+              <img src="{{ maquinaria.imagen.url }}" alt="Imagen de {{ maquinaria.modelo }}">
+          </div> <br>
+          <div class="botones">
+                  {% if request.session.cliente_rol != "jefe" %}
+                      <a href="{% url 'hacer_reserva' maquinaria.id %}" class="btn btn-primary btn-hacer-reserva">Hacer reserva</a>
+                  {% endif %}
+          </div>
+      </div>
+  {% empty %}
+      <p>No hay maquinarias disponibles con esos filtros.</p>
+  {% endfor %}
+</div>
 {% include "footer.html" %}
 <script>
   function abrirModal(id) {
@@ -110,10 +114,15 @@ window.onclick = function(event) {
 
 
 <style>
+.contenedor{
+  display: flex;
+  flex-direction: column;  
+  align-items: center;    
+  width: 100%;
+}
 .maquinaria {
   display: flex;
-  gap: 20px; /* espacio entre columnas */
-  align-items: flex-start;
+  gap: 20px; 
   border: 1px solid #ddd;
   padding: 15px;
   border-radius: 8px;
