@@ -129,7 +129,7 @@
                     
                     {% if alquiler.codigo_maquina %}
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalObservaciones{{ alquiler.id }}">
-                            Ver Observaciones
+                           Agregar observacion
                         </button>
 
                         <!-- Modal -->
@@ -142,21 +142,7 @@
                                 </div>
 
                                 <div class="modal-body">
-                                <!-- Historial de observaciones -->
-                                {% with alquiler.codigo_maquina as maquina %}
-                                    {% if maquina.observacion_set.all %}
-                                        <ul class="list-group mb-3">
-                                            {% for obs in maquina.observacion_set.all %}
-                                                <li class="list-group-item">
-                                                    <strong>{{ obs.mail }}:</strong> <br> {{ obs.observacion }}<br>
-                                                    <small>{{ obs.fecha }}</small>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        <p>No hay observaciones para esta máquina.</p>
-                                    {% endif %}
-                                {% endwith %}
+                             
 
                                 <!-- Formulario para nueva observación -->
                                 <form method="post" action="{% url 'agregar_observacion' alquiler.codigo_maquina.id %}">

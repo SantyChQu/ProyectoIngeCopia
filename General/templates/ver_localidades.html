@@ -74,7 +74,9 @@
                     <th>Código Postal</th>
                     <th>Dirección</th>
                     <th>Teléfono</th>
-                    <th>Acciones</th>
+                    {% if request.session.cliente_rol == "jefe" %}
+                        <th>Acciones</th>
+                    {% endif %}
                     <th>Mapa</th>
                 </tr>
             </thead>
@@ -85,8 +87,8 @@
                         <td>{{ loc.codigo_postal }}</td>
                         <td>{{ loc.ubicacion }}</td>
                         <td>{{ loc.telefono }}</td>
-                        <td>
-                            {% if request.session.cliente_rol == "jefe" %}
+                        {% if request.session.cliente_rol == "jefe" %}
+                            <td>
                                 <form method="post" action="{% url 'eliminar_localidad' loc.id %}" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-sm btn-danger"
@@ -94,10 +96,8 @@
                                         Eliminar
                                     </button>
                                 </form>
-                            {% else %}
-                                <span class="text-muted">Solo jefe</span>
-                            {% endif %}
-                        </td>
+                            </td>
+                        {% endif %}
                         <td>
                             <a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|add:', '|add:loc.ubicacion|urlencode }}" target="_blank">
                                 <button class="btn btn-info btn-sm">Ver Mapa</button>
