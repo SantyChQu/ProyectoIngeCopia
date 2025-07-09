@@ -68,6 +68,11 @@
 
 <h1 style="text-align: center;">Listado de Clientes</h1>
 
+<form method="get" action="{% url 'ver_clientes' %}" style="text-align:center; margin-bottom: 20px;">
+    <input type="text" name="buscar" placeholder="Buscar por apellido, mail o DNI" value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
 {% if clientes|length == 0 %}
     <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">
         No hay Clientes registrados
