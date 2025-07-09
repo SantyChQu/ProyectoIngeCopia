@@ -5,7 +5,7 @@ from datetime import datetime
 class MaquinariaForm(forms.ModelForm):
     class Meta:
         model = Maquinaria
-        exclude = ['estado']
+        exclude = ['estado','fecha_habilitacion']
         widgets = {
             'codigo_serie': forms.TextInput(attrs={'minlength': 1}),
         }
