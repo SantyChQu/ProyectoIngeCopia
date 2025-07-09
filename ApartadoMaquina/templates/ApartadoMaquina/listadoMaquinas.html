@@ -68,9 +68,19 @@
 
 <h1 style="text-align: center;">Listado de Maquinarias</h1>
 
+<!-- 🔍 Buscador siempre visible -->
+<form method="get" action="{% url 'ver_maquinarias' %}" style="text-align: center; margin-bottom: 20px;">
+    <input type="text" name="buscar" placeholder="Buscar por código o estado" value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
 {% if maquinarias|length == 0 %}
     <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">
-        No hay maquinarias registradas.
+        {% if request.GET.buscar %}
+            No se encontraron maquinarias con el código o estado "<strong>{{ request.GET.buscar }}</strong>".
+        {% else %}
+            No hay maquinarias registradas.
+        {% endif %}
     </p>
 {% else %}
 
@@ -80,6 +90,8 @@
         <button type="submit" class="boton-autodestruir">🔥 Autodestruir</button>
     </form>
     {% endif %}
+
+    <!-- acá sigue la tabla y todo el contenido -->
 
     <table class="table table-bordered table-hover text-center align-middle">
         <thead>

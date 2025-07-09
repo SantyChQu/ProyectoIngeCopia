@@ -47,8 +47,19 @@ def agregar_observacion_maquinaria(request, id):
             messages.success(request, f"Observación agregada a {maquinaria.codigo_serie}.")
     return redirect('ver_maquinarias')
 
+from django.db.models import Q
+
 def ver_maquinarias(request):
+    buscar = request.GET.get('buscar', '').lower()
+
     maquinarias = Maquinaria.objects.exclude(estado='eliminado')
+
+    if buscar:
+        maquinarias = maquinarias.filter(
+            Q(codigo_serie__icontains=buscar) |
+            Q(estado__icontains=buscar)
+        )
+
     for maquina in maquinarias:
         maquina.verificar_estado()
 
