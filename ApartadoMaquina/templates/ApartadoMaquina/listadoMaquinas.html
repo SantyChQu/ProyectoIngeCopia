@@ -218,9 +218,10 @@
                 {% endif %}
                 <td>
                     {% if maquina.estado == 'inhabilitado' and maquina.fecha_habilitacion %}
-                        <p style="color:red; font-weight:bold;">
-                            {{ maquina.fecha_habilitacion|date:"d/m/Y H:i" }}
-                        </p>
+                        {% load tz %}
+                            <p style="color:red; font-weight:bold;">
+                            {{ maquina.fecha_habilitacion|localtime|date:"d/m/Y H:i" }}
+                            </p> 
                     {% else %}
                         <span> - </span>    
                     {% endif %}
