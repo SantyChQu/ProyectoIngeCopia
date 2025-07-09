@@ -68,7 +68,6 @@
 
 <h1 style="text-align: center;">Listado de Maquinarias</h1>
 
-<!-- 🔍 Buscador siempre visible -->
 <form method="get" action="{% url 'ver_maquinarias' %}" style="text-align: center; margin-bottom: 20px;">
     <input type="text" name="buscar" placeholder="Buscar por código o estado" value="{{ request.GET.buscar }}">
     <button type="submit" class="btn btn-primary">Buscar</button>
@@ -90,8 +89,6 @@
         <button type="submit" class="boton-autodestruir">🔥 Autodestruir</button>
     </form>
     {% endif %}
-
-    <!-- acá sigue la tabla y todo el contenido -->
 
     <table class="table table-bordered table-hover text-center align-middle">
         <thead>
@@ -116,6 +113,7 @@
             </tr>
         </thead>
         <tbody>
+            
             {% for maquina in maquinarias %}
             <tr>
                 <td>{{ maquina.codigo_serie }}</td>

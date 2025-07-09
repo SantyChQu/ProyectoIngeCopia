@@ -49,6 +49,8 @@ def agregar_observacion_maquinaria(request, id):
 
 from django.db.models import Q
 
+from django.db.models import Case, When, Value, IntegerField
+
 def ver_maquinarias(request):
     buscar = request.GET.get('buscar', '').lower()
 
@@ -59,6 +61,16 @@ def ver_maquinarias(request):
             Q(codigo_serie__icontains=buscar) |
             Q(estado__icontains=buscar)
         )
+
+    # Orden personalizado: primero habilitado (0), luego inhabilitado (1), luego otros estados (2)
+    maquinarias = maquinarias.annotate(
+        estado_orden=Case(
+            When(estado='habilitado', then=Value(0)),
+            When(estado='inhabilitado', then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        )
+    ).order_by('estado_orden')
 
     for maquina in maquinarias:
         maquina.verificar_estado()
