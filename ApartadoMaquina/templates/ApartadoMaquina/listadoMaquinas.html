@@ -71,9 +71,18 @@
 
 <h1 style="text-align: center;">Listado de Maquinarias</h1>
 
+<form method="get" action="{% url 'ver_maquinarias' %}" style="text-align: center; margin-bottom: 20px;">
+    <input type="text" name="buscar" placeholder="Buscar por código o estado" value="{{ request.GET.buscar }}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
 {% if maquinarias|length == 0 %}
     <p style="text-align: center; font-weight: bold; color: #a94442; background-color: #f2dede; padding: 10px; border-radius: 5px;">
-        No hay maquinarias registradas.
+        {% if request.GET.buscar %}
+            No se encontraron maquinarias con el código o estado "<strong>{{ request.GET.buscar }}</strong>".
+        {% else %}
+            No hay maquinarias registradas.
+        {% endif %}
     </p>
 {% else %}
 
@@ -107,6 +116,7 @@
             </tr>
         </thead>
         <tbody>
+            
             {% for maquina in maquinarias %}
             <tr>
                 <td>{{ maquina.codigo_serie }}</td>
@@ -238,6 +248,11 @@
                                         <strong>{{ obs.mail }}</strong><br>
                                         {{ obs.observacion }}<br>
                                         <small>{{ obs.fecha|date:"d/m/Y" }}</small>
+                                        <form action="{% url 'eliminarO' obs.id %}" method="post" style="display:inline;">
+                                              {% csrf_token %}
+                                              <button type="submit" class="boton-VolverAlInicio">Eliminar Observación</button>
+                                          </form>
+                                           
                                     </li>
                                     {% endfor %}
                                 </ul>

@@ -47,8 +47,31 @@ def agregar_observacion_maquinaria(request, id):
             messages.success(request, f"Observación agregada a {maquinaria.codigo_serie}.")
     return redirect('ver_maquinarias')
 
+from django.db.models import Q
+
+from django.db.models import Case, When, Value, IntegerField
+
 def ver_maquinarias(request):
+    buscar = request.GET.get('buscar', '').lower()
+
     maquinarias = Maquinaria.objects.exclude(estado='eliminado')
+
+    if buscar:
+        maquinarias = maquinarias.filter(
+            Q(codigo_serie__icontains=buscar) |
+            Q(estado__icontains=buscar)
+        )
+
+    # Orden personalizado: primero habilitado (0), luego inhabilitado (1), luego otros estados (2)
+    maquinarias = maquinarias.annotate(
+        estado_orden=Case(
+            When(estado='habilitado', then=Value(0)),
+            When(estado='inhabilitado', then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        )
+    ).order_by('estado_orden')
+
     for maquina in maquinarias:
         maquina.verificar_estado()
 
@@ -68,6 +91,7 @@ def ver_maquinarias(request):
 from django.shortcuts import get_object_or_404
 
 from datetime import timedelta
+
 def cambiar_estado_maquinaria(request, id):
     if request.method == 'POST':
         maquina = get_object_or_404(Maquinaria, id=id)
@@ -91,8 +115,7 @@ def cambiar_estado_maquinaria(request, id):
                 dias = int(dias_extra)
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias)
-                messages.success(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por {dias} días.")
-
+                
         else:
             
             maquina.estado = 'habilitado'
@@ -230,3 +253,12 @@ def alquileres_por_maquina(request):
         'data': data,
         'maquinas': maquinas,
     })
+
+def eliminarObservacion(request,id):
+
+
+    observacion = get_object_or_404(Observacion,id=id)
+
+    observacion.delete()
+    messages.success(request,"observacion eliminada correctamente")
+    return redirect('ver_maquinarias')

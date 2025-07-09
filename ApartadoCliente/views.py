@@ -17,26 +17,37 @@ def autodestruir_clientes(request):
         return redirect('inicio')  
 
     return redirect('ver_clientes')
+
+
 from django.db.models import Q, Case, When, Value, IntegerField
+
 def ver_clientes(request):
     cliente_id = request.session.get('cliente_id')
     cliente_actual = Cliente.objects.filter(id=cliente_id).first()
 
-    # Excluye a los jefes del listado
-    clientes = Cliente.objects.exclude(Q(rol='jefe') | Q(rol='empleados')).order_by('apellido')
-   
+    buscar = request.GET.get('buscar', '')
+
+    clientes = Cliente.objects.exclude(Q(rol='jefe') | Q(rol='empleados'))
+
+    if buscar:
+        clientes = clientes.filter(
+            Q(apellido__icontains=buscar) |
+            Q(mail__icontains=buscar) |
+            Q(dni__icontains=buscar)
+        )
+
     clientes = clientes.order_by(
         Case(
             When(estado='habilitado', then=Value(0)),
             When(estado='inhabilitado', then=Value(1)),
-            default=Value(2),  # por si hay otro estado
+            default=Value(2),
             output_field=IntegerField()
         ),
         'apellido'
     )
 
     hay_clientes_no_jefes = clientes.exists()
-    
+
     return render(request, 'listadoClientes.html', {
         'clientes': clientes,
         'cliente_actual': cliente_actual,
