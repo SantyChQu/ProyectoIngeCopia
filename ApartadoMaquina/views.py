@@ -90,28 +90,34 @@ def ver_maquinarias(request):
 ##
 from django.shortcuts import get_object_or_404
 
-from django.utils import timezone
 from datetime import timedelta
 
 def cambiar_estado_maquinaria(request, id):
-
     if request.method == 'POST':
         maquina = get_object_or_404(Maquinaria, id=id)
         empleado_mail = get_object_or_404(Cliente, id=request.session.get("cliente_id"))
+
         if maquina.estado == 'habilitado':
             opcion = request.POST.get('opcion')
+
             if opcion == '1':
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=1)
-                
+                messages.success(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por 1 día.")
+
             elif opcion == 'varios':
-                dias = int(request.POST.get('dias_extra', 1))
+                dias_extra = request.POST.get('dias_extra')
+
+                if not dias_extra or int(dias_extra) < 2:
+                    messages.error(request, 'Debés ingresar un número de días válido (mínimo 2) para inhabilitar por varios días.')
+                    return redirect('ver_maquinarias')
+
+                dias = int(dias_extra)
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias)
-                messages.error(request, f"La maquinaria '{maquina.codigo_serie}' fue Inhabilitada correctamente.")
-
                 
         else:
+            
             maquina.estado = 'habilitado'
             maquina.fecha_habilitacion = None
             messages.success(request, f"La maquinaria '{maquina.codigo_serie}' fue habilitada correctamente.")
