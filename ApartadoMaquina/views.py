@@ -224,3 +224,12 @@ def alquileres_por_maquina(request):
         'data': data,
         'maquinas': maquinas,
     })
+
+def eliminarObservacion(request,id):
+
+
+    observacion = get_object_or_404(Observacion,id=id)
+
+    observacion.delete()
+    messages.success(request,"observacion eliminada correctamente")
+    return redirect('ver_maquinarias')

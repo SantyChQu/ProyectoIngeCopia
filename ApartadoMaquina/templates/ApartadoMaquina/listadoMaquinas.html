@@ -232,6 +232,11 @@
                                         <strong>{{ obs.mail }}</strong><br>
                                         {{ obs.observacion }}<br>
                                         <small>{{ obs.fecha|date:"d/m/Y" }}</small>
+                                        <form action="{% url 'eliminarO' obs.id %}" method="post" style="display:inline;">
+                                              {% csrf_token %}
+                                              <button type="submit" class="boton-VolverAlInicio">Eliminar Observación</button>
+                                          </form>
+                                           
                                     </li>
                                     {% endfor %}
                                 </ul>

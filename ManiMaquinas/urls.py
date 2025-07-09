@@ -24,6 +24,7 @@ from ApartadoCliente import views as cliente_views
 from ApartadoMaquina import views as maquinas_views
 import os
 urlpatterns = [
+    path("EliminarObservacion/<int:id>", maquinas_views.eliminarObservacion, name='eliminarO'),
     path("admin/", admin.site.urls),
     path('', general.inicio, name='inicio'),
     path('ingreso/', general.ingresar, name='ingreso'),
