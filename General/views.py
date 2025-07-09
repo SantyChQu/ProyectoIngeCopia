@@ -346,7 +346,8 @@ def misalquileres(request):
     cliente_id = request.session['cliente_id']
     cliente = Cliente.objects.get(id=cliente_id)
 
-    alquileres = Alquiler.objects.filter(mail=cliente).order_by('desde')
+    # Orden descendente por fecha: más recientes primero
+    alquileres = Alquiler.objects.filter(mail=cliente).order_by('-desde')
 
     # Emparejamos alquiler con su formulario (solo si se puede puntuar)
     alquileres_forms = []
@@ -361,7 +362,7 @@ def misalquileres(request):
         'alquileres_forms': alquileres_forms
     }
 
-    return render(request, 'misalquileres.html', context) 
+    return render(request, 'misalquileres.html', context)
 
 
 def cancelar_alquiler(request, alquiler_id):
