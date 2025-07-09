@@ -100,6 +100,7 @@
                     <li><a class="dropdown-item" href="/maquinarias/">Ver Listado Maquinarias</a></li>
                     <li><a class="dropdown-item" href="/agregar_empleado/">Agregar Empleado</a></li>
                     <li><a class="dropdown-item" href="/empleados/">Ver Listado Empleados</a></li>
+                    <li><a class="dropdown-item" href="{% url 'ver_alquileres' %}">Ver Alquileres</a></li>
                 {% endif %}
 
                 {% if request.session.cliente_rol == "empleados" %}
