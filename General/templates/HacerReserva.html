@@ -73,9 +73,7 @@
     <h2>Reservar: {{ maquinaria.marca }} {{ maquinaria.modelo }}</h2>
     <p><strong>Localidad:</strong> {{ maquinaria.localidad.nombre }}</p>
     <p><strong>Precio por día:</strong> ${{ maquinaria.precio_alquiler_diario }}</p>
-     <p><strong>Politica de cancelacion:</strong> {{ maquinaria.politica.nombre }}</p>
-
-
+    <p><strong>Política de cancelación:</strong> {{ maquinaria.politica.nombre }}</p>
 
     <form method="post">
         {% csrf_token %}
@@ -94,8 +92,11 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
+<!-- Pasar fechas ocupadas desde Django a JS -->
+{{ fechas_ocupadas|json_script:"fechas-ocupadas-json" }}
+
 <script>
-    const fechasOcupadas = {{ fechas_ocupadas|safe }};
+    const fechasOcupadas = JSON.parse(document.getElementById("fechas-ocupadas-json").textContent);
     const hoy = new Date().toISOString().split('T')[0];
 
     flatpickr(".datepicker", {

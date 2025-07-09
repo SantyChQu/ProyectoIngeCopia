@@ -41,16 +41,20 @@ def inicio(request):
         'localidad_filtro': int(localidad_filtro) if localidad_filtro else ''
     })
 
+import json  # Por si querés usar JsonResponse en otra parte
+
 def hacer_reserva(request, maquinaria_id):
     if 'cliente_id' not in request.session:
         return redirect('/registro/')
 
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
     cliente = Cliente.objects.get(id=request.session['cliente_id'])
+
     alquileres_existentes = Alquiler.objects.filter(
-       codigo_maquina=maquinaria,
-      estado='pendienteRetiro'
+        codigo_maquina=maquinaria,
+        estado='pendienteRetiro'
     )
+
     if request.method == 'POST':
         fecha_inicio_str = request.POST.get('fecha_inicio')
         fecha_fin_str = request.POST.get('fecha_fin')
@@ -83,11 +87,12 @@ def hacer_reserva(request, maquinaria_id):
         else:
             messages.error(request, 'Fechas inválidas.')
 
-    # Generar fechas ocupadas para mostrar en el calendario
+    # Generar fechas ocupadas sumando un día extra al final
     fechas_ocupadas = []
     for alquiler in alquileres_existentes:
         actual = alquiler.desde
-        while actual <= alquiler.hasta:
+        fin_con_extra = alquiler.hasta + timedelta(days=1)
+        while actual <= fin_con_extra:
             fechas_ocupadas.append(actual.strftime("%Y-%m-%d"))
             actual += timedelta(days=1)
 
@@ -95,6 +100,7 @@ def hacer_reserva(request, maquinaria_id):
         'maquinaria': maquinaria,
         'fechas_ocupadas': fechas_ocupadas,
     })
+
 # ------------------------- AUTODESTRUIR MAQUINARIAS -----------------------------------------
 def autodestruir_maquinarias(request):
     Maquinaria.objects.all().delete()
