@@ -2,6 +2,9 @@
 
 {% block content %}
 <style>
+     input.is-invalid {
+        border-color: #dc3545;
+    }
     .alert-success {
         background-color: rgb(125, 236, 151);
         color: rgb(7, 7, 7);
@@ -154,10 +157,13 @@
                                         <input id="diasExtra{{ maquina.id }}" type="number" name="dias_extra" min="2" max="365"
                                             class="form-control mb-2" placeholder="Cantidad de días">
                                         <button type="submit" name="opcion" value="varios"
-                                        class="btn btn-danger w-100"
-                                        onclick="toggleRequired{{ maquina.id }}(true)">
-                                        Inhabilitar por varios días
+                                            class="btn btn-danger w-100"
+                                            onclick="return validarDiasExtra{{ maquina.id }}()">
+                                            Inhabilitar por varios días
                                         </button>
+                                        <div id="errorDiasExtra{{ maquina.id }}" class="text-danger" style="display: none;">
+                                            Debés ingresar un número de días válido.
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -301,6 +307,20 @@
         function toggleRequired{{ maquina.id }}(isRequired) {
             const input = document.getElementById('diasExtra{{ maquina.id }}');
             input.required = isRequired;
+        }
+        function validarDiasExtra{{ maquina.id }}() {
+            const diasExtraInput = document.getElementById('diasExtra{{ maquina.id }}');
+            const errorDiv = document.getElementById('errorDiasExtra{{ maquina.id }}');
+
+            if (!diasExtraInput.value || parseInt(diasExtraInput.value) < 2) {
+                errorDiv.style.display = 'block';
+                diasExtraInput.classList.add('is-invalid');
+                return false;  // Evita el submit
+            } else {
+                errorDiv.style.display = 'none';
+                diasExtraInput.classList.remove('is-invalid');
+                return true; // Permite el submit
+            }
         }
 
     </script>
