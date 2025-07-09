@@ -29,18 +29,20 @@
 </style>
 
 <h1 class="text-center mb-4">Listado de Localidades</h1>
+
 <form method="get" action="{% url 'ver_localidades' %}" style="text-align:center; margin-bottom: 20px;">
     <input type="text" name="buscar" placeholder="Buscar por nombre" value="{{ request.GET.buscar }}">
     <button type="submit" class="btn btn-primary">Buscar</button>
 </form>
-<!-- Botón para abrir el modal -->
+
+<!-- Botón y Modal para agregar localidad (solo jefe) -->
+{% if request.session.cliente_rol == "jefe" %}
 <div class="text-center mb-3">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregarLocalidad">
         Agregar Localidad
     </button>
 </div>
 
-<!-- Modal para agregar localidad -->
 <div class="modal fade" id="modalAgregarLocalidad" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -61,6 +63,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 {% if localidades %}
     <div class="table-responsive">
@@ -69,8 +72,8 @@
                 <tr>
                     <th>Ciudad</th>
                     <th>Código Postal</th>
-                    <th>Direccion</th>
-                    <th>Telefono</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
                     <th>Acciones</th>
                     <th>Mapa</th>
                 </tr>
@@ -83,18 +86,22 @@
                         <td>{{ loc.ubicacion }}</td>
                         <td>{{ loc.telefono }}</td>
                         <td>
-                            <form method="post" action="{% url 'eliminar_localidad' loc.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger"
-                                        onclick="return confirm('¿Eliminar la localidad {{ loc.nombre }}?')">
-                                    Eliminar
-                                </button>
-                            </form>
+                            {% if request.session.cliente_rol == "jefe" %}
+                                <form method="post" action="{% url 'eliminar_localidad' loc.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('¿Eliminar la localidad {{ loc.nombre }}?')">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted">Solo jefe</span>
+                            {% endif %}
                         </td>
                         <td>
-                        <a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|add:', '|add:loc.ubicacion|urlencode }}" target="_blank">
-                            <button class="btn btn-info btn-sm">Ver Mapa</button>
-                        </a>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|add:', '|add:loc.ubicacion|urlencode }}" target="_blank">
+                                <button class="btn btn-info btn-sm">Ver Mapa</button>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

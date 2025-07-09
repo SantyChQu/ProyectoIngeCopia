@@ -69,6 +69,7 @@ from django.shortcuts import get_object_or_404
 
 from django.utils import timezone
 from datetime import timedelta
+
 def cambiar_estado_maquinaria(request, id):
 
     if request.method == 'POST':
@@ -84,6 +85,8 @@ def cambiar_estado_maquinaria(request, id):
                 dias = int(request.POST.get('dias_extra', 1))
                 maquina.estado = 'inhabilitado'
                 maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias)
+                messages.error(request, f"La maquinaria '{maquina.codigo_serie}' fue Inhabilitada correctamente.")
+
                 
         else:
             maquina.estado = 'habilitado'
