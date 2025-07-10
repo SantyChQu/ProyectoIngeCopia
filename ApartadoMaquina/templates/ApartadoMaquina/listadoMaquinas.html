@@ -156,20 +156,19 @@
                                         <p>¿Por cuánto tiempo querés inhabilitar la maquina <strong>{{ maquina.codigo_serie }}</strong>?</p>
 
                                         <!-- Botón para 1 día -->
-                                        <button type="submit" name="opcion" value="1" 
+                                        <!-- <button type="submit" name="opcion" value="1" 
                                         class="btn btn-warning mb-2 w-100"
                                         onclick="toggleRequired{{ maquina.id }}(false)">
                                         Inhabilitar por 1 día
-                                        </button>
+                                        </button> -->
 
                                         <!-- Botón para más días -->
-                                        <p style="margin-top: 15px;">Inhabilitar por más días:</p>
-                                        <input id="diasExtra{{ maquina.id }}" type="number" name="dias_extra" min="2" max="365"
+                                        <input id="diasExtra{{ maquina.id }}" type="number" name="dias_extra" min="1" max="365"
                                             class="form-control mb-2" placeholder="Cantidad de días">
                                         <button type="submit" name="opcion" value="varios"
                                             class="btn btn-danger w-100"
                                             onclick="return validarDiasExtra{{ maquina.id }}()">
-                                            Inhabilitar por varios días
+                                            Inhabilitar maquina
                                         </button>
                                         <div id="errorDiasExtra{{ maquina.id }}" class="text-danger" style="display: none;">
                                             Debés ingresar un número de días válido.

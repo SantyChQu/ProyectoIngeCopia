@@ -115,8 +115,8 @@ def cambiar_estado_maquinaria(request, id):
                 dias_inhabilitacion = 1
             elif opcion == 'varios':
                 dias_extra = request.POST.get('dias_extra')
-                if not dias_extra or int(dias_extra) < 2:
-                    messages.error(request, 'Debés ingresar un número de días válido (mínimo 2) para inhabilitar por varios días.')
+                if not dias_extra or int(dias_extra) < 1:
+                    messages.error(request, 'Debés ingresar un número de días válido (mínimo 1) para inhabilitar la maquina.')
                     return redirect('ver_maquinarias')
                 dias_inhabilitacion = int(dias_extra)
             else:
