@@ -780,7 +780,7 @@ def ver_alquileres(request):
 
     def calcular_retraso_y_recargo(alquiler):
         dias_atraso = max((hoy - alquiler.hasta).days, 0)
-        monto_recargo = alquiler.precioPorDia * dias_atraso
+        monto_recargo = alquiler.precioPorDia * dias_atraso * Decimal('1.5')
         alquiler.dias_atraso = dias_atraso
         alquiler.monto_recargo = monto_recargo
 
@@ -836,9 +836,10 @@ def aceptar_devolucion_con_retraso(request, alquiler_id):
     if alquiler.estado == 'pendienteDevolucion':
         hoy = date.today()
         dias_atraso = max((hoy - alquiler.hasta).days, 0)
-        monto_recargo = (alquiler.precioPorDia * dias_atraso) * 1.5
+        monto_recargo = (alquiler.precioPorDia * dias_atraso) * Decimal('1.5')
         alquiler.dias_atraso = dias_atraso
-        alquiler.monto_recargo = monto_recargo
+        alquiler.precio = alquiler.precio + monto_recargo
+        alquiler.monto_recargo = monto_recargo 
         alquiler.estado = 'finalizado'
         alquiler.save()
         if dias_atraso > 0:
