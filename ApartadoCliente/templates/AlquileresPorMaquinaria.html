@@ -1,87 +1,99 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
-  <h2 style="text-align:center;">Cantidad de alquileres por máquina</h2>
 
-  
-  {#-----------------------------------------------#}
+<h2 class="text-center">Cantidad de Alquileres por Máquina</h2>
 
-  <div style="text-align: right; margin-bottom: 10px;">
+<form method="get" class="text-center mb-4">
+  {{ form.anio.label_tag }}
+  {{ form.anio }}
+  <button type="submit">Generar gráfico</button>
+</form>
+
+{% if hay_anio %}
+  {% if hay_datos %}
+    <div style="text-align: right; margin-bottom: 10px;">
       <button id="btnDescargar" style="
         background-color: #3498db;
         color: white;
         border: none;
         padding: 8px 15px;
         border-radius: 4px;
-        cursor: pointer;
-      "> Descargar Estadística </button>
+        cursor: pointer;">
+        Descargar Estadística
+      </button>
     </div>
-    {#-----------------------------------------------#}
-  <div style="width: 80%; margin: 0 auto;">
-    <canvas id="graficoMaquinas"></canvas>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const ctx = document.getElementById('graficoMaquinas').getContext('2d');
-    const grafico = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: {{ labels|safe }},
-        datasets: [{
-          label: 'Cantidad de Alquileres',
-          data: {{ data|safe }},
-          backgroundColor: 'rgba(255, 167, 38, 0.7)',
-          borderColor: 'rgba(255, 167, 38, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        scales: {
-          x: {
-            beginAtZero: true,
-            precision: 0,
-            stepSize: 1
+
+    <div style="width: 80%; margin: auto;">
+      <canvas id="graficoMaquinas"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const ctx = document.getElementById('graficoMaquinas');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: {{ etiquetas|safe }},
+          datasets: [{
+            label: 'Cantidad de Alquileres',
+            data: {{ cantidades|safe }},
+            backgroundColor: 'rgba(255, 167, 38, 0.7)',
+            borderColor: 'rgba(255, 167, 38, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          scales: {
+            x: {
+              beginAtZero: true,
+              precision: 0,
+              stepSize: 1
+            }
           }
         }
-      }
-    });
-    
-{#-----------------------------------------------#}
-document.getElementById('btnDescargar').addEventListener('click', function() {
+      });
+
+      document.getElementById('btnDescargar').addEventListener('click', function() {
         const link = document.createElement('a');
         const canvas = document.getElementById('graficoMaquinas');
         link.href = canvas.toDataURL('image/png');
         link.download = 'alquileres_por_maquina.png';
         link.click();
       });
-{#-----------------------------------------------#}
+    </script>
 
-  </script>
+    <h3 class="text-center mt-4">Detalle</h3>
+    <table style="margin: auto; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="border: 1px solid #ddd; padding: 8px;">Máquina</th>
+          <th style="border: 1px solid #ddd; padding: 8px;">Cantidad de Alquileres</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for maquina in maquinas %}
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">{{ maquina.marca }} {{ maquina.modelo }}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">{{ maquina.cantidad_alquileres }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-  <h3 style="text-align:center; margin-top: 40px;">Detalle</h3>
-  <table style="margin: 0 auto; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th style="border: 1px solid #ddd; padding: 8px;">Máquina</th>
-        <th style="border: 1px solid #ddd; padding: 8px;">Cantidad de Alquileres</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for maquina in maquinas %}
-      <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;">{{ maquina.marca }} {{ maquina.modelo }}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">{{ maquina.cantidad_alquileres }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
+  {% else %}
+    <p style="text-align: center; color: red;">
+      No se poseen alquileres para ninguna maquina en el año seleccionado.
+    </p>
+  {% endif %}
   <div style="text-align: center; margin-top: 20px;">
-    <a href="{% url 'ver_maquinarias' %}">
+    <a href="{% url 'inicio' %}">
       <button style="background-color: #FFA726; border: none; padding: 10px 20px; border-radius: 5px; color: white; cursor: pointer;">
-        Volver al Listado de Maquinarias
+        Volver
       </button>
     </a>
   </div>
+{% endif %}
+
 {% endblock %}

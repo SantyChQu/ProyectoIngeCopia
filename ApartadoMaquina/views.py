@@ -237,20 +237,61 @@ def modificar_maquina(request, id):
     #return redirect('ver_maquinarias')
 
 from django.db.models import Count
-
+from General.forms import FiltroAnioForm
+from collections import defaultdict
 def alquileres_por_maquina(request):
-    # Traer todas las máquinas que NO están eliminadas
-    maquinas = Maquinaria.objects.exclude(estado='eliminado').annotate(
-        cantidad_alquileres=Count('alquiler')  
-    ).order_by('-cantidad_alquileres')
+    form = FiltroAnioForm(request.GET or None)
 
-    # Chart.js
-    labels = [f"{m.marca} {m.modelo}" for m in maquinas]
-    data = [m.cantidad_alquileres for m in maquinas]
+    etiquetas = []
+    cantidades = []
+    hay_anio = False
+    hay_datos = False
+    maquinas = []
 
-    return render(request, 'alquileresPorMaquinaria.html', {
-        'labels': labels,
-        'data': data,
+    if form.is_valid() and form.cleaned_data.get('anio'):
+        anio = form.cleaned_data['anio']
+        hay_anio = True
+
+        alquileres = Alquiler.objects.filter(
+            estado__in=['finalizado', 'pendienteRetiro', 'enCurso'],
+            desde__year=anio
+        )
+
+        agrupados = defaultdict(int)
+
+        for alquiler in alquileres:
+            if alquiler.codigo_maquina: 
+                clave = f"{alquiler.codigo_maquina.marca} {alquiler.codigo_maquina.modelo}"
+                agrupados[clave] += 1
+
+        resultados = sorted(agrupados.items(), key=lambda x: x[1], reverse=True)
+
+        etiquetas = [r[0] for r in resultados]
+        cantidades = [r[1] for r in resultados]
+        hay_datos = sum(cantidades) > 0
+
+        # Para tabla detalle
+        maquinas = (
+        Maquinaria.objects.exclude(estado='eliminado')
+        .annotate(
+            cantidad_alquileres=Count(
+                'alquiler',
+                filter=Q(
+                    alquiler__estado__in=['finalizado', 'pendienteRetiro', 'enCurso'],
+                    alquiler__desde__year=anio
+                )
+            )
+        )
+        .filter(cantidad_alquileres__gt=0)
+        .order_by('-cantidad_alquileres')
+    )
+
+    return render(request, 'AlquileresPorMaquinaria.html', {
+        'form': form,
+        'etiquetas': etiquetas,
+        'cantidades': cantidades,
+        'hay_anio': hay_anio,
+        'hay_datos': hay_datos,
         'maquinas': maquinas,
     })
 
