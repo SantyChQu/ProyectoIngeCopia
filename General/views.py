@@ -421,7 +421,7 @@ def cancelar_alquiler(request, alquiler_id):
     if rol_cliente == 'jefe':
         messages.success(
             request,
-            f'Alquiler cancelado por jefe. Se devolvió el 100% (${monto_a_devolver:.2f}) al cliente.'
+            f'Alquiler cancelado. Se devolvió el 100% (${monto_a_devolver:.2f}) al cliente.'
         )
         return redirect('/alquileres')
     else:
@@ -480,13 +480,17 @@ def ver_localidades(request):
     if buscar:
         localidades = localidades.filter(nombre__icontains=buscar)
 
-    localidades = localidades.order_by('nombre')  
+    localidades = localidades.order_by('nombre')
 
     if request.method == 'POST':
         form = LocalidadForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('ver_localidades')
+            nombre = form.cleaned_data['nombre']
+            if Localidad.objects.filter(nombre__iexact=nombre).exists():
+                form.add_error('nombre', f"Ya existe una localidad con el nombre '{nombre}'.")
+            else:
+                form.save()
+                return redirect('ver_localidades')
     else:
         form = LocalidadForm()
 
@@ -500,10 +504,16 @@ def agregar_localidad(request):
     if request.method == 'POST':
         form = LocalidadForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('ver_localidades')
+            nombre = form.cleaned_data['nombre']
+            if Localidad.objects.filter(nombre__iexact=nombre).exists():
+                messages.error(request, f"Ya existe una localidad con el nombre '{nombre}'.")
+            else:
+                form.save()
+                messages.success(request, f"Localidad '{nombre}' agregada correctamente.")
+                return redirect('ver_localidades')
     else:
         form = LocalidadForm()
+
     return render(request, 'agregar_localidad.html', {'form': form})
 
 from django.shortcuts import get_object_or_404, redirect, render

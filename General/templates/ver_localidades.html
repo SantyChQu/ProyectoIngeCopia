@@ -63,55 +63,66 @@
         </div>
     </div>
 </div>
+
+<!-- Script para abrir el modal si hay errores -->
+{% if form.errors %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var modal = new bootstrap.Modal(document.getElementById("modalAgregarLocalidad"));
+        modal.show();
+    });
+</script>
+{% endif %}
 {% endif %}
 
 {% if localidades %}
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover tabla-localidades">
-            <thead>
-                <tr>
-                    <th>Ciudad</th>
-                    <th>Código Postal</th>
-                    <th>Dirección</th>
-                    <th>Teléfono</th>
-                    {% if request.session.cliente_rol == "jefe" %}
-                        <th>Acciones</th>
-                    {% endif %}
-                    <th>Mapa</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for loc in localidades %}
-                    <tr>
-                        <td>{{ loc.nombre }}</td>
-                        <td>{{ loc.codigo_postal }}</td>
-                        <td>{{ loc.ubicacion }}</td>
-                        <td>{{ loc.telefono }}</td>
-                        {% if request.session.cliente_rol == "jefe" %}
-                            <td>
-                                <form method="post" action="{% url 'eliminar_localidad' loc.id %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('¿Eliminar la localidad {{ loc.nombre }}?')">
-                                        Eliminar
-                                    </button>
-                                </form>
-                            </td>
-                        {% endif %}
-                        <td>
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|add:', '|add:loc.ubicacion|urlencode }}" target="_blank">
-                                <button class="btn btn-info btn-sm">Ver Mapa</button>
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover tabla-localidades">
+        <thead>
+            <tr>
+                <th>Ciudad</th>
+                <th>Código Postal</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                {% if request.session.cliente_rol == "jefe" %}
+                <th>Acciones</th>
+                {% endif %}
+                <th>Mapa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loc in localidades %}
+            <tr>
+                <td>{{ loc.nombre }}</td>
+                <td>{{ loc.codigo_postal }}</td>
+                <td>{{ loc.ubicacion }}</td>
+                <td>{{ loc.telefono }}</td>
+                {% if request.session.cliente_rol == "jefe" %}
+                <td>
+                    <form method="post" action="{% url 'eliminar_localidad' loc.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('¿Eliminar la localidad {{ loc.nombre }}?')">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
+                {% endif %}
+                <td>
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ loc.nombre|add:', '|add:loc.ubicacion|urlencode }}"
+                        target="_blank">
+                        <button class="btn btn-info btn-sm">Ver Mapa</button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% else %}
-    <div class="alert alert-warning text-center" role="alert">
-        No hay localidades registradas.
-    </div>
+<div class="alert alert-warning text-center" role="alert">
+    No hay localidades registradas.
+</div>
 {% endif %}
 
 <a href="{% url 'inicio' %}">
