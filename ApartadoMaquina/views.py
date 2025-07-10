@@ -126,16 +126,35 @@ def cambiar_estado_maquinaria(request, id):
         return redirect('ver_maquinarias')
 
 
-   
 def eliminar_maquinaria(request, maquinaria_id):
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
 
-    if maquinaria.estado == 'eliminado':
+    # Impide eliminación solo si hay alquiler en curso
+    tiene_alquiler_en_curso = Alquiler.objects.filter(
+        codigo_maquina=maquinaria,
+        estado='enCurso'
+    ).exists()
+
+    if tiene_alquiler_en_curso:
+        messages.error(request, 'No se puede eliminar la maquinaria porque tiene un alquiler en curso.')
+    elif maquinaria.estado == 'eliminado':
         messages.warning(request, 'La maquinaria ya está marcada como eliminada.')
     else:
+        # Cancelar alquileres pendientes relacionados
+        alquileres_pendientes = Alquiler.objects.filter(
+            codigo_maquina=maquinaria,
+            estado__in=['pendienteRetiro', 'pendienteDevolucion']
+        )
+
+        for alquiler in alquileres_pendientes:
+            alquiler.estado = 'finalizado'
+            alquiler.cancelado = True
+            alquiler.save()
+
         maquinaria.estado = 'eliminado'
         maquinaria.save()
-        messages.success(request, 'Eliminacion Exitosa')
+
+        messages.success(request, 'Maquinaria eliminada y alquileres pendientes cancelados.')
 
     return redirect('ver_maquinarias')
 
