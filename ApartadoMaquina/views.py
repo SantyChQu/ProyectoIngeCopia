@@ -92,37 +92,73 @@ from django.shortcuts import get_object_or_404
 
 from datetime import timedelta
 
+
+from datetime import timedelta
+from decimal import Decimal
+from django.contrib import messages
+from django.shortcuts import redirect, get_object_or_404
+
 def cambiar_estado_maquinaria(request, id):
     if request.method == 'POST':
         maquina = get_object_or_404(Maquinaria, id=id)
         empleado_mail = get_object_or_404(Cliente, id=request.session.get("cliente_id"))
 
+        # Verificar si tiene alquileres en curso
         if maquina.estado == 'habilitado':
+            if Alquiler.objects.filter(codigo_maquina=maquina, estado='enCurso').exists():
+                messages.error(request, f"No se puede inhabilitar la maquinaria '{maquina.codigo_serie}' porque tiene un alquiler en curso.")
+                return redirect('ver_maquinarias')
+
             opcion = request.POST.get('opcion')
 
             if opcion == '1':
-                maquina.estado = 'inhabilitado'
-                maquina.fecha_habilitacion = timezone.now() + timedelta(days=1)
-                messages.success(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por 1 día.")
-
+                dias_inhabilitacion = 1
             elif opcion == 'varios':
                 dias_extra = request.POST.get('dias_extra')
-
                 if not dias_extra or int(dias_extra) < 2:
                     messages.error(request, 'Debés ingresar un número de días válido (mínimo 2) para inhabilitar por varios días.')
                     return redirect('ver_maquinarias')
+                dias_inhabilitacion = int(dias_extra)
+            else:
+                messages.error(request, 'Opción inválida.')
+                return redirect('ver_maquinarias')
 
-                dias = int(dias_extra)
-                maquina.estado = 'inhabilitado'
-                maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias)
-                
+            # Inhabilitar la máquina
+            maquina.estado = 'inhabilitado'
+            maquina.fecha_habilitacion = timezone.now() + timedelta(days=dias_inhabilitacion)
+            maquina.save()
+
+            # Cancelar alquileres pendientes que empiecen durante la inhabilitación
+            fecha_limite = maquina.fecha_habilitacion
+            hoy = timezone.now().date()
+            alquileres_a_cancelar = Alquiler.objects.filter(
+                codigo_maquina=maquina,
+                estado='pendienteRetiro',
+                desde__lte=fecha_limite.date()
+            )
+
+            for alquiler in alquileres_a_cancelar:
+                # Calcular monto a devolver
+                dias = (alquiler.hasta - alquiler.desde).days
+                monto_total = maquina.precio_alquiler_diario * Decimal(dias)
+                tarjeta = alquiler.tarjeta
+                if tarjeta:
+                    tarjeta.monto += monto_total
+                    tarjeta.save()
+                alquiler.precio = Decimal('0.00')
+                alquiler.estado = 'finalizado'
+                alquiler.cancelado = True
+                alquiler.save()
+
+            messages.success(request, f"La maquinaria '{maquina.codigo_serie}' fue inhabilitada por {dias_inhabilitacion} día(s). Se cancelaron {alquileres_a_cancelar.count()} alquiler(es) pendientes.")
+
         else:
-            
+            # Habilitar la maquinaria
             maquina.estado = 'habilitado'
             maquina.fecha_habilitacion = None
+            maquina.save()
             messages.success(request, f"La maquinaria '{maquina.codigo_serie}' fue habilitada correctamente.")
 
-        maquina.save()
         return redirect('ver_maquinarias')
 
 
