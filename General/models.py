@@ -67,13 +67,19 @@ class Empleado(models.Model):
 
 
 class Localidad(models.Model):
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100, unique=True)
     codigo_postal = models.CharField(max_length=10)
     ubicacion = models.TextField()
     telefono = models.CharField(max_length=20)
 
     def __str__(self):
         return self.nombre
+    
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+        if Localidad.objects.filter(nombre__iexact=nombre).exists():
+            raise forms.ValidationError("Ya existe una localidad con ese nombre.")
+        return nombre
 
 
 class Politica(models.Model):
