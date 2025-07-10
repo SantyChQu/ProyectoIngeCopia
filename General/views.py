@@ -374,22 +374,25 @@ def misalquileres(request):
 def cancelar_alquiler(request, alquiler_id):
     alquiler = get_object_or_404(Alquiler, id=alquiler_id)
 
-    # Verificamos que el alquiler pertenezca al cliente logueado
     cliente_id = request.session.get('cliente_id')
-    if alquiler.mail.id != cliente_id:
+    rol_cliente = request.session.get('cliente_rol')
+
+    # Solo cliente propietario o jefe puede cancelar
+    if alquiler.mail.id != cliente_id and rol_cliente != 'jefe':
         messages.error(request, 'No tenés permiso para cancelar este alquiler.')
         return redirect('/misalquileres')
 
-    # Solo se puede cancelar si aún no está finalizado
+    # No se puede cancelar si ya está finalizado
     if alquiler.estado == 'finalizado':
         messages.error(request, 'Este alquiler ya fue finalizado.')
         return redirect('/misalquileres')
 
-    # Verificamos que falten al menos 2 días para que empiece el alquiler
-    hoy = timezone.now().date()
-    if (alquiler.desde - hoy).days < 2:
-        messages.error(request, 'Solo podés cancelar alquileres con al menos 2 días de anticipación.')
-        return redirect('/misalquileres')
+    # Solo los clientes (no jefes) deben cumplir la condición de los 2 días de anticipación
+    if rol_cliente != 'jefe':
+        hoy = timezone.now().date()
+        if (alquiler.desde - hoy).days < 2:
+            messages.error(request, 'Solo podés cancelar alquileres con al menos 2 días de anticipación.')
+            return redirect('/misalquileres')
 
     maquinaria = alquiler.codigo_maquina
     politica = maquinaria.politica
@@ -399,8 +402,11 @@ def cancelar_alquiler(request, alquiler_id):
     monto_total = maquinaria.precio_alquiler_diario * Decimal(dias)
 
     # Porcentaje de devolución
-    porcentaje_devolucion = politica.porcentaje / Decimal(100)
-    monto_a_devolver = monto_total * porcentaje_devolucion
+    if rol_cliente == 'jefe':
+        monto_a_devolver = monto_total  # devolución completa
+    else:
+        porcentaje_devolucion = politica.porcentaje / Decimal(100)
+        monto_a_devolver = monto_total * porcentaje_devolucion
 
     tarjeta = alquiler.tarjeta
     if tarjeta:
@@ -412,11 +418,18 @@ def cancelar_alquiler(request, alquiler_id):
     alquiler.cancelado = True
     alquiler.save()
 
-    messages.success(
-        request,
-        f'Alquiler cancelado. Se devolvieron ${monto_a_devolver:.2f} según la política de cancelación.'
-    )
-    return redirect('/misalquileres')
+    if rol_cliente == 'jefe':
+        messages.success(
+            request,
+            f'Alquiler cancelado por jefe. Se devolvió el 100% (${monto_a_devolver:.2f}) al cliente.'
+        )
+        return redirect('/alquileres')
+    else:
+        messages.success(
+            request,
+            f'Alquiler cancelado. Se devolvieron ${monto_a_devolver:.2f} según la política de cancelación.'
+        )
+        return redirect('/misalquileres')
 
 def puntuar_alquiler(request, alquiler_id):
     if request.method == 'POST':
