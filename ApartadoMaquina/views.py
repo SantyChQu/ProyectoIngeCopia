@@ -132,7 +132,7 @@ from django.utils import timezone
 def eliminar_maquinaria(request, maquinaria_id):
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
 
-    # Impide eliminación solo si hay alquiler en curso
+    # Impide eliminación si hay un alquiler en curso
     tiene_alquiler_en_curso = Alquiler.objects.filter(
         codigo_maquina=maquinaria,
         estado='enCurso'
@@ -143,10 +143,10 @@ def eliminar_maquinaria(request, maquinaria_id):
     elif maquinaria.estado == 'eliminado':
         messages.warning(request, 'La maquinaria ya está marcada como eliminada.')
     else:
-        # Cancelar alquileres pendientes relacionados
+        # Cancelar alquileres en estado 'pendienteRetiro'
         alquileres_pendientes = Alquiler.objects.filter(
             codigo_maquina=maquinaria,
-            estado__in=['pendienteRetiro', 'pendienteDevolucion']
+            estado='pendienteRetiro'
         )
 
         for alquiler in alquileres_pendientes:
@@ -154,7 +154,7 @@ def eliminar_maquinaria(request, maquinaria_id):
             dias = (alquiler.hasta - alquiler.desde).days
             monto_total = maquinaria.precio_alquiler_diario * Decimal(dias)
 
-            # Devolver 100% del monto (como jefe)
+            # Devolver 100% del monto
             tarjeta = alquiler.tarjeta
             if tarjeta:
                 tarjeta.monto += monto_total
@@ -165,14 +165,12 @@ def eliminar_maquinaria(request, maquinaria_id):
             alquiler.cancelado = True
             alquiler.save()
 
-        # Marcar maquinaria como eliminada
         maquinaria.estado = 'eliminado'
         maquinaria.save()
 
-        messages.success(request, 'Maquinaria eliminada. Alquileres pendientes cancelados y dinero devuelto.')
+        messages.success(request, 'Maquinaria eliminada. Alquileres pendientes de retiro cancelados y dinero devuelto.')
 
     return redirect('ver_maquinarias')
-
 
 
 def modificar_maquina(request, id):

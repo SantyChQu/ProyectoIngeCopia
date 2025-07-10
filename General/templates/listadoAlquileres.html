@@ -40,6 +40,19 @@
                 <td>{{ alquiler.hasta }}</td>
                 <td>{{ alquiler.get_estado_display }}</td>
             
+                 {% if cliente.rol == 'jefe' %} 
+
+               {% if alquiler.estado == 'pendienteRetiro' %}
+                    <td>
+                        <form method="post" action="{% url 'cancelar_alquiler' alquiler.id %}">
+                            {% csrf_token %}
+                            <button style="background-color: #FFA726;" type="submit" class="btn btn-danger btn-sm" 
+                            onclick="return confirmarCancelarEstado('{{alquiler.codigo_identificador }}', '{{ alquiler.mail.dni}}', 'Cancelar Alquiler')">Cancelar Alquiler</button>
+                        </form>
+                     </td>   
+                 {%endif%}    
+             {%endif%}
+            
             {% if cliente.rol == 'empleados' %} 
                 <td>
                     {% if alquiler.estado == 'pendienteRetiro' %}
