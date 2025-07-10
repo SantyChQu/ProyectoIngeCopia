@@ -126,6 +126,9 @@ def cambiar_estado_maquinaria(request, id):
         return redirect('ver_maquinarias')
 
 
+from decimal import Decimal
+from django.utils import timezone
+
 def eliminar_maquinaria(request, maquinaria_id):
     maquinaria = get_object_or_404(Maquinaria, id=maquinaria_id)
 
@@ -147,14 +150,26 @@ def eliminar_maquinaria(request, maquinaria_id):
         )
 
         for alquiler in alquileres_pendientes:
+            # Calcular monto total del alquiler
+            dias = (alquiler.hasta - alquiler.desde).days
+            monto_total = maquinaria.precio_alquiler_diario * Decimal(dias)
+
+            # Devolver 100% del monto (como jefe)
+            tarjeta = alquiler.tarjeta
+            if tarjeta:
+                tarjeta.monto += monto_total
+                tarjeta.save()
+
+            alquiler.precio = Decimal('0.00')
             alquiler.estado = 'finalizado'
             alquiler.cancelado = True
             alquiler.save()
 
+        # Marcar maquinaria como eliminada
         maquinaria.estado = 'eliminado'
         maquinaria.save()
 
-        messages.success(request, 'Maquinaria eliminada y alquileres pendientes cancelados.')
+        messages.success(request, 'Maquinaria eliminada. Alquileres pendientes cancelados y dinero devuelto.')
 
     return redirect('ver_maquinarias')
 
