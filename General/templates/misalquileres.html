@@ -51,28 +51,32 @@
                                     <div class="modal fade" id="modalPuntuar{{ a.id }}" tabindex="-1" aria-labelledby="modalPuntuarLabel{{ a.id }}" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <form method="POST" action="{% url 'puntuar_alquiler' a.id %}">
+                                                <form method="POST" action="{% url 'puntuar_alquiler' a.id %}"id="form-puntuar-{{ a.id }}">
                                                     {% csrf_token %}
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="modalPuntuarLabel{{ a.id }}">Calificar alquiler {{ a.codigo_identificador }}</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                                     </div>
                                                     <div class="modal-body">
+                                                        <div id="error-estrellas-{{ a.id }}" class="alert alert-danger py-1 mb-2" style="display: none;">
+                                                             Por favor seleccioná una cantidad de estrellas antes de guardar.
+                                                        </div>
                                                         {% if form %}
+                                                            
                                                             <div class="mb-3">
-                                                            <label class="form-label">Calificación:</label>
-                                                            <div class="star-rating">
-                                                                <input type="radio" id="star5-{{ a.id }}" name="estrellas" value="5" />
-                                                                <label for="star5-{{ a.id }}">&#9733;</label>
-                                                                <input type="radio" id="star4-{{ a.id }}" name="estrellas" value="4" />
-                                                                <label for="star4-{{ a.id }}">&#9733;</label>
-                                                                <input type="radio" id="star3-{{ a.id }}" name="estrellas" value="3" />
-                                                                <label for="star3-{{ a.id }}">&#9733;</label>
-                                                                <input type="radio" id="star2-{{ a.id }}" name="estrellas" value="2" />
-                                                                <label for="star2-{{ a.id }}">&#9733;</label>
-                                                                <input type="radio" id="star1-{{ a.id }}" name="estrellas" value="1" />
-                                                                <label for="star1-{{ a.id }}">&#9733;</label>
-                                                            </div>
+                                                                
+                                                                <div class="star-rating">
+                                                                    <input type="radio" id="star5-{{ a.id }}" name="estrellas" value="5" {% if form.data.estrellas == '5' %}checked{% endif %}/>
+                                                                    <label for="star5-{{ a.id }}">&#9733;</label>
+                                                                    <input type="radio" id="star4-{{ a.id }}" name="estrellas" value="4" {% if form.data.estrellas == '4' %}checked{% endif %}/>
+                                                                    <label for="star4-{{ a.id }}">&#9733;</label>
+                                                                    <input type="radio" id="star3-{{ a.id }}" name="estrellas" value="3" {% if form.data.estrellas == '3' %}checked{% endif %}/>
+                                                                    <label for="star3-{{ a.id }}">&#9733;</label>
+                                                                    <input type="radio" id="star2-{{ a.id }}" name="estrellas" value="2"{% if form.data.estrellas == '2' %}checked{% endif %} />
+                                                                    <label for="star2-{{ a.id }}">&#9733;</label>
+                                                                    <input type="radio" id="star1-{{ a.id }}" name="estrellas" value="1"{% if form.data.estrellas == '1' %}checked{% endif %}/>
+                                                                    <label for="star1-{{ a.id }}">&#9733;</label>
+                                                                </div>
                                                             </div>
                                                             {{ form.nota.label_tag }}
                                                             {{ form.nota }}
@@ -81,7 +85,8 @@
                                                         {% endif %}
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                                        <button type="button" class="btn btn-primary" onclick="validarPuntuar('{{ a.id }}')">Guardar</button>
+
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                                     </div>
                                                 </form>
@@ -94,6 +99,7 @@
                             </td>
                         </tr>
                     {% endfor %}
+                    
                 </tbody>
             </table>
         </div>
@@ -103,33 +109,58 @@
         </div>
     {% endif %}
 </div>
+<script>
+   
+  function validarPuntuar(id) {
+    const form = document.getElementById('form-puntuar-' + id);
+    const errorDiv = document.getElementById('error-estrellas-' + id);
+    const radios = form.querySelectorAll('input[name="estrellas"]');
+    let checked = false;
+
+    radios.forEach(radio => {
+        if (radio.checked) checked = true;
+    });
+
+    if (!checked) {
+        errorDiv.style.display = 'block';
+    } else {
+        errorDiv.style.display = 'none';
+        form.submit(); 
+    }
+    }
+
+</script>
+
+
+
+
+
 <style>
 .star-rating {
-  direction: rtl; /* para que se pinten bien de derecha a izquierda */
+  direction: rtl;
   display: inline-flex;
 }
 
-.star-rating input {
-  display: none; /* oculta los radios */
+.star-rating input[type="radio"] {
+  display: none;
 }
 
 .star-rating label {
   font-size: 2rem;
-  color: #ddd; /* gris por defecto */
+  color: #ddd;
   cursor: pointer;
   transition: color 0.2s;
 }
 
-/* Cuando el input está chequeado, pinta todas las anteriores */
-.star-rating input:checked ~ label {
-  color: #ffc107; /* amarillo dorado */
+.star-rating input[type="radio"]:checked ~ label {
+  color: #ffc107;
 }
 
-/* Hover: pinta al pasar el mouse */
 .star-rating label:hover,
 .star-rating label:hover ~ label {
   color: #ffc107;
 }
+
 
 </style>
 {% endblock %}

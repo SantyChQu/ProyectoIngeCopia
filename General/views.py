@@ -431,29 +431,33 @@ def cancelar_alquiler(request, alquiler_id):
         )
         return redirect('/misalquileres')
 
+
+
+@require_POST
 def puntuar_alquiler(request, alquiler_id):
-    if request.method == 'POST':
-        alquiler = get_object_or_404(
-            Alquiler,
-            id=alquiler_id,
-            mail_id=request.session.get("cliente_id")
+    alquiler = get_object_or_404(
+        Alquiler,
+        id=alquiler_id,
+        mail_id=request.session.get("cliente_id")
+    )
+
+    if alquiler.estado != 'finalizado' or alquiler.cancelado or alquiler.calificacion is not None:
+        return redirect('/misalquileres')
+
+    form = CalificacionForm(request.POST)
+    if form.is_valid():
+        calificacion = Calificacion.objects.create(
+            cliente_id=request.session.get("cliente_id"),
+            estrellas=form.cleaned_data['estrellas'],
+            nota=form.cleaned_data['nota']
         )
-
-        # Validación única
-        if alquiler.estado != 'finalizado' or alquiler.cancelado or alquiler.calificacion is not None:
-            return redirect('/misalquileres')
-
-        form = CalificacionForm(request.POST)
-        if form.is_valid():
-            calificacion = Calificacion.objects.create(
-                cliente_id=request.session.get("cliente_id"),
-                estrellas=form.cleaned_data['estrellas'],
-                nota=form.cleaned_data['nota']
-            )
-            alquiler.calificacion = calificacion  
-            alquiler.save()
+        alquiler.calificacion = calificacion
+        alquiler.save()
 
     return redirect('/misalquileres')
+
+
+
 
 def agregar_observacion(request, maquina_id):
     if request.method == 'POST':

@@ -70,7 +70,7 @@ urlpatterns = [
     path('alquileres/<int:alquiler_id>/aceptar_devolucion/', general.aceptar_devolucion, name='aceptar_devolucion'),
     path('alquileres/<int:alquiler_id>/aceptar_devolucion_con_mora/', general.aceptar_devolucion_con_retraso, name='aceptar_devolucion_con_retraso'),
     path('historial_alquileres/', general.historial_alquileres, name='historial_alquileres'),
-    path('maquinaria/<int:id>/agregar_observacion/', maquinas_views.agregar_observacion_maquinaria, name='agregar_observacion_maquinaria'),
+    path('maquinaria/<int:id>/agregar_observacion_maquinaria/', maquinas_views.agregar_observacion_maquinaria, name='agregar_observacion_maquinaria'),
 
     ]
 if settings.DEBUG:
