@@ -517,7 +517,7 @@ def agregar_localidad(request):
     return render(request, 'agregar_localidad.html', {'form': form})
 
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib import messages
+
 from .models import Localidad, Alquiler
 
 
