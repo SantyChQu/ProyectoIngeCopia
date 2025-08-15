@@ -57,7 +57,7 @@ urlpatterns = [
     path('proximamente/',general.proximo),
     path('estadisticas/', cliente_views.estadisticas_clientes, name='estadisticas_clientes'),
     path('localidades/', general.ver_localidades, name='ver_localidades'),
-     path('localidades/agregar/', general.agregar_localidad, name='agregar_localidad'),
+    path('localidades/agregar/', general.agregar_localidad, name='agregar_localidad'),
     path('localidades/eliminar/<int:localidad_id>/', general.eliminar_localidad, name='eliminar_localidad'),
     path('estadisticas_alquileres/', general.estadisticas_alquileres_localidad, name='estadisticas_alquileres_localidad'),
     path('agregar_empleado/',general.registro_empleado, name='registro_empleado'),
